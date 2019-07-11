@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.LightningDemoController">
+   <children>
+      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <bottom>
+            <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0" BorderPane.alignment="CENTER">
+               <content>
+                  <VBox>
+                     <children>
+                        <Label text="sway" />
+                        <Slider fx:id="swaySlider" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
+                        <Label layoutX="10.0" layoutY="10.0" text="jitter" />
+                        <Slider fx:id="jitterSlider" blockIncrement="2.0" layoutX="10.0" layoutY="10.0" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
+                        <Label layoutX="10.0" layoutY="128.0" text="density" />
+                        <Slider fx:id="densitySlider" blockIncrement="0.1" layoutX="10.0" layoutY="24.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.01" />
+                        <Label layoutX="10.0" layoutY="175.0" text="Sepia" />
+                        <Slider fx:id="sepiaSlider" blockIncrement="0.1" layoutX="10.0" layoutY="192.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.25" />
+                        <Label layoutX="10.0" layoutY="175.0" text="bloom" />
+                        <Slider fx:id="bloomSlider" blockIncrement="0.1" layoutX="10.0" layoutY="412.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.25" />
+                        <Label layoutX="10.0" layoutY="111.0" text="glow" />
+                        <Slider fx:id="glowSlider" blockIncrement="0.1" layoutX="10.0" layoutY="38.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.75" />
+                        <Label layoutX="10.0" layoutY="285.0" text="Shadow" />
+                        <Slider fx:id="shadowSlider" layoutX="10.0" layoutY="302.0" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="10.0" />
+                        <Label layoutX="10.0" layoutY="103.0" text="opacity" />
+                        <Slider fx:id="opacitySlider" blockIncrement="0.1" layoutX="10.0" layoutY="52.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.75" />
+                        <Label layoutX="10.0" layoutY="179.0" text="thickness" />
+                        <Slider fx:id="thicknessSlider" blockIncrement="5.0" layoutX="10.0" layoutY="66.0" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="5.0" />
+                        <Label layoutX="10.0" layoutY="285.0" text="Time Delay" />
+                        <Slider fx:id="timeDelaySlider" blockIncrement="100.0" layoutX="10.0" layoutY="302.0" majorTickUnit="100.0" max="1000.0" minorTickCount="20" showTickLabels="true" showTickMarks="true" value="33.0" />
+                        <Label layoutX="10.0" layoutY="120.0" text="Envelope Size" />
+                        <Slider fx:id="envelopeSizeSlider" blockIncrement="0.1" layoutX="10.0" layoutY="357.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.75" />
+                        <Label layoutX="10.0" layoutY="395.0" text="Envelope De-scalar" />
+                        <Slider fx:id="envelopeScalarSlider" blockIncrement="0.1" layoutX="10.0" layoutY="209.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.75" />
+                     </children>
+                  </VBox>
+               </content>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </ScrollPane>
+         </bottom>
+         <center>
+            <Pane fx:id="centerPane" minHeight="400.0" minWidth="400.0" style="-fx-background-color: #000000;" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
