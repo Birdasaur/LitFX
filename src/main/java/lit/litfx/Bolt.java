@@ -47,10 +47,8 @@ public class Bolt extends Polyline {
 
         //interpolate a line of points
         ArrayList<Point2D> linePoints = Algorithms.simpleBres2D(
-            new Double(start.getX()).intValue(),
-            new Double(start.getY()).intValue(), 
-            new Double(end.getX()).intValue(),
-            new Double(end.getY()).intValue()
+            (int) start.getX(), (int) start.getY(), 
+            (int) end.getX(),(int) end.getY()
         );
         
         //create random bolt points based on a density factor

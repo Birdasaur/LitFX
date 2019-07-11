@@ -122,49 +122,11 @@ public class BranchLightning extends Group {
             branchList.forEach(branch -> branch.setEffect(effect));
         }
     }
-            
-    
-//    public void setVisibleLength(int length) {
-//        pointIndexProperty.set(length);
-//    }
-//    public int getVisibleLength() {
-//        return pointIndexProperty.get();
-//    }
-    
-//    public void animate(Duration animationDuration) {
-//        
-//        getPoints().clear();
-//        pointIndexProperty.set(0);
-//        Timeline timeline = new Timeline();
-//        timeline.getKeyFrames().add(
-//            new KeyFrame(milliseconds,
-//                new KeyValue(pointIndexProperty, boltPoints.size(), Interpolator.EASE_OUT)
-//            )
-//        );
-//        timeline.play();
-//    }   
-    
-//    private void updateLine(int boltLength) {
-//        //System.out.println("BoltLength: " + boltLength);
-//        //Should we remove some points?
-//        if(boltLength < (getPoints().size() / 2)) {
-//            if(boltLength <= 0)
-//                getPoints().clear();
-//            else {
-//                int start = 0;
-//                int end = boltLength * 2;
-//                getPoints().remove(start, end);
-//            }
-//        }
-//        //should we add some points?
-//        else if(boltLength > (getPoints().size() / 2)) {
-//            Double [] points = new Double [boltLength * 2];
-//            for(int i=0;i<boltLength;i++) {
-//                points[i*2] = boltPoints.get(i).getX();
-//                points[i*2+1] = boltPoints.get(i).getY();
-//            }   
-//            this.getPoints().setAll(points);
-//        }
-//    }
-    
+    public void setOpacity(double opacity, Member member) {
+        if(member == Member.PRIMARYBOLT) {
+            primaryBolt.setOpacity(opacity);
+        } else {
+            branchList.forEach(branch -> branch.setOpacity(opacity));
+        }
+    }    
 }

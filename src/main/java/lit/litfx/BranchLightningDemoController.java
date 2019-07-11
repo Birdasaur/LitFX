@@ -10,12 +10,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TabPane;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.SepiaTone;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -28,6 +30,8 @@ import javafx.scene.paint.Color;
 public class BranchLightningDemoController implements Initializable {
     @FXML
     Pane centerPane;
+    @FXML
+    TabPane tabPane;
     //Dynamics
     @FXML
     private Slider branchesSlider;
@@ -84,7 +88,10 @@ public class BranchLightningDemoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         centerPane.setOnMouseClicked((MouseEvent event) -> {
-            end = new Point2D(event.getX(), event.getY());
+            if(event.getButton() == MouseButton.PRIMARY)
+                start = new Point2D(event.getX(), event.getY());
+            else if(event.getButton() == MouseButton.SECONDARY)
+                end = new Point2D(event.getX(), event.getY());
         });
         centerPane.widthProperty().addListener((obs, oV, nV)-> {
             start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0);    
@@ -92,7 +99,7 @@ public class BranchLightningDemoController implements Initializable {
         centerPane.heightProperty().addListener((obs, oV, nV)-> {
             start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0);    
         });
-//        timeDelayProp.bind(timeDelaySlider.valueProperty());
+
         start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0); 
         end = new Point2D(centerPane.getWidth()-10.0, centerPane.getHeight() / 2.0); 
         
@@ -111,6 +118,8 @@ public class BranchLightningDemoController implements Initializable {
         Thread animationThread = new Thread(animationTask);
         animationThread.setDaemon(true);
         animationThread.start();
+        
+        tabPane.setOnMouseEntered(event -> tabPane.requestFocus());
     }    
     public void updateBolts() {
         Platform.runLater(()-> {
@@ -128,6 +137,8 @@ public class BranchLightningDemoController implements Initializable {
                     BranchLightning.Member.PRIMARYBOLT);
             branch.setEffect(collectEffects(BranchLightning.Member.BRANCH), 
                     BranchLightning.Member.BRANCH);
+            branch.setOpacity(boltOpacitySlider.getValue(), BranchLightning.Member.PRIMARYBOLT);
+            branch.setOpacity(branchOpacitySlider.getValue(), BranchLightning.Member.BRANCH);
             centerPane.getChildren().add(branch);
         });
     }    

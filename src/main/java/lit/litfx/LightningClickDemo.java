@@ -1,12 +1,12 @@
 package lit.litfx;
 
+import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import javafx.stage.Stage;
@@ -20,18 +20,16 @@ public class LightningClickDemo extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-//        StackPane root = new StackPane();
         BorderPane root = new BorderPane();
         root.setOnMouseClicked((MouseEvent event) -> {
             root.getChildren().clear();
             Polyline poly = null;
             if(event.getButton() == MouseButton.PRIMARY) {
                 poly = Algorithms.toPolyLine(
-                        Algorithms.simpleBres2D(
-                            new Double(root.getWidth() / 2.0).intValue(), 
-                            new Double(root.getHeight() / 2.0).intValue(),
-                            new Double(event.getX()).intValue(), 
-                            new Double(event.getY()).intValue()
+                        Algorithms.simpleBres2D((int) (root.getWidth() / 2.0), 
+                            (int) (root.getHeight() / 2.0),
+                            (int) event.getX(), 
+                            (int) event.getY()
                         )
                     );
                 poly.setStroke(Color.STEELBLUE);

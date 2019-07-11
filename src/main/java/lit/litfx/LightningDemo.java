@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -19,8 +18,6 @@ public class LightningDemo extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LightningDemo.fxml"));
-//        loader.setLocation(getClass().getResource("LightningDemo.fxml"));
-//        AnchorPane anchorPane = (AnchorPane) loader.load();
         Parent parent = loader.load();        
         scene = new Scene(parent, 800, 800, Color.BLACK);
         
