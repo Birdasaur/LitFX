@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>run</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>clean</goal>
+                <goal>javafx:run</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>debug</actionName>
+            <packagings>
+                <packaging>jar</packaging>
+            </packagings>
+            <goals>
+                <goal>clean</goal>
+                <goal>clean javafx:run@debug</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-JLink</actionName>
+            <displayName>JLink</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>javafx:jlink</goal>
+            </goals>
+        </action>
+    </actions>
