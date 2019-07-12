@@ -1,6 +1,5 @@
 package lit.litfx;
 
-import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
@@ -42,7 +41,6 @@ public class LightningClickDemo extends Application {
             }
             if(null != poly) {
                 root.getChildren().add(poly); 
-                
                 if(poly instanceof Bolt && event.isShiftDown()) {
                     ((Bolt)poly).setVisibleLength(0);
                     ((Bolt)poly).animate(Duration.millis(100));
@@ -50,10 +48,8 @@ public class LightningClickDemo extends Application {
             }
             
         });
-
-        Scene scene = new Scene(root, 300, 300, Color.BLACK);
-        
-        primaryStage.setTitle("Hello World!");
+        Scene scene = new Scene(root, 600, 600, Color.BLACK);
+        primaryStage.setTitle("Click to fire bolt of lightning.");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -64,5 +60,4 @@ public class LightningClickDemo extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
 }

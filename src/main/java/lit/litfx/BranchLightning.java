@@ -49,22 +49,22 @@ public class BranchLightning extends Group {
         getChildren().add(primaryBolt);
                 
         //Determine randomly where the branches should be
-        ArrayList<BoltPoint> branchPoints = randomBranchPoints(branches, primaryBolt);
+        ArrayList<EdgePoint> branchPoints = randomBranchPoints(branches, primaryBolt);
         //For each branch location, generate a new bolt of lightning
         branchList = new ArrayList<>();
         Random random = new Random();
         for(int i=0; i<branchPoints.size(); i++) {
             //Get the starting location for the new branch bolt
-            int startIndex = primaryBolt.getBoltPoints().indexOf(branchPoints.get(i));
+            int startIndex = primaryBolt.getEdgePoints().indexOf(branchPoints.get(i));
             //Is it the last bolt point?
-            if(startIndex >= primaryBolt.getBoltPoints().size()-1) {
+            if(startIndex >= primaryBolt.getEdgePoints().size()-1) {
                 //back everything up by 1
                 startIndex = startIndex - 1;
             } 
-            BoltPoint startBoltPoint = primaryBolt.getBoltPoints().get(startIndex);
+            EdgePoint startBoltPoint = primaryBolt.getEdgePoints().get(startIndex);
             //Use the actual end point of the original bolt as a "heading" 
             //This allows reasonable looking divergence of the branches
-            BoltPoint endBoltPoint = new BoltPoint(1, end);
+            EdgePoint endBoltPoint = new EdgePoint(1, end);
             //Calculate the actual angle of the line with regard to the screen
             //Screen coordinates is Y positive down, 0,0 upper left corner
             Point2D startPoint2D = new Point2D(startBoltPoint.getX(), startBoltPoint.getY());
@@ -92,17 +92,17 @@ public class BranchLightning extends Group {
         getChildren().addAll(branchList);
     }
     
-    private ArrayList<BoltPoint> randomBranchPoints(int branches, Bolt bolt) {
+    private ArrayList<EdgePoint> randomBranchPoints(int branches, Bolt bolt) {
         // pick a bunch of random points on the Bolt
         ArrayList<Integer> positions = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < branches; i++) {
             positions.add(
-                Math.round(random.nextFloat() * (bolt.getBoltPoints().size()-1)));
+                Math.round(random.nextFloat() * (bolt.getEdgePoints().size()-1)));
         }
-        ArrayList<BoltPoint> branchPoints = new ArrayList<>();
+        ArrayList<EdgePoint> branchPoints = new ArrayList<>();
         positions.stream().sorted().forEach(
-            pos -> branchPoints.add(bolt.getBoltPoints().get(pos)));
+            pos -> branchPoints.add(bolt.getEdgePoints().get(pos)));
         
         return branchPoints;
     }
