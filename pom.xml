@@ -78,7 +78,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.2</version>
                 <configuration>
-                    <mainClass>lit.litfx.BranchLightningDemo</mainClass>
+                    <mainClass>lit.litfx.CanvasLightningDemo</mainClass>
                     <stripDebug>true</stripDebug>
                     <compress>2</compress>
                     <noHeaderFiles>true</noHeaderFiles>

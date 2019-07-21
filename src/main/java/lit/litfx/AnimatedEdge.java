@@ -27,6 +27,19 @@ public abstract class AnimatedEdge extends Polyline {
         this.density = density;
         edgePoints = new ArrayList<>();
     }
+
+    public double[] getXpointArray() {
+        double [] xPointArray = new double[edgePoints.size()];
+        for(int i=0; i<xPointArray.length;i++)
+            xPointArray[i] = edgePoints.get(i).getX();
+        return xPointArray;
+    }
+    public double[] getYpointArray() {
+        double [] yPointArray = new double[edgePoints.size()];
+        for(int i=0; i<yPointArray.length;i++)
+            yPointArray[i] = edgePoints.get(i).getY();
+        return yPointArray;
+    }
     
     /**
      * @return the edgePoints
