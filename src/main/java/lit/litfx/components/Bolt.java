@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.components;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
+import lit.litfx.Algorithms;
 
 /**
  *

@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.components;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;

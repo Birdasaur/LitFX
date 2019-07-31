@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +17,7 @@ import javafx.scene.effect.SepiaTone;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import lit.litfx.components.Bolt;
 
 /**
  * FXML Controller class

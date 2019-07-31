@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.components;
 
 import java.util.ArrayList;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.demos;
 
 import javafx.application.Application;
 import javafx.geometry.Point2D;
@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lit.litfx.Algorithms;
+import lit.litfx.components.Bolt;
 
 /**
  *

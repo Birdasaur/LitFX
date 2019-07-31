@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.demos;
 
 import java.io.IOException;
 import javafx.application.Application;

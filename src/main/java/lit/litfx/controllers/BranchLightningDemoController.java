@@ -1,4 +1,4 @@
-package lit.litfx;
+package lit.litfx.controllers;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,8 +9,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
 import javafx.scene.effect.Bloom;
@@ -22,20 +20,17 @@ import javafx.scene.effect.SepiaTone;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import lit.litfx.components.BranchLightning;
 
 /**
  * FXML Controller class
  *
  * @author phillsm1
  */
-public class CanvasLightningDemoController implements Initializable {
+public class BranchLightningDemoController implements Initializable {
     @FXML
-    Canvas centerCanvas;
-    @FXML
-    StackPane centerPane;
-
+    Pane centerPane;
     @FXML
     TabPane tabPane;
     //Dynamics
@@ -93,21 +88,21 @@ public class CanvasLightningDemoController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        centerCanvas.setOnMouseClicked((MouseEvent event) -> {
+        centerPane.setOnMouseClicked((MouseEvent event) -> {
             if(event.getButton() == MouseButton.PRIMARY)
                 start = new Point2D(event.getX(), event.getY());
             else if(event.getButton() == MouseButton.SECONDARY)
                 end = new Point2D(event.getX(), event.getY());
         });
-        centerCanvas.widthProperty().addListener((obs, oV, nV)-> {
-            start = new Point2D(centerCanvas.getWidth() / 2.0, centerCanvas.getHeight() / 2.0);    
+        centerPane.widthProperty().addListener((obs, oV, nV)-> {
+            start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0);    
         });
-        centerCanvas.heightProperty().addListener((obs, oV, nV)-> {
-            start = new Point2D(centerCanvas.getWidth() / 2.0, centerCanvas.getHeight() / 2.0);    
+        centerPane.heightProperty().addListener((obs, oV, nV)-> {
+            start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0);    
         });
 
-        start = new Point2D(centerCanvas.getWidth() / 2.0, centerCanvas.getHeight() / 2.0); 
-        end = new Point2D(centerCanvas.getWidth()-10.0, centerCanvas.getHeight() / 2.0); 
+        start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0); 
+        end = new Point2D(centerPane.getWidth()-10.0, centerPane.getHeight() / 2.0); 
         
         timeDelayProp.bind(durationSlider.valueProperty());
         
@@ -125,41 +120,28 @@ public class CanvasLightningDemoController implements Initializable {
         animationThread.setDaemon(true);
         animationThread.start();
         
-        centerCanvas.widthProperty().bind(centerPane.widthProperty());
-        centerCanvas.heightProperty().bind(centerPane.heightProperty());
-        
         tabPane.setOnMouseEntered(event -> tabPane.requestFocus());
     }    
     public void updateBolts() {
-        GraphicsContext gc = centerCanvas.getGraphicsContext2D();
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, centerPane.getWidth(), centerPane.getHeight());
-        BranchLightning branch = new BranchLightning(start, end, 
-            densitySlider.getValue(), 
-            swaySlider.getValue(), 
-            jitterSlider.getValue(),
-            branchesSlider.valueProperty().getValue().intValue(),
-            branchDivergenceSlider.getValue()
-        );
-        
-        gc.setStroke(Color.ALICEBLUE.deriveColor(
-            Color.ALICEBLUE.getRed(), Color.ALICEBLUE.getGreen(), 
-            Color.ALICEBLUE.getBlue(), boltOpacitySlider.getValue()));
-//        gc.setEffect(collectEffects(BranchLightning.Member.PRIMARYBOLT));
-        gc.setLineWidth(boltThicknessSlider.getValue());
-            gc.strokePolyline(branch.primaryBolt.getXpointArray(), 
-                branch.primaryBolt.getYpointArray(), branch.primaryBolt.getVisibleLength());
-
-        gc.setStroke(Color.STEELBLUE.deriveColor(
-            Color.STEELBLUE.getRed(), Color.STEELBLUE.getGreen(), 
-            Color.STEELBLUE.getBlue(), branchOpacitySlider.getValue()));
-//        gc.setEffect(collectEffects(BranchLightning.Member.BRANCH));
-        gc.setLineWidth(branchThicknessSlider.getValue());
-        branch.branchList.forEach(branchBolt -> {
-            gc.strokePolyline(branchBolt.getXpointArray(), 
-                branchBolt.getYpointArray(), branchBolt.getVisibleLength());
+        Platform.runLater(()-> {
+            centerPane.getChildren().clear();
+            BranchLightning branch = new BranchLightning(start, end, 
+                densitySlider.getValue(), 
+                swaySlider.getValue(), 
+                jitterSlider.getValue(),
+                branchesSlider.valueProperty().getValue().intValue(),
+                branchDivergenceSlider.getValue()
+            );
+            branch.setBoltThickness(boltThicknessSlider.getValue());
+            branch.setBranchThickness(branchThicknessSlider.getValue());
+            branch.setEffect(collectEffects(BranchLightning.Member.PRIMARYBOLT), 
+                    BranchLightning.Member.PRIMARYBOLT);
+            branch.setEffect(collectEffects(BranchLightning.Member.BRANCH), 
+                    BranchLightning.Member.BRANCH);
+            branch.setOpacity(boltOpacitySlider.getValue(), BranchLightning.Member.PRIMARYBOLT);
+            branch.setOpacity(branchOpacitySlider.getValue(), BranchLightning.Member.BRANCH);
+            centerPane.getChildren().add(branch);
         });
-        
     }    
     private Effect collectEffects(BranchLightning.Member member) {
         if(member == BranchLightning.Member.PRIMARYBOLT) {

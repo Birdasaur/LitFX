@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.CanvasLightningDemoController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.controllers.BranchLightningDemoController">
    <bottom>
       <TabPane fx:id="tabPane" style="-fx-background-color: #000000;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
          <tabs>
@@ -109,10 +108,6 @@
       </TabPane>
    </bottom>
    <center>
-      <StackPane fx:id="centerPane" BorderPane.alignment="CENTER">
-         <children>
-            <Canvas fx:id="centerCanvas" height="200.0" width="200.0" />
-         </children>
-      </StackPane>
+      <Pane fx:id="centerPane" minHeight="400.0" minWidth="400.0" style="-fx-background-color: #000000;" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
