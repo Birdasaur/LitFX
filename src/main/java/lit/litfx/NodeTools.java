@@ -2,9 +2,11 @@ package lit.litfx;
 
 import java.util.ArrayList;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import lit.litfx.components.Bolt;
+import lit.litfx.components.BoltDynamics;
 import lit.litfx.components.EdgePoint;
 
 /**
@@ -13,14 +15,6 @@ import lit.litfx.components.EdgePoint;
  */
 public enum NodeTools {
     INSTANCE;
-    public static Bolt arcNodes(Node node1, Node node2) {
-        ArrayList<EdgePoint> arcPoints = shortArcPoints(node1, node2);
-        
-        Bolt bolt = new Bolt(arcPoints.get(0).toPoint2D(), arcPoints.get(1).toPoint2D(),
-            0.1, 80, 15, 0.85, 0.1); 
-        bolt.setStroke(Color.ALICEBLUE);
-        return bolt;
-    }
 
     public static ArrayList<EdgePoint> shortArcPoints(Node node1, Node node2) {
         Bounds boundsInLocal = node1.getBoundsInLocal();
@@ -52,6 +46,62 @@ public enum NodeTools {
         points.add(new EdgePoint(1, minXNode2, minYNode2, 0));
         return points;
     }
+    public static ArrayList<EdgePoint> nodeLoopPoints(EdgePoint startPoint, Node node) {
+        Bounds boundsInLocal = node.getBoundsInLocal();
+        Bounds nodeSceneBounds = node.localToScene(boundsInLocal);        
+
+        ArrayList<EdgePoint> points = new ArrayList<>();
+        //convert each bounds point to a usable EdgePoint
+        EdgePoint upperLeft = new EdgePoint(0, nodeSceneBounds.getMinX(), nodeSceneBounds.getMinY(), 0);
+        EdgePoint upperRight = new EdgePoint(1, nodeSceneBounds.getMaxX(), nodeSceneBounds.getMinY(), 0);
+        EdgePoint lowerRight = new EdgePoint(2, nodeSceneBounds.getMaxX(), nodeSceneBounds.getMaxY(), 0);
+        EdgePoint lowerLeft = new EdgePoint(3, nodeSceneBounds.getMinX(), nodeSceneBounds.getMaxY(), 0);
+        //Find shortest distance to each bound point
+        double upperLeftDistance = startPoint.distance(upperLeft);
+        double upperRightDistance = startPoint.distance(upperRight);
+        double lowerRightDistance = startPoint.distance(lowerRight);
+        double lowerLeftDistance = startPoint.distance(lowerLeft);
+        //Determine the order of the points based on location of bounds
+        if(upperLeftDistance <= upperRightDistance 
+        && upperLeftDistance <= lowerRightDistance 
+        && upperLeftDistance <= lowerLeftDistance) {
+            points.add(upperLeft);
+            points.add(upperRight);
+            points.add(lowerRight);
+            points.add(lowerLeft);
+        } else if(upperRightDistance <= upperLeftDistance 
+        && upperRightDistance <= lowerRightDistance 
+        && upperRightDistance <= lowerLeftDistance) {
+            points.add(upperRight);
+            points.add(lowerRight);
+            points.add(lowerLeft);
+            points.add(upperLeft);
+        } else if(lowerRightDistance <= upperLeftDistance 
+        && lowerRightDistance <= upperRightDistance 
+        && lowerRightDistance <= lowerLeftDistance) {
+            points.add(lowerRight);
+            points.add(lowerLeft);
+            points.add(upperLeft);
+            points.add(upperRight);
+        } else {
+            points.add(lowerLeft);
+            points.add(upperLeft);
+            points.add(upperRight);
+            points.add(lowerRight);
+        }
+        //System.out.println(minXNode1 + ", " + minYNode1 + " -> " + minXNode2 + ", " + minYNode2);
+        return points;
+    }
+
+    public static Bolt arcNodes(Node node1, Node node2, BoltDynamics dynamics) {
+        ArrayList<EdgePoint> arcPoints = shortArcPoints(node1, node2);
+        Bolt bolt = new Bolt(arcPoints.get(0), arcPoints.get(1), dynamics); 
+        bolt.setStroke(Color.ALICEBLUE);
+        return bolt;
+    }
+    
+    
+    
     public static double transformX(double dataXcoord, double domain, double range) {
         return (dataXcoord * range) / domain;
     }

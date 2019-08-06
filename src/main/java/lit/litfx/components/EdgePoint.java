@@ -1,5 +1,6 @@
 package lit.litfx.components;
 
+import java.util.Comparator;
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 

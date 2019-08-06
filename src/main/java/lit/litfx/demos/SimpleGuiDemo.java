@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import lit.litfx.NodeTools;
 import lit.litfx.components.Bolt;
+import lit.litfx.components.BoltDynamics;
 
 /**
  *
@@ -42,10 +43,15 @@ public class SimpleGuiDemo extends Application {
         Button button1 = new Button("Arc to Button 2");
         Button button2 = new Button("Arc to ChoiceBox");
         Button button3 = new Button("Arc to ChoiceBox");
-
+        //0.1, 80, 15, 0.85, 0.1);
+        final BoltDynamics boltDynamics = new BoltDynamics.Builder().with(dynamics -> {
+            dynamics.density = 0.1; dynamics.sway = 80; dynamics.jitter = 15;
+            dynamics.envelopeSize = 0.85; dynamics.envelopeScalar = 0.1;
+        }).build();
+        
         button1.setOnAction(action -> {
             litPane.getChildren().removeIf(node -> node instanceof Bolt);
-            Bolt bolt = NodeTools.arcNodes(button1, button2);
+            Bolt bolt = NodeTools.arcNodes(button1, button2, boltDynamics);
             setBoltEffects(bolt);
             litPane.getChildren().add(bolt);
             //System.out.println("First Point: " + bolt.getPoints().get(0) + ", " + bolt.getPoints().get(1));
@@ -54,7 +60,7 @@ public class SimpleGuiDemo extends Application {
         });
         button2.setOnAction(action -> {
             litPane.getChildren().removeIf(node -> node instanceof Bolt);
-            Bolt bolt = NodeTools.arcNodes(button2, choices);
+            Bolt bolt = NodeTools.arcNodes(button2, choices, boltDynamics);
             setBoltEffects(bolt);
             litPane.getChildren().add(bolt);
             //System.out.println("First Point: " + bolt.getPoints().get(0) + ", " + bolt.getPoints().get(1));
@@ -64,7 +70,7 @@ public class SimpleGuiDemo extends Application {
         
         button3.setOnAction(action -> {
             litPane.getChildren().removeIf(node -> node instanceof Bolt);
-            Bolt bolt = NodeTools.arcNodes(button3, choices);
+            Bolt bolt = NodeTools.arcNodes(button3, choices, boltDynamics);
             setBoltEffects(bolt);
             litPane.getChildren().add(bolt);
             //System.out.println("First Point: " + bolt.getPoints().get(0) + ", " + bolt.getPoints().get(1));

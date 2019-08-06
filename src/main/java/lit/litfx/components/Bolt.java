@@ -24,6 +24,10 @@ public class Bolt extends AnimatedEdge {
     double envelopeSize = 0.75;
     double envelopeScaler = 0.1;
             
+    public Bolt(EdgePoint start, EdgePoint end, BoltDynamics dynamics) {
+        this(start.toPoint2D(), end.toPoint2D(), dynamics.density, dynamics.sway,
+            dynamics.jitter, dynamics.envelopeSize, dynamics.envelopeScalar);
+    }
     public Bolt(Point2D start, Point2D end, 
         double density, double sway, double jitter,
         double envelopeSize, double envelopeScalar) {
