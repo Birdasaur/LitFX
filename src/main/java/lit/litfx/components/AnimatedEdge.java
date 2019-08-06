@@ -28,6 +28,15 @@ public abstract class AnimatedEdge extends Polyline {
         edgePoints = new ArrayList<>();
     }
 
+    public void updatePolylinePoints(int length) {
+        Double [] points = new Double [length * 2];
+        for(int i=0;i<length;i++) {
+            points[i*2] = getEdgePoints().get(i).getX();
+            points[i*2+1] = getEdgePoints().get(i).getY();
+        }   
+        this.getPoints().setAll(points); 
+    }
+    
     public double[] getXpointArray() {
         double [] xPointArray = new double[edgePoints.size()];
         for(int i=0; i<xPointArray.length;i++)

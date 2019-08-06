@@ -121,12 +121,7 @@ public class Bolt extends AnimatedEdge {
         }
         //should we add some points?
         else if(length > (getPoints().size() / 2)) {
-            Double [] points = new Double [length * 2];
-            for(int i=0;i<length;i++) {
-                points[i*2] = getEdgePoints().get(i).getX();
-                points[i*2+1] = getEdgePoints().get(i).getY();
-            }   
-            this.getPoints().setAll(points);
+            updatePolylinePoints(length);
         }
     }
 }
