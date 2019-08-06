@@ -26,7 +26,7 @@ import lit.litfx.components.Bolt;
  *
  * @author phillsm1
  */
-public class LitGuiDemo extends Application {
+public class SimpleGuiDemo extends Application {
 
     double animationDuration = 200;
         
@@ -95,10 +95,9 @@ public class LitGuiDemo extends Application {
         root.setBackground(Background.EMPTY);
         Scene scene = new Scene(root, 600, 600, Color.BLACK);
 
-        primaryStage.setTitle("Click to fire bolt of lightning.");
+        primaryStage.setTitle("Click a button to arc between nodes.");
         primaryStage.setScene(scene);
         primaryStage.show();
-        
     }
     
     private void setBoltEffects(Bolt bolt) {
