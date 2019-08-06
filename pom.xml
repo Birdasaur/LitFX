@@ -78,7 +78,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.2</version>
                 <configuration>
-                    <mainClass>lit.litfx.demos.SimpleGuiDemo</mainClass>
+                    <mainClass>lit.litfx.demos.LitViewDemo</mainClass>
                     <stripDebug>true</stripDebug>
                     <compress>2</compress>
                     <noHeaderFiles>true</noHeaderFiles>

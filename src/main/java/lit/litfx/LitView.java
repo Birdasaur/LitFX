@@ -3,8 +3,18 @@ package lit.litfx;
 import java.util.Collection;
 import java.util.HashMap;
 import javafx.scene.Node;
+import javafx.scene.effect.Bloom;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
+import javafx.scene.effect.SepiaTone;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import lit.litfx.components.AnimatedEdge;
+import lit.litfx.components.Arc;
+import lit.litfx.components.Bolt;
+import lit.litfx.components.NodeLink;
 
 /**
  *
@@ -16,9 +26,9 @@ public class LitView extends Region {
      * Provides lookup mechanism to find any Node that is currently 
      * tracked in the system.
      */    
-    private static HashMap<Node, AnimatedEdge> nodeToEdgeMap = new HashMap<>();
-
-    Region litRegion;
+    private HashMap<NodeLink, AnimatedEdge> nodeLinkToEdgeMap = new HashMap<>();
+    private Region litRegion;
+    private double animationDuration = 100;
     
     public LitView(Region parentToOverlay) {
         litRegion = parentToOverlay;
@@ -27,50 +37,74 @@ public class LitView extends Region {
         setMouseTransparent(true);
     }
     
+    public void arcNodes(Node node1, Node node2) {
+        NodeLink nodeLink = new NodeLink(node1, node2);
+        if(nodeLinkToEdgeMap.containsKey(nodeLink)) {
+            getChildren().remove(nodeLinkToEdgeMap.get(nodeLink));
+        }
+
+        Arc arc = new Arc(node1, node2, 0.1, 80, 15, 0.85, 0.1); 
+        setBoltEffects(arc);
+        arc.setVisibleLength(0);
+        getChildren().add(arc);
+        arc.animate(Duration.millis(animationDuration));
+        nodeLinkToEdgeMap.put(nodeLink, arc);
+    }
+    
+    private void setBoltEffects(Bolt bolt) {
+        bolt.setStroke(Color.ALICEBLUE);
+        bolt.setOpacity(0.75);
+        bolt.setStrokeWidth(4.0);
+        SepiaTone st = new SepiaTone(0.25);
+        Bloom bloom = new Bloom(0.25);
+        bloom.setInput(st);
+        Glow glow = new Glow(0.75);
+        glow.setInput(bloom);
+        DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.CORNSILK, 10, 0.5, 0, 0);
+        shadow.setInput(glow);
+        shadow.setRadius(60.0);
+        bolt.setEffect(shadow);
+    }    
+    
     /**
      * Provides lookup mechanism to find any edge that is currently 
      * managed in the view.
-     * @param node the Node that has an AnimatedEdge starting from it.
-     * @return The AnimatedEdge that has the Node as a starting point. If no Node
-     * exists that is currently being tracked then returns null.
+     * @param node1 the Node to Node connection that has an AnimatedEdge 
+     * @param node2 
+     * @return The AnimatedEdge. If no NodeLink exists that matches then returns null.
      */
-    public static AnimatedEdge lookupByNode(Node node) {
-        return nodeToEdgeMap.get(node);
-    }    
-    /**
-     * Add a Node object to be tracked which has an edge anchored to it. 
-     * 
-     * @param node
-     * @param edge
-     */     
-    public static void addNode(Node node, AnimatedEdge edge) {
-        nodeToEdgeMap.put(node, edge);
-        //@TODO SMP Add change listeners here
+    public AnimatedEdge lookupByNode(Node node1, Node node2) {
+        return nodeLinkToEdgeMap.get(new NodeLink(node1, node2));
     }    
 
     /**
-     * Remove a Node object with an anchored AnimatedEdge from the view. 
+     * Remove a Node to Node AnimatedEdge from the view. 
      * 
-     * @param node
+     * @param node1
+     * @param node2
      */     
-    public static void removeNode(Node node) {
-        nodeToEdgeMap.remove(node);
-        //@TODO SMP Remove change listeners here
+    public void removeArc(Node node1, Node node2) {
+        NodeLink nodeLink = new NodeLink(node1, node2);
+        if(nodeLinkToEdgeMap.containsKey(nodeLink)) {
+            getChildren().remove(nodeLinkToEdgeMap.get(nodeLink));
+            nodeLinkToEdgeMap.remove(nodeLink);
+            //@TODO SMP Remove change listeners here
+        }
     }     
     /**
      * Removes all model objects currently in the mapping. 
      * 
      */     
-    public static void clearAll() {
-        //Remove All listeners
-        nodeToEdgeMap.clear();
+    public void clearAll() {
+        //@TODO SMPRemove All listeners
+        nodeLinkToEdgeMap.clear();
+        getChildren().clear();
     }
     /**
      * Get a list of all the AnimatedEdge objects in the mapping
      * @return 
      */ 
-    public static Collection<AnimatedEdge> getAll() {
-        return nodeToEdgeMap.values();
+    public Collection<AnimatedEdge> getArcs() {
+        return nodeLinkToEdgeMap.values();
     }    
-    
 }
