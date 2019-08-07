@@ -1,10 +1,16 @@
 package lit.litfx.demos;
 
+import java.util.ArrayList;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -15,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import lit.litfx.LitView;
+import lit.litfx.components.BoltDynamics;
 
 /**
  *
@@ -45,16 +52,58 @@ public class LitViewDemo extends Application {
         HBox middleHBox = new HBox(imageView);
         middleHBox.setAlignment(Pos.CENTER);
  
-        VBox vbox = new VBox(200, topHBox, middleHBox);
+        RadioButton singleBolt = new RadioButton("Single Bolts");
+        singleBolt.setSelected(true);
+        RadioButton chainLightning = new RadioButton("Chain Lightning");
+        ToggleGroup tg = new ToggleGroup();
+        singleBolt.setToggleGroup(tg);
+        chainLightning.setToggleGroup(tg);
+        
+        CheckBox loopBack = new CheckBox("Loop Start Node");
+        loopBack.disableProperty().bind(chainLightning.selectedProperty().not());
+        CheckBox loopForward = new CheckBox("Loop End Node");
+        loopForward.disableProperty().bind(chainLightning.selectedProperty().not());
+        
+        HBox bottomHBox = new HBox(50, singleBolt, chainLightning, loopBack, loopForward);
+        bottomHBox.setAlignment(Pos.CENTER);
+        
+        VBox vbox = new VBox(200, topHBox, middleHBox, bottomHBox);
         vbox.setAlignment(Pos.CENTER);
         vbox.setFillWidth(true);
-        
+
+        //0.1, 80, 15, 0.85, 0.1);
+        BoltDynamics boltDynamics = new BoltDynamics.Builder().with(dynamics -> {
+            dynamics.density = 0.1; dynamics.sway = 80; dynamics.jitter = 30;
+            dynamics.envelopeSize = 0.85; dynamics.envelopeScalar = 0.1;
+        }).build();
+        BoltDynamics loopDynamics = new BoltDynamics.Builder().with(dynamics -> {
+            dynamics.density = 0.1; dynamics.sway = 15; dynamics.jitter = 5;
+            dynamics.envelopeSize = 0.75; dynamics.envelopeScalar = 0.1;
+            dynamics.loopStartNode = true; dynamics.loopEndNode = true;
+        }).build();
+
         LitView litView = new LitView(vbox);
         button1.setOnAction(action -> {
-            litView.arcNodes(button1, imageView);
+            if(singleBolt.isSelected())
+                litView.arcNodes(button1, imageView, boltDynamics);
+            else {
+                ArrayList<Node> nodes = new ArrayList<>();
+                nodes.add(button1);
+                nodes.add(imageView);
+                nodes.add(button2);
+                litView.chainNodes(nodes, boltDynamics, loopDynamics);
+            }
         });
         button2.setOnAction(action -> {
-            litView.arcNodes(button2, imageView);
+            if(singleBolt.isSelected())
+                litView.arcNodes(button2, imageView, boltDynamics);
+            else {
+                ArrayList<Node> nodes = new ArrayList<>();
+                nodes.add(button2);
+                nodes.add(imageView);
+                nodes.add(button1);
+                litView.chainNodes(nodes, boltDynamics, loopDynamics);
+            }
         });
         
         StackPane centerStack = new StackPane(vbox, litView);

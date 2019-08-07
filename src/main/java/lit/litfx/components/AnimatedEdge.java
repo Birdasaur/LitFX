@@ -4,21 +4,17 @@ package lit.litfx.components;
 import java.util.ArrayList;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.shape.Polyline;
-import javafx.util.Duration;
 
 /**
  *
  * @author phillsm1
  */
-public abstract class AnimatedEdge extends Polyline {
+public abstract class AnimatedEdge extends Polyline implements AnimatedEffect{
     public EdgePoint start;
     public EdgePoint end;
     public double density;
     public SimpleIntegerProperty pointIndexProperty = new SimpleIntegerProperty(0);
     private ArrayList<EdgePoint> edgePoints;
-   
-    public abstract void animate(Duration milliseconds);
-    public abstract void updateLength(int length);
     
     public AnimatedEdge(EdgePoint start, EdgePoint end, double density) {
         super();

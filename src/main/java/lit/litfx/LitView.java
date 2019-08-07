@@ -1,19 +1,23 @@
 package lit.litfx;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import javafx.scene.Node;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.SepiaTone;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import lit.litfx.components.AnimatedEdge;
+import lit.litfx.components.AnimatedEffect;
 import lit.litfx.components.Arc;
 import lit.litfx.components.Bolt;
+import lit.litfx.components.BoltDynamics;
+import lit.litfx.components.ChainLightning;
 import lit.litfx.components.NodeLink;
 
 /**
@@ -26,7 +30,8 @@ public class LitView extends Region {
      * Provides lookup mechanism to find any Node that is currently 
      * tracked in the system.
      */    
-    private HashMap<NodeLink, AnimatedEdge> nodeLinkToEdgeMap = new HashMap<>();
+//    private HashMap<NodeLink, AnimatedEdge> nodeLinkToEdgeMap = new HashMap<>();
+    private HashMap<NodeLink, AnimatedEffect> nodeLinkToEffectMap = new HashMap<>();
     private Region litRegion;
     private double animationDuration = 100;
     
@@ -36,25 +41,44 @@ public class LitView extends Region {
         prefHeightProperty().bind(litRegion.heightProperty());
         setMouseTransparent(true);
     }
-    
-    public void arcNodes(Node node1, Node node2) {
-        NodeLink nodeLink = new NodeLink(node1, node2);
-        if(nodeLinkToEdgeMap.containsKey(nodeLink)) {
-            getChildren().remove(nodeLinkToEdgeMap.get(nodeLink));
+    public void chainNodes(ArrayList<Node> nodes, 
+            BoltDynamics boltDynamics, BoltDynamics loopDynamics) {
+        NodeLink nodeLink = new NodeLink(nodes.get(0), nodes.get(1));
+        if(nodeLinkToEffectMap.containsKey(nodeLink)) {
+            getChildren().remove(nodeLinkToEffectMap.get(nodeLink));
         }
 
-        Arc arc = new Arc(node1, node2, 0.1, 80, 15, 0.85, 0.1); 
-        setBoltEffects(arc);
+        ChainLightning cl = new ChainLightning(nodes, boltDynamics, loopDynamics);
+        cl.setEffect(getBoltEffects());
+        cl.setStroke(Color.ALICEBLUE);
+        cl.setOpacity(0.75);
+        cl.setStrokeWidth(4.0);        
+//        arc.setVisibleLength(0);
+        getChildren().add(cl);
+//        cl.animate(Duration.millis(animationDuration));
+        nodeLinkToEffectMap.put(nodeLink, cl);
+        
+    }
+    public void arcNodes(Node node1, Node node2, BoltDynamics dynamics) {
+        NodeLink nodeLink = new NodeLink(node1, node2);
+        if(nodeLinkToEffectMap.containsKey(nodeLink)) {
+            getChildren().remove(nodeLinkToEffectMap.get(nodeLink));
+        }
+        Arc arc = new Arc(node1, node2, dynamics); 
+        arc.setEffect(getBoltEffects());
+        arc.setStroke(Color.ALICEBLUE);
+        arc.setOpacity(0.75);
+        arc.setStrokeWidth(4.0);        
         arc.setVisibleLength(0);
         getChildren().add(arc);
         arc.animate(Duration.millis(animationDuration));
-        nodeLinkToEdgeMap.put(nodeLink, arc);
+        nodeLinkToEffectMap.put(nodeLink, arc);
     }
     
-    private void setBoltEffects(Bolt bolt) {
-        bolt.setStroke(Color.ALICEBLUE);
-        bolt.setOpacity(0.75);
-        bolt.setStrokeWidth(4.0);
+    private Effect getBoltEffects() {
+//        bolt.setStroke(Color.ALICEBLUE);
+//        bolt.setOpacity(0.75);
+//        bolt.setStrokeWidth(4.0);
         SepiaTone st = new SepiaTone(0.25);
         Bloom bloom = new Bloom(0.25);
         bloom.setInput(st);
@@ -63,7 +87,7 @@ public class LitView extends Region {
         DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.CORNSILK, 10, 0.5, 0, 0);
         shadow.setInput(glow);
         shadow.setRadius(60.0);
-        bolt.setEffect(shadow);
+        return shadow;
     }    
     
     /**
@@ -71,10 +95,10 @@ public class LitView extends Region {
      * managed in the view.
      * @param node1 the Node to Node connection that has an AnimatedEdge 
      * @param node2 
-     * @return The AnimatedEdge. If no NodeLink exists that matches then returns null.
+     * @return The AnimatedEffect. If no NodeLink exists that matches then returns null.
      */
-    public AnimatedEdge lookupByNode(Node node1, Node node2) {
-        return nodeLinkToEdgeMap.get(new NodeLink(node1, node2));
+    public AnimatedEffect lookupByNode(Node node1, Node node2) {
+        return nodeLinkToEffectMap.get(new NodeLink(node1, node2));
     }    
 
     /**
@@ -85,9 +109,9 @@ public class LitView extends Region {
      */     
     public void removeArc(Node node1, Node node2) {
         NodeLink nodeLink = new NodeLink(node1, node2);
-        if(nodeLinkToEdgeMap.containsKey(nodeLink)) {
-            getChildren().remove(nodeLinkToEdgeMap.get(nodeLink));
-            nodeLinkToEdgeMap.remove(nodeLink);
+        if(nodeLinkToEffectMap.containsKey(nodeLink)) {
+            getChildren().remove(nodeLinkToEffectMap.get(nodeLink));
+            nodeLinkToEffectMap.remove(nodeLink);
             //@TODO SMP Remove change listeners here
         }
     }     
@@ -97,14 +121,14 @@ public class LitView extends Region {
      */     
     public void clearAll() {
         //@TODO SMPRemove All listeners
-        nodeLinkToEdgeMap.clear();
+        nodeLinkToEffectMap.clear();
         getChildren().clear();
     }
     /**
      * Get a list of all the AnimatedEdge objects in the mapping
      * @return 
      */ 
-    public Collection<AnimatedEdge> getArcs() {
-        return nodeLinkToEdgeMap.values();
+    public Collection<AnimatedEffect> getEffects() {
+        return nodeLinkToEffectMap.values();
     }    
 }

@@ -13,6 +13,10 @@ public class Arc extends Bolt {
     Node startNode;
     Node endNode;
     
+    public Arc(Node startNode, Node endNode, BoltDynamics dynamics) {
+        this(startNode, endNode, dynamics.density, dynamics.sway, dynamics.jitter,
+            dynamics.envelopeSize, dynamics.envelopeScalar);
+    }
     public Arc(Node startNode, Node endNode, 
         double density, double sway, double jitter,
         double envelopeSize, double envelopeScalar) {
@@ -23,8 +27,5 @@ public class Arc extends Bolt {
 
         this.startNode = startNode;
         this.endNode = endNode;
-
     }
-
-    //@TODO SMP  Need to add optional listener support for when the nodes change position
 }
