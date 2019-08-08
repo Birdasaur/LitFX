@@ -49,7 +49,11 @@ public class Bolt extends AnimatedEdge {
         ArrayList<Integer> positions = new ArrayList<>();
         Random random = new Random();
         for (int i = 0; i < linePoints.size() * density; i++) {
-            positions.add(Math.round(random.nextFloat()*distance));
+            int pos = Math.round(random.nextFloat()*distance);
+            if(pos <= 0)
+                pos = 1;
+            positions.add(pos);
+            
         }
         //System.out.println("Generated positions: " + positions);
         //Sort the indices in rising order
@@ -89,10 +93,16 @@ public class Bolt extends AnimatedEdge {
             else if(displacement > (sway*envelope))
                 displacement = (sway*envelope);
 
-            Point2D point = new Point2D(
+            Point2D prevPoint = linePoints.get(pos-1);
+            //Horizontal Case
+            Point2D newPoint = new Point2D(
                 straightPoint.getX(), straightPoint.getY() + displacement);
-                    
-            edgePointList.add(new EdgePoint(pos, point));
+            //Vertical edge case
+            if(newPoint.getX() == prevPoint.getX() 
+            && straightPoint.getY() != prevPoint.getY())
+                 newPoint = new Point2D(straightPoint.getX() + displacement, straightPoint.getY());
+                
+            edgePointList.add(new EdgePoint(pos, newPoint));
             prevDisplacement = displacement;
         }
         return edgePointList;

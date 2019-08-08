@@ -4,6 +4,7 @@
     <groupId>lit</groupId>
     <artifactId>LitFX</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>12</maven.compiler.source>
@@ -76,7 +77,27 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.2</version>
+                <version>0.0.3</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <mainClass>lit.litfx.demos.LitViewDemo</mainClass>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>debug</id>
+                        <configuration>
+                            <debug>true</debug>
+                            <debuglevel>lines,vars,source</debuglevel>                             
+<!--                                <options>
+                                <options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</options>
+                            </options>-->
+                            <mainClass>lit.litfx.demos.LitViewDemo</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+                               
                 <configuration>
                     <mainClass>lit.litfx.demos.LitViewDemo</mainClass>
                     <stripDebug>true</stripDebug>

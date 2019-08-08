@@ -8,6 +8,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.effect.Effect;
 import javafx.scene.paint.Color;
+import lit.litfx.Algorithms;
 
 /**
  *
@@ -66,18 +67,14 @@ public class BranchLightning extends Group {
             //This allows reasonable looking divergence of the branches
             EdgePoint endBoltPoint = new EdgePoint(1, end);
             //Calculate the actual angle of the line with regard to the screen
-            //Screen coordinates is Y positive down, 0,0 upper left corner
-            Point2D startPoint2D = new Point2D(startBoltPoint.getX(), startBoltPoint.getY());
-            double baseAngle = Math.toDegrees(Math.atan2(
-                endBoltPoint.getY()-startBoltPoint.getY(), 
-                endBoltPoint.getX()-startBoltPoint.getX()));
             //add a random angle to diverge from the base bolt
             double deltaAngle = ThreadLocalRandom.current().nextDouble(-branchAngleLimit, branchAngleLimit);
-            double finalAngleRadians = Math.toRadians(baseAngle + deltaAngle);
+            double finalAngleRadians = Algorithms.divergenceAngle(
+                startBoltPoint.toPoint2D(), endBoltPoint.toPoint2D(), deltaAngle);
             //System.out.println("baseAngle: " + baseAngle 
             //    + " deltaAngle: " + deltaAngle + " finalAngleRadians: " + finalAngleRadians);
-            
             //Figure out endpoint based on original bolt distance and angle from normal
+            Point2D startPoint2D = new Point2D(startBoltPoint.getX(), startBoltPoint.getY());
             double branchLength = random.nextDouble() * startPoint2D.distance(end);
             Point2D endPoint2D = new Point2D(
                 startPoint2D.getX() + branchLength * Math.cos(finalAngleRadians), 

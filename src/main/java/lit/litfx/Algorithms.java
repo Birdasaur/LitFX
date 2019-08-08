@@ -44,4 +44,14 @@ public enum Algorithms {
         }
         return new Polyline(points);        
     }
+    
+    public static double divergenceAngle(Point2D startPoint, Point2D endPoint, double deltaAngle) {
+            //Calculate the actual angle of the line with regard to the screen
+            //Screen coordinates is Y positive down, 0,0 upper left corner
+            double baseAngle = Math.toDegrees(Math.atan2(
+                endPoint.getY()-startPoint.getY(), 
+                endPoint.getX()-startPoint.getX()));
+            //add a angle to diverge from the base 
+            return Math.toRadians(baseAngle + deltaAngle);
+    }
 }

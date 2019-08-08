@@ -15,7 +15,6 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import lit.litfx.components.AnimatedEffect;
 import lit.litfx.components.Arc;
-import lit.litfx.components.Bolt;
 import lit.litfx.components.BoltDynamics;
 import lit.litfx.components.ChainLightning;
 import lit.litfx.components.NodeLink;
@@ -30,7 +29,6 @@ public class LitView extends Region {
      * Provides lookup mechanism to find any Node that is currently 
      * tracked in the system.
      */    
-//    private HashMap<NodeLink, AnimatedEdge> nodeLinkToEdgeMap = new HashMap<>();
     private HashMap<NodeLink, AnimatedEffect> nodeLinkToEffectMap = new HashMap<>();
     private Region litRegion;
     private double animationDuration = 100;
@@ -76,9 +74,6 @@ public class LitView extends Region {
     }
     
     private Effect getBoltEffects() {
-//        bolt.setStroke(Color.ALICEBLUE);
-//        bolt.setOpacity(0.75);
-//        bolt.setStrokeWidth(4.0);
         SepiaTone st = new SepiaTone(0.25);
         Bloom bloom = new Bloom(0.25);
         bloom.setInput(st);
