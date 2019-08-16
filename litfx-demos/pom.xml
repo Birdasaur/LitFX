@@ -52,9 +52,9 @@
                         <configuration>
                             <debug>true</debug>
                             <debuglevel>lines,vars,source</debuglevel>
-                            <!--                                <options>
-                                                            <options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</options>
-                                                        </options>-->
+                            <options>
+                                <options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</options>
+                            </options>
                             <mainClass>${mainClassName}</mainClass>
                         </configuration>
                     </execution>

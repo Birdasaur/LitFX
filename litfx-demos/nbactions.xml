@@ -20,9 +20,10 @@
                 <goal>javafx:run@debug</goal>
             </goals>
             <properties>
-              <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} --module-path ${project.build.directory}/modules --module ${moduleName}/${mainClass}</exec.args>
-              <exec.executable>java</exec.executable>
-              <jpda.listen>true</jpda.listen>
+                <skipTests>true</skipTests>
+                <javafx.run.debug>${jpda.attach.port}</javafx.run.debug>
+                <jpda.attach>define</jpda.attach>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} --module-path ${project.build.directory}/modules --module ${moduleName}/${mainClass}</exec.args>
             </properties>            
         </action>
     </actions>
