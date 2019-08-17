@@ -9,14 +9,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.SepiaTone;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import lit.litfx.core.components.Bolt;
@@ -29,7 +33,7 @@ import lit.litfx.core.components.Bolt;
 public class RideDemoController implements Initializable {
 
     @FXML
-    Pane centerPane;
+    GridPane centerPane;
     
     @FXML
     Slider delaySlider;
@@ -37,6 +41,17 @@ public class RideDemoController implements Initializable {
     ChoiceBox nodePatternChoiceBox;
     @FXML
     Button traverseNodesButton;
+    @FXML
+    Button clearAllButton;
+    @FXML
+    CheckBox repeatCheckBox;
+    @FXML
+    RadioButton clockwiseRadioButton;
+    @FXML
+    RadioButton counterRadioButton;
+    @FXML
+    ToggleGroup directionToggleGroup;
+    
     @FXML
     SimpleLongProperty timeDelayProp = new SimpleLongProperty(16);
     
