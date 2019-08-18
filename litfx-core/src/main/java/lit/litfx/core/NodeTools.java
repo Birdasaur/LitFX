@@ -1,8 +1,12 @@
 package lit.litfx.core;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import lit.litfx.core.components.Bolt;
 import lit.litfx.core.components.BoltDynamics;
@@ -98,9 +102,22 @@ public enum NodeTools {
         bolt.setStroke(Color.ALICEBLUE);
         return bolt;
     }
-    
-    
-    
+   public static final List<Node> getAllChildren(final Parent parent) {
+        final List<Node> result = new LinkedList<>();
+        if (parent != null) {
+            final List<Node> childrenLvl1 = parent.getChildrenUnmodifiable();
+            result.addAll(childrenLvl1);
+            final List<Node> childrenLvl2 =
+                    childrenLvl1.stream()
+                                .filter(c -> c instanceof Parent)
+                                .map(c -> (Parent) c)
+                                .map(NodeTools::getAllChildren)
+                                .flatMap(List::stream)
+                                .collect(Collectors.toList());
+            result.addAll(childrenLvl2);
+        }
+        return result;
+    }    
     public static double transformX(double dataXcoord, double domain, double range) {
         return (dataXcoord * range) / domain;
     }
