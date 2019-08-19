@@ -4,6 +4,12 @@
 .label {
     -fx-text-fill: aliceblue;
 }
+.spinner > .label {
+    -fx-text-fill: aliceblue;
+}
+.spinner > .text-field {
+    -fx-text-fill: aliceblue;
+}
 
 .spinner > .increment-arrow-button,
 .spinner > .decrement-arrow-button {
@@ -391,8 +397,23 @@
     -fx-font-size: 11pt;
     -fx-border-width: 2px;
     -fx-borders-style: solid; 
-    -fx-border-color: darkslategray;
+    -fx-border-color: aliceblue;
 }
+
+/* Text color of non-focused items in the list */
+.choice-box .menu-item > .label { -fx-text-fill: darkslategray; }
+
+
+.choice-box .label  {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: aliceblue;
+    -fx-opacity: 0.8;    
+}
+.choice-box .label:hover {
+    -fx-text-fill: aliceblue;
+}
+
 
 .choice-box:hover {
     -fx-background-color: transparent, transparent, transparent, #d2d2d2;
@@ -401,9 +422,6 @@
 
 .choice-box:focused {
     -fx-background-color: transparent, transparent, transparent, #d2d2d2;
-    /*-fx-background-insets: -1.4, 0, 1, 2;*/
-
-    /*-fx-background-radius: 0, 15, 15, 0;*/
 }
 
 .choice-box:focused:hover  {

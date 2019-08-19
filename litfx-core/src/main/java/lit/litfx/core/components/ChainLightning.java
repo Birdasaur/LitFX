@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -14,7 +15,7 @@ import lit.litfx.core.NodeTools;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  * 
  */
 public class ChainLightning extends Group implements AnimatedEffect {
@@ -87,7 +88,6 @@ public class ChainLightning extends Group implements AnimatedEffect {
         //Since ChainLightning is really just a bunch of bolts, we need call each
         //bolt's animation request in order, and wait for it to finish before
         //proceeding to the next bolt.
-//        Task animationTask = new Task() {
         animationTask = new Task() {
             @Override
             protected Void call() throws Exception {

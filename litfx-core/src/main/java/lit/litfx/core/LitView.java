@@ -23,7 +23,7 @@ import lit.litfx.core.components.NodeLink;
 
 /**
  *
- * @author Sean
+ * @author Birdasaur
  * Manages Lit components & tracks any associated Nodes
  */
 public class LitView extends Region {

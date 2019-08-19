@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class RideDemo extends Application {
     private Scene scene;

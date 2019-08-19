@@ -4,7 +4,7 @@ import javafx.util.Duration;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public interface AnimatedEffect {
     public void animate(Duration milliseconds);

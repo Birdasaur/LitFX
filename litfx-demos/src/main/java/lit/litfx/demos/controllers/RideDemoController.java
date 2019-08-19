@@ -6,8 +6,6 @@ import java.util.ResourceBundle;
 import static java.util.stream.Collectors.toList;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,10 +13,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import lit.litfx.core.LitView;
@@ -29,7 +28,7 @@ import lit.litfx.core.components.ChainLightning;
 /**
  * FXML Controller class
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class RideDemoController implements Initializable {
 
@@ -46,7 +45,9 @@ public class RideDemoController implements Initializable {
     Slider transitionDelaySlider;    
 
     @FXML
-    ChoiceBox nodePatternChoiceBox;
+    Spinner<Integer> tailLengthSpinner;
+    @FXML
+    ColorPicker chainLightningColorPicker;
     @FXML
     Button traverseNodesButton;
     @FXML
@@ -115,20 +116,33 @@ public class RideDemoController implements Initializable {
         
         //How much time will we wait between arc redraws
         timeDelayProp.bind(repeatDelaySlider.valueProperty());
+        //can't bind the color value because chain lightning is a collection of objects
+        chainLightningColorPicker.valueProperty().addListener(event -> {
+            if(null != currentChain) {
+                currentChain.setStroke(chainLightningColorPicker.getValue());
+            }
+        });
+        
         //start the arc redraw thread
         initAnimationTask();
     }    
     
     @FXML
     public void rideTheLightning() {
-        //@TODO will replace the current arc
-        if(clockwiseRadioButton.isSelected())
-            Platform.runLater(() -> currentChain = forwardArc());
-        else
-            Platform.runLater(() -> currentChain = backwardArc());
+        Platform.runLater(() -> {          
+            //What direction are we going?  
+            if(clockwiseRadioButton.isSelected())
+                currentChain = forwardArc();
+            else
+                currentChain = backwardArc();
+            currentChain.setStroke(chainLightningColorPicker.getValue());
+            currentChain.tailLength.bind(tailLengthSpinner.valueProperty());
+        });
     }
     @FXML
     public void clearAll() {
+        if(null != currentChain)
+            currentChain.stop();
         litView.clearAll();
     }
     private void initAnimationTask() {
@@ -137,7 +151,7 @@ public class RideDemoController implements Initializable {
             protected Void call() throws Exception {
                 while(!this.isCancelled() && !this.isDone()) {
                     if(repeatCheckBox.isSelected()) {
-                        //@TODO check if the current chain lightning is finished
+                        //check if the current chain lightning is finished
                         if(null == currentChain || !currentChain.isAnimating() )
                             rideTheLightning();
                     }
