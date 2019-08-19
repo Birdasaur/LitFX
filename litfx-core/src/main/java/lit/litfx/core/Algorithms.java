@@ -6,7 +6,7 @@ import javafx.scene.shape.Polyline;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public enum Algorithms {
     INSTANCE;
@@ -19,7 +19,6 @@ public enum Algorithms {
         int err = dx - dy;
         while (true) {
             pointList.add(new Point2D(x1, y1));
-//            System.out.print("(" +x1 + "," + y1 + ")\n"); 
             if (x1 == x2 && y1 == y2) {
                 break;
             }

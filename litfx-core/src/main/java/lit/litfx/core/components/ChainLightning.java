@@ -1,6 +1,12 @@
 package lit.litfx.core.components;
 
 import java.util.ArrayList;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
@@ -9,7 +15,7 @@ import lit.litfx.core.NodeTools;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  * 
  */
 public class ChainLightning extends Group implements AnimatedEffect {
@@ -17,6 +23,15 @@ public class ChainLightning extends Group implements AnimatedEffect {
     ArrayList<Bolt> boltList;
     BoltDynamics boltDynamics;
     BoltDynamics loopDynamics;
+    SimpleIntegerProperty boltIndexProperty = new SimpleIntegerProperty(0);
+    SimpleBooleanProperty animating = new SimpleBooleanProperty(false);
+
+    public SimpleLongProperty animationSleepMilli = new SimpleLongProperty(10);
+    public SimpleDoubleProperty boltAnimationDuration = new SimpleDoubleProperty(10);
+    public SimpleLongProperty transitionDelayMilli = new SimpleLongProperty(10);
+    public SimpleIntegerProperty tailLength = new SimpleIntegerProperty(4);
+    
+    Task animationTask;
     
     public ChainLightning(ArrayList<Node> nodeList, BoltDynamics boltDynamics, BoltDynamics loopDynamics) {
         this.boltDynamics = boltDynamics;
@@ -62,16 +77,71 @@ public class ChainLightning extends Group implements AnimatedEffect {
         return loopBoltList;
     }
 
+    public void animate(Duration boltDurationMilli, long transitionDelayMilli, long animationSleepMilli) {
+        this.transitionDelayMilli.set(transitionDelayMilli);
+        this.animationSleepMilli.set(animationSleepMilli);
+        animate(boltDurationMilli);
+    }
+    
     @Override
     public void animate(Duration milliseconds) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //Since ChainLightning is really just a bunch of bolts, we need call each
+        //bolt's animation request in order, and wait for it to finish before
+        //proceeding to the next bolt.
+        animationTask = new Task() {
+            @Override
+            protected Void call() throws Exception {
+                //check if the current animation is finished
+                if(!animating.get()) {
+                    animating.set(true);
+                    //for each bolt in the list
+                    for(int i=0; i<boltList.size(); i++){
+                        Bolt currentBolt = boltList.get(i);
+                        currentBolt.setVisible(true);
+                        System.out.println("animating next chainlighting arc...");
+                        currentBolt.animate(milliseconds);
+                        while(currentBolt.isAnimating())
+                            //Thread.onSpinWait();
+                            Thread.sleep(animationSleepMilli.get());
+                        System.out.println("chainlighting arc animation complete.");
+                        if((i - tailLength.get()) >= 0)
+                            boltList.get(i - tailLength.get()).setVisible(false);
+                        if(this.isCancelled() || this.isDone())
+                            break;
+
+                        //How long should we wait until we animate the next bolt?
+                        Thread.sleep(transitionDelayMilli.get());                    
+                    }
+                    animating.set(false);
+                }
+                return null;
+            }
+        };
+        Thread animationThread = new Thread(animationTask);
+        animationThread.setDaemon(true);
+        animationThread.start();  
+    }
+    @Override
+    public void stop() {
+        animationTask.cancel();
+
     }
 
     @Override
     public void updateLength(int length) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        setVisibleLength(length);
+    }    
 
+    public void setVisibleLength(int visibleLength) {
+        boltIndexProperty.set(visibleLength);
+        for(int i=0; i < boltList.size(); i++) {
+            boltList.get(i).setVisible(i < visibleLength);
+        }        
+    }
+    public int getVisibleLength() {
+        return boltIndexProperty.get();
+    }
+    
     public void setStroke(Color color) {
         boltList.forEach(bolt -> bolt.setStroke(color));
     }
@@ -79,6 +149,9 @@ public class ChainLightning extends Group implements AnimatedEffect {
     public void setStrokeWidth(double strokeWidth) {
         boltList.forEach(bolt -> bolt.setStrokeWidth(strokeWidth));
     }
-    
 
+    @Override
+    public boolean isAnimating() {
+        return animating.get();
+    }
 }

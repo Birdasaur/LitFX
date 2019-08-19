@@ -4,9 +4,11 @@ import javafx.util.Duration;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public interface AnimatedEffect {
     public void animate(Duration milliseconds);
-    public void updateLength(int length);    
+    public void updateLength(int length); 
+    public boolean isAnimating();
+    public void stop();
 }

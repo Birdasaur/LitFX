@@ -2,6 +2,7 @@
 package lit.litfx.core.components;
 
 import java.util.ArrayList;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.shape.Polyline;
 
@@ -15,6 +16,7 @@ public abstract class AnimatedEdge extends Polyline implements AnimatedEffect{
     public double density;
     public SimpleIntegerProperty pointIndexProperty = new SimpleIntegerProperty(0);
     private ArrayList<EdgePoint> edgePoints;
+    SimpleBooleanProperty animating = new SimpleBooleanProperty(false);
     
     public AnimatedEdge(EdgePoint start, EdgePoint end, double density) {
         super();
