@@ -23,6 +23,7 @@ public class Bolt extends AnimatedEdge {
     double jitter;
     double envelopeSize = 0.75;
     double envelopeScaler = 0.1;
+    Timeline timeline;    
             
     public Bolt(EdgePoint start, EdgePoint end, BoltDynamics dynamics) {
         this(start.toPoint2D(), end.toPoint2D(), dynamics.density, dynamics.sway,
@@ -112,13 +113,20 @@ public class Bolt extends AnimatedEdge {
     public void animate(Duration milliseconds) {
         getPoints().clear();
         pointIndexProperty.set(0);
-        Timeline timeline = new Timeline();
+        timeline = new Timeline();
         timeline.getKeyFrames().add(new KeyFrame(milliseconds,
                 new KeyValue(pointIndexProperty, getEdgePoints().size(), Interpolator.EASE_OUT)
             )
         );
+        animating.set(true);
+        timeline.setOnFinished(event -> animating.set(false));
         timeline.play();
     }   
+    @Override
+    public void stop() {
+        timeline.stop();
+        animating.set(false);
+    }
 
     @Override
     public void updateLength(int length) {
@@ -137,5 +145,9 @@ public class Bolt extends AnimatedEdge {
         else if(length > (getPoints().size() / 2)) {
             updatePolylinePoints(length);
         }
+    }
+    @Override
+    public boolean isAnimating() {
+        return animating.get();
     }
 }

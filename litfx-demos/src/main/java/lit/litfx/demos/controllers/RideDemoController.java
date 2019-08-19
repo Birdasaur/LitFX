@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import lit.litfx.core.LitView;
 import lit.litfx.core.NodeTools;
 import lit.litfx.core.components.BoltDynamics;
+import lit.litfx.core.components.ChainLightning;
 
 /**
  * FXML Controller class
@@ -38,7 +39,12 @@ public class RideDemoController implements Initializable {
     StackPane centerStackPane;
     
     @FXML
-    Slider delaySlider;
+    Slider repeatDelaySlider;
+    @FXML
+    Slider animationDurationSlider;
+    @FXML
+    Slider transitionDelaySlider;    
+
     @FXML
     ChoiceBox nodePatternChoiceBox;
     @FXML
@@ -55,13 +61,14 @@ public class RideDemoController implements Initializable {
     ToggleGroup directionToggleGroup;
     
     @FXML
-    SimpleLongProperty timeDelayProp = new SimpleLongProperty(16);
+    SimpleLongProperty timeDelayProp = new SimpleLongProperty(1000);
     
     BoltDynamics boltDynamics;
     BoltDynamics loopDynamics;
     LitView litView;
     ArrayList<Node> centerChildren;     
     ArrayList<Node> reverseCenterChildren;
+    ChainLightning currentChain;
     
     /**
      * Initializes the controller class.
@@ -72,6 +79,9 @@ public class RideDemoController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         //assign the Region you want to get lit
         litView = new LitView(centerPane);
+        litView.boltAnimationDuration.bind(animationDurationSlider.valueProperty());
+        litView.transitionDelay.bind(transitionDelaySlider.valueProperty());
+        
         //If you already have a nice stackpane, just add your LitView last
         centerStackPane.getChildren().add(litView);
         //nice dynamics for the bolts that arc between nodes
@@ -104,7 +114,7 @@ public class RideDemoController implements Initializable {
         counterRadioButton.selectedProperty().addListener(event -> clearAll());
         
         //How much time will we wait between arc redraws
-        timeDelayProp.bind(delaySlider.valueProperty());
+        timeDelayProp.bind(repeatDelaySlider.valueProperty());
         //start the arc redraw thread
         initAnimationTask();
     }    
@@ -113,9 +123,9 @@ public class RideDemoController implements Initializable {
     public void rideTheLightning() {
         //@TODO will replace the current arc
         if(clockwiseRadioButton.isSelected())
-            Platform.runLater(()->forwardArc());
+            Platform.runLater(() -> currentChain = forwardArc());
         else
-            Platform.runLater(()->backwardArc());
+            Platform.runLater(() -> currentChain = backwardArc());
     }
     @FXML
     public void clearAll() {
@@ -126,12 +136,12 @@ public class RideDemoController implements Initializable {
             @Override
             protected Void call() throws Exception {
                 while(!this.isCancelled() && !this.isDone()) {
-                    //@TODO check if the current chain lightning is finished
-
                     if(repeatCheckBox.isSelected()) {
-                        rideTheLightning();
+                        //@TODO check if the current chain lightning is finished
+                        if(null == currentChain || !currentChain.isAnimating() )
+                            rideTheLightning();
                     }
-                    System.out.println("animation...");
+                    System.out.println("riding the lightning...");
                     Thread.sleep(timeDelayProp.get());
                 }
                 return null;
@@ -141,14 +151,12 @@ public class RideDemoController implements Initializable {
         animationThread.setDaemon(true);
         animationThread.start();        
     }
-    private void forwardArc() {
+    private ChainLightning forwardArc() {
         System.out.println("started forwardArc()");
-        litView.chainNodes((ArrayList<Node>) centerChildren, boltDynamics, loopDynamics);
-        System.out.println("finished forwardArc()");
+        return litView.chainNodes(centerChildren, boltDynamics, loopDynamics, true);
     }    
-    private void backwardArc() {
+    private ChainLightning backwardArc() {
         System.out.println("started backwardArc()");
-        litView.chainNodes((ArrayList<Node>) reverseCenterChildren, boltDynamics, loopDynamics);
-        System.out.println("finished backwardArc()");
+        return litView.chainNodes(reverseCenterChildren, boltDynamics, loopDynamics, true);
     }    
 }

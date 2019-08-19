@@ -3,6 +3,8 @@ package lit.litfx.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.Node;
 import javafx.scene.effect.Bloom;
 import javafx.scene.effect.BlurType;
@@ -21,7 +23,7 @@ import lit.litfx.core.components.NodeLink;
 
 /**
  *
- * @author phillsm1
+ * @author Sean
  * Manages Lit components & tracks any associated Nodes
  */
 public class LitView extends Region {
@@ -31,18 +33,28 @@ public class LitView extends Region {
      */    
     private HashMap<NodeLink, AnimatedEffect> nodeLinkToEffectMap = new HashMap<>();
     private Region litRegion;
-    private double animationDuration = 100;
-    
+    public SimpleDoubleProperty boltAnimationDuration = new SimpleDoubleProperty(100);
+    public SimpleLongProperty transitionDelay = new SimpleLongProperty(100);
+    public SimpleLongProperty animationSleepDelay = new SimpleLongProperty(10);
+            
     public LitView(Region parentToOverlay) {
         litRegion = parentToOverlay;
         prefWidthProperty().bind(litRegion.widthProperty());
         prefHeightProperty().bind(litRegion.heightProperty());
         setMouseTransparent(true);
     }
-    public void chainNodes(ArrayList<Node> nodes, 
+    
+    public ChainLightning chainNodes(ArrayList<Node> nodes, 
             BoltDynamics boltDynamics, BoltDynamics loopDynamics) {
+        return chainNodes(nodes, boltDynamics, loopDynamics, false);
+    }
+    public ChainLightning chainNodes(ArrayList<Node> nodes,
+        BoltDynamics boltDynamics, BoltDynamics loopDynamics, boolean animate) {
+        //@TODO SMP Maybe we should recognize the NodeLink here from first to last
+        //rather than first to second?
         NodeLink nodeLink = new NodeLink(nodes.get(0), nodes.get(1));
         if(nodeLinkToEffectMap.containsKey(nodeLink)) {
+            nodeLinkToEffectMap.get(nodeLink).stop();
             getChildren().remove(nodeLinkToEffectMap.get(nodeLink));
         }
 
@@ -50,14 +62,19 @@ public class LitView extends Region {
         cl.setEffect(getBoltEffects());
         cl.setStroke(Color.ALICEBLUE);
         cl.setOpacity(0.75);
-        cl.setStrokeWidth(4.0);        
-//        arc.setVisibleLength(0);
-        getChildren().add(cl);
-//        cl.animate(Duration.millis(animationDuration));
+        cl.setStrokeWidth(4.0); 
         nodeLinkToEffectMap.put(nodeLink, cl);
-        
+        //If we intend to animate first set all the sub bolts to be not visible
+        if(animate)
+            cl.setVisibleLength(0);
+        getChildren().add(cl);
+        //if animating, initiate the animation task
+        if(animate)
+            cl.animate(Duration.millis(boltAnimationDuration.get()), 
+                transitionDelay.get(), animationSleepDelay.get());
+        return cl;
     }
-    public void arcNodes(Node node1, Node node2, BoltDynamics dynamics) {
+    public Arc arcNodes(Node node1, Node node2, BoltDynamics dynamics) {
         NodeLink nodeLink = new NodeLink(node1, node2);
         if(nodeLinkToEffectMap.containsKey(nodeLink)) {
             getChildren().remove(nodeLinkToEffectMap.get(nodeLink));
@@ -69,8 +86,9 @@ public class LitView extends Region {
         arc.setStrokeWidth(4.0);        
         arc.setVisibleLength(0);
         getChildren().add(arc);
-        arc.animate(Duration.millis(animationDuration));
+        arc.animate(Duration.millis(boltAnimationDuration.get()));
         nodeLinkToEffectMap.put(nodeLink, arc);
+        return arc;
     }
     
     private Effect getBoltEffects() {
