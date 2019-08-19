@@ -5,5 +5,6 @@ Custom JLink Goal for NetBeans 11: Right Click Project -> Run Maven -> JLink
 
 ![](/media/pjchainlitfx.png)
 
+![](/media/ridelitfx.png)
 
 ![](/media/LitFX.png)
