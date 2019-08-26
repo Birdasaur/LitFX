@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ColorPicker?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory?>
-<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 
 <AnchorPane id="AnchorPane" style="-fx-background-color: #00000000;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.demos.controllers.ShadowsDemoController">
    <children>
@@ -42,54 +37,12 @@
                         <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button fx:id="traverseNodesButton" mnemonicParsing="false" onAction="#rideTheLightning" prefWidth="150.0" text="Traverse nodes" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                        <Button fx:id="clearAllButton" layoutX="240.0" layoutY="94.0" mnemonicParsing="false" onAction="#clearAll" prefWidth="150.0" text="Clear All" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
-                        <HBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.rowSpan="2">
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
+                        <VBox alignment="CENTER" spacing="20.0" GridPane.rowIndex="2">
                            <children>
-                              <VBox alignment="CENTER_LEFT" spacing="20.0">
-                                 <children>
-                                    <CheckBox fx:id="repeatCheckBox" graphicTextGap="20.0" mnemonicParsing="false" text="Repeat" />
-                                    <RadioButton fx:id="clockwiseRadioButton" mnemonicParsing="false" selected="true" text="Clockwise">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="directionToggleGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="counterRadioButton" mnemonicParsing="false" text="Counter" toggleGroup="$directionToggleGroup" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                 </padding>
-                              </VBox>
-                           </children>
-                        </HBox>
-                        <VBox alignment="CENTER" spacing="5.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3">
-                           <children>
-                              <Label text="Repeat Delay (ms)" />
-                              <Slider fx:id="repeatDelaySlider" blockIncrement="100.0" majorTickUnit="100.0" max="1000.0" min="100.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="500.0" />
-                              <Label layoutX="361.0" layoutY="76.0" text="Bolt Animation Duration (ms)" />
-                              <Slider fx:id="animationDurationSlider" blockIncrement="20.0" layoutX="20.0" layoutY="94.0" majorTickUnit="20.0" max="500.0" min="20.0" minorTickCount="5" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
-                              <Label layoutX="370.0" layoutY="31.0" text="Transistion Delay (ms)" />
-                              <Slider fx:id="transitionDelaySlider" layoutX="20.0" layoutY="57.0" majorTickUnit="100.0" max="1000.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" />
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </VBox>
-                        <VBox alignment="CENTER" spacing="20.0" GridPane.rowIndex="1" GridPane.rowSpan="2">
-                           <children>
-                              <Label layoutX="75.0" layoutY="174.0" text="Tail Length" />
-                              <Spinner fx:id="tailLengthSpinner" prefHeight="50.0">
-                                <valueFactory>
-                                    <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="10" max="30" min="1" />
-                                </valueFactory>           
-                              </Spinner>
-                              <Label layoutX="81.0" layoutY="169.0" text="Bolt Color" />
-                              <ColorPicker fx:id="chainLightningColorPicker" prefHeight="50.0" prefWidth="200.0">
+                              <Label layoutX="81.0" layoutY="169.0" text="Shadow Color" />
+                              <ColorPicker fx:id="shadowColorPicker" prefHeight="50.0" prefWidth="200.0">
                                 <value>
-                                    <Color blue="0.9411765" green="0.972549" red="1.0" />
+                                    <Color blue="0.0" green="0.0" red="0.0" />
                                 </value>
                               </ColorPicker>                                                   
                            </children>
@@ -97,16 +50,63 @@
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
                         </VBox>
-                        <ImageView fitHeight="400.0" fitWidth="400.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                        <ImageView fitHeight="400.0" fitWidth="400.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                            <image>
-                              <Image url="@ridethelightning.png" />
+                              <Image url="@shadows_512.png" />
                            </image>
                         </ImageView>
+                        <VBox alignment="CENTER" layoutX="10.0" layoutY="420.0" spacing="20.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                           <children>
+                              <Label layoutX="81.0" layoutY="169.0" text="Primary Light Color" />
+                              <ColorPicker fx:id="primaryLightColorPicker" prefHeight="50.0" prefWidth="200.0">
+                                 <value>
+                                    <Color blue="0.9411765" green="0.972549" red="1.0" />
+                                 </value>
+                              </ColorPicker>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                           <children>
+                              <TextArea fx:id="lyricsTextArea" prefHeight="150.0" text="I'm talking about my life. I can't seem to get that through to you. I'm not just talking about one person, I'm talking about everybody, I'm talking about form, I'm talking about content, I'm talking about interrelationships. &#10;&#10;I'm talking about God, the devil, hell, heaven.&#10;&#10;Do you understand? Finally!" wrapText="true" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="40.0" GridPane.rowSpan="2">
+                           <children>
+                              <CheckBox fx:id="enableShadowCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Shadow Layer" />
+                              <CheckBox fx:id="enablePrimaryCheckBox" layoutX="44.0" layoutY="102.0" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Primary Light" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="10.0" layoutY="215.0" spacing="40.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <CheckBox fx:id="shadowColorPickerAmbientCheckBox" layoutX="44.0" layoutY="102.0" mnemonicParsing="false" prefWidth="150.0" text="Shadow ColorPicker" />
+                              <CheckBox fx:id="primaryColorPickerAmbientCheckBox" layoutX="35.0" layoutY="120.0" mnemonicParsing="false" prefWidth="150.0" text="Primary Color Picker" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="40.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                           <children>
+                              <CheckBox fx:id="imageViewAmbientCheckBox" mnemonicParsing="false" prefWidth="150.0" text="ImageView" />
+                              <CheckBox fx:id="textAreaAmbientCheckBox" mnemonicParsing="false" prefWidth="150.0" text="TextArea" />
+                           </children>
+                        </VBox>
                      </children>
                   </GridPane>
                </children>
             </StackPane>
          </center>
+         <bottom>
+            <VBox alignment="BOTTOM_CENTER" spacing="5.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Global Alpha" />
+                  <Slider fx:id="ambientLightSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </bottom>
       </BorderPane>
    </children>
 </AnchorPane>
