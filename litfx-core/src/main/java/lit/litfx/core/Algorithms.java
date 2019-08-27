@@ -54,44 +54,43 @@ public enum Algorithms {
             //add a angle to diverge from the base 
             return Math.toRadians(baseAngle + deltaAngle);
     }
-	// Inspired by examples at https://gist.github.com/Roland09 
-	// http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-        //Does not currently support the Z axis
-	private EdgePoint getLineIntersection(EdgePoint startPoint1, EdgePoint endPoint1, 
-                EdgePoint startPoint2, EdgePoint endPoint2) {
-		double x1 = startPoint1.getX();
-		double y1 = startPoint1.getY();
-		double x2 = endPoint1.getX();
-		double y2 = endPoint1.getY();
 
-		double x3 = startPoint2.getX();
-		double y3 = startPoint2.getY();
-		double x4 = endPoint2.getX();
-		double y4 = endPoint2.getY();
+    // Inspired by examples at https://gist.github.com/Roland09 
+    // http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+    //Does not currently support the Z axis
+    public static EdgePoint getLineIntersection(EdgePoint startPoint1, EdgePoint endPoint1, 
+            EdgePoint startPoint2, EdgePoint endPoint2) {
+            double x1 = startPoint1.getX();
+            double y1 = startPoint1.getY();
+            double x2 = endPoint1.getX();
+            double y2 = endPoint1.getY();
 
-		double ax = x2 - x1;
-		double ay = y2 - y1;
-		double bx = x4 - x3;
-		double by = y4 - y3;
+            double x3 = startPoint2.getX();
+            double y3 = startPoint2.getY();
+            double x4 = endPoint2.getX();
+            double y4 = endPoint2.getY();
 
-		double denominator = ax * by - ay * bx;
+            double ax = x2 - x1;
+            double ay = y2 - y1;
+            double bx = x4 - x3;
+            double by = y4 - y3;
 
-		if (denominator == 0)
-                    return null;
+            double denominator = ax * by - ay * bx;
 
-		double cx = x3 - x1;
-		double cy = y3 - y1;
+            if (denominator == 0)
+                return null;
 
-		double t = (cx * by - cy * bx) / denominator;
-		if (t < 0 || t > 1)
-                    return null;
+            double cx = x3 - x1;
+            double cy = y3 - y1;
 
-		double u = (cx * ay - cy * ax) / denominator;
-		if (u < 0 || u > 1)
-                    return null;
+            double t = (cx * by - cy * bx) / denominator;
+            if (t < 0 || t > 1)
+                return null;
 
-//		return new PVector(x1 + t * ax, y1 + t * ay);
-                return new EdgePoint(0, x1 + t * ax, y1 + t * ay, 0);
-	}    
-    
+            double u = (cx * ay - cy * ax) / denominator;
+            if (u < 0 || u > 1)
+                return null;
+
+            return new EdgePoint(0, x1 + t * ax, y1 + t * ay, 0);
+    }    
 }
