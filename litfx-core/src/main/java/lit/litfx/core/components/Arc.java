@@ -5,7 +5,7 @@ import lit.litfx.core.NodeTools;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  * 
  */
 public class Arc extends Bolt {

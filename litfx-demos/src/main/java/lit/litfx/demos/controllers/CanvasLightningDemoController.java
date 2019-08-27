@@ -27,7 +27,7 @@ import lit.litfx.core.components.BranchLightning;
 /**
  * FXML Controller class
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class CanvasLightningDemoController implements Initializable {
     @FXML

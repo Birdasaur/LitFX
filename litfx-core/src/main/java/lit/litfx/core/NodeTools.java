@@ -14,7 +14,7 @@ import lit.litfx.core.components.EdgePoint;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public enum NodeTools {
     INSTANCE;

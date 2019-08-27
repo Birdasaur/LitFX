@@ -5,7 +5,7 @@ import javafx.scene.Node;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class NodeLink {
     Node startNode;

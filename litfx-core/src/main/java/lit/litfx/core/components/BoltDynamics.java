@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class BoltDynamics {
     public double density;

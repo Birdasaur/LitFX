@@ -15,7 +15,7 @@ import lit.litfx.core.components.Bolt;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class LightningClickDemo extends Application {
     
