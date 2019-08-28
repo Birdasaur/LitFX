@@ -5,22 +5,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
-import java.util.stream.Stream;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Line;
-import lit.litfx.core.LitView;
 import lit.litfx.core.NodeTools;
+import lit.litfx.core.ShadowView;
 import lit.litfx.core.components.EdgePoint;
 import lit.litfx.core.components.LineOfSight;
 
@@ -44,7 +39,7 @@ public class ShadowsDemoController implements Initializable {
 //    @FXML
 //    CheckBox repeatCheckBox;
     
-    LitView litView;
+    ShadowView shadowView;
     ArrayList<Node> centerChildren;     
     
     /**
@@ -54,11 +49,12 @@ public class ShadowsDemoController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-//        //assign the Region you want to engulf in shadows
-//        litView = new LitView(centerPane);
-//        
-//        //If you already have a nice stackpane, just add your LitView last
-//        centerStackPane.getChildren().add(litView);
+        //assign the Region you want to engulf in shadows
+        shadowView = new ShadowView(centerPane);
+        
+        //If you already have a nice stackpane, just add your LitView last
+        centerStackPane.getChildren().add(shadowView);
+        shadowView.ambientLightIntensity.bind(ambientLightSlider.valueProperty());
 
         //get the Node children in traversal order
         centerChildren = new ArrayList<>();
