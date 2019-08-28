@@ -8,6 +8,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import lit.litfx.core.components.Bolt;
 import lit.litfx.core.components.BoltDynamics;
 import lit.litfx.core.components.EdgePoint;
@@ -118,6 +119,22 @@ public enum NodeTools {
         }
         return result;
     }    
+    public static List<Line> boundsToLines(Node node) {
+        Bounds boundsInLocal = node.getBoundsInLocal();
+        Bounds nodeSceneBounds = node.localToScene(boundsInLocal);   
+        List<Line> lines = new ArrayList<>();
+        //convert each bounds point pair to a Line, clockwise order from min x, min y
+        lines.add(new Line(nodeSceneBounds.getMinX(), nodeSceneBounds.getMinY(), 
+            nodeSceneBounds.getMaxX(), nodeSceneBounds.getMinY()));
+        lines.add(new Line(nodeSceneBounds.getMaxX(), nodeSceneBounds.getMinY(), 
+            nodeSceneBounds.getMaxX(), nodeSceneBounds.getMaxY()));
+        lines.add(new Line(nodeSceneBounds.getMaxX(), nodeSceneBounds.getMaxY(), 
+            nodeSceneBounds.getMinX(), nodeSceneBounds.getMaxY()));
+        lines.add(new Line(nodeSceneBounds.getMinX(), nodeSceneBounds.getMaxY(), 
+            nodeSceneBounds.getMinX(), nodeSceneBounds.getMinY()));
+        return lines;
+    }
+   
     public static double transformX(double dataXcoord, double domain, double range) {
         return (dataXcoord * range) / domain;
     }

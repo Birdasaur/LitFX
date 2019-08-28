@@ -11,8 +11,8 @@ import lit.litfx.core.Algorithms;
  */
 public class LineOfSight {
 
-    EdgePoint centerPoint;
-    double scanLength;
+    public EdgePoint centerPoint;
+    public double scanLength;
 
     public LineOfSight(EdgePoint centerPoint, double scanLength) {
         this.centerPoint = centerPoint;
@@ -26,17 +26,16 @@ public class LineOfSight {
      * @param angleStart
      * @param angleEnd
      * @param angleStep
-     * @param scanLineLength how far to shoot the scan lines
      * @return List of type Line Inspired by examples at
      * https://gist.github.com/Roland09
      */
-    public List<Line> createScanLines(double angleStart, double angleEnd, double angleStep, double scanLineLength) {
+    public List<Line> createScanLines(double angleStart, double angleEnd, double angleStep) {
         //Create a new collection to store the scan lines
         List<Line> scanLines = new ArrayList<>();
         for (double angle = angleStart; angle < angleEnd; angle += angleStep) {
             //find the endpoint based on the current angle
-            double x = centerPoint.getX() + Math.cos(angle) * scanLineLength;
-            double y = centerPoint.getY() + Math.sin(angle) * scanLineLength;
+            double x = centerPoint.getX() + Math.cos(angle) * scanLength;
+            double y = centerPoint.getY() + Math.sin(angle) * scanLength;
             //new line eminating from the origin
             Line line = new Line(centerPoint.getX(), centerPoint.getY(), x, y);
             scanLines.add(line);
@@ -61,26 +60,33 @@ public class LineOfSight {
 
             // find the intersection that is closest to the scanline
             if (intersections.size() > 0) {
-                double x = 0;
-                double y = 0;
-                double shortestDistance = Double.MAX_VALUE;
-                //find the closest intersection find the closest 
-                for (EdgePoint intersectionPoint : intersections) {
-                    //double currDist = scanLine.getStart().dist(intersectionPoint);
-                    double currDist = new EdgePoint(0, scanLine.getStartX(), scanLine.getEndY(), 0)
-                        .distance(intersectionPoint);
-                    if (currDist < shortestDistance) {
-                        x = intersectionPoint.getX();
-                        y = intersectionPoint.getY();
-                        shortestDistance = currDist;
-                    }
-                }
-                intersectionPoints.add(new EdgePoint(0, x, y, 0));
+                intersectionPoints.add(
+                    closestPoint(
+                        new EdgePoint(0, scanLine.getStartX(), scanLine.getStartY(), 0),
+                        intersections
+                    )
+                );
             }
         }
         return intersectionPoints;
     }
 
+    private EdgePoint closestPoint(EdgePoint startPoint, List<EdgePoint> intersections) {
+        double closestX = 0;
+        double closestY = 0;
+        double shortestDistance = Double.MAX_VALUE;
+        //find the closest intersection find the closest 
+        for (EdgePoint intersectionPoint : intersections) {
+            double currDist = startPoint.distance(intersectionPoint);
+            if (currDist < shortestDistance) {
+                closestX = intersectionPoint.getX();
+                closestY = intersectionPoint.getY();
+                shortestDistance = currDist;
+            }
+        }
+        return new EdgePoint(0, closestX, closestY, 0);
+    }
+    
     /**
      * Find intersecting lines.
      *
