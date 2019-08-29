@@ -2,6 +2,8 @@ package lit.litfx.core.components;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.shape.Line;
 import lit.litfx.core.Algorithms;
 
@@ -11,12 +13,12 @@ import lit.litfx.core.Algorithms;
  */
 public class LineOfSight {
 
-    public EdgePoint centerPoint;
-    public double scanLength;
+    public SimpleObjectProperty<EdgePoint> centerPoint;
+    public SimpleDoubleProperty scanLength;
 
     public LineOfSight(EdgePoint centerPoint, double scanLength) {
-        this.centerPoint = centerPoint;
-        this.scanLength = scanLength;
+        this.centerPoint = new SimpleObjectProperty<>(centerPoint);
+        this.scanLength = new SimpleDoubleProperty(scanLength);
     }
 
     /**
@@ -34,10 +36,10 @@ public class LineOfSight {
         List<Line> scanLines = new ArrayList<>();
         for (double angle = angleStart; angle < angleEnd; angle += angleStep) {
             //find the endpoint based on the current angle
-            double x = centerPoint.getX() + Math.cos(angle) * scanLength;
-            double y = centerPoint.getY() + Math.sin(angle) * scanLength;
+            double x = centerPoint.get().getX() + Math.cos(angle) * scanLength.get();
+            double y = centerPoint.get().getY() + Math.sin(angle) * scanLength.get();
             //new line eminating from the origin
-            Line line = new Line(centerPoint.getX(), centerPoint.getY(), x, y);
+            Line line = new Line(centerPoint.get().getX(), centerPoint.get().getY(), x, y);
             scanLines.add(line);
         }
         return scanLines;
@@ -117,9 +119,9 @@ public class LineOfSight {
             if (end == null) {
                 end = new EdgePoint(1, scanLine.getEndX(), scanLine.getEndY(), 0);
             } // intersection found => limit to scan line length
-            else if (start.distance(end) > scanLength) {
+            else if (start.distance(end) > scanLength.get()) {
                 end.normalize();
-                end.multiply(scanLength);
+                end.multiply(scanLength.get());
             }
             // we have a valid line end, either an intersection with another line or we have the scan line limit
             if (end != null) {
