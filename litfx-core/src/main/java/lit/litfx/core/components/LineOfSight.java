@@ -15,12 +15,21 @@ public class LineOfSight {
 
     public SimpleObjectProperty<EdgePoint> centerPoint;
     public SimpleDoubleProperty scanLength;
-
+    public List<Line> scanLines = new ArrayList<>();
+    public List<EdgePoint> intersections = new ArrayList<>();
+            
     public LineOfSight(EdgePoint centerPoint, double scanLength) {
         this.centerPoint = new SimpleObjectProperty<>(centerPoint);
         this.scanLength = new SimpleDoubleProperty(scanLength);
     }
 
+    public void updateScan(List<Line> nodeLines) {
+        scanLines = createScanLines(0, 360, 1);
+//        System.out.println("Scan Lines count: " + scanLines.size());
+        intersections = getIntersectionPoints(scanLines, nodeLines);
+//        System.out.println("Intersections In Range: " + intersections.size());
+    }
+    
     /**
      * Sweep around the given circle with the given distance and create the scan
      * lines
@@ -33,16 +42,16 @@ public class LineOfSight {
      */
     public List<Line> createScanLines(double angleStart, double angleEnd, double angleStep) {
         //Create a new collection to store the scan lines
-        List<Line> scanLines = new ArrayList<>();
+        List<Line> newScanLines = new ArrayList<>();
         for (double angle = angleStart; angle < angleEnd; angle += angleStep) {
             //find the endpoint based on the current angle
             double x = centerPoint.get().getX() + Math.cos(angle) * scanLength.get();
             double y = centerPoint.get().getY() + Math.sin(angle) * scanLength.get();
             //new line eminating from the origin
             Line line = new Line(centerPoint.get().getX(), centerPoint.get().getY(), x, y);
-            scanLines.add(line);
+            newScanLines.add(line);
         }
-        return scanLines;
+        return newScanLines;
     }
 
     /**
@@ -58,14 +67,14 @@ public class LineOfSight {
         //Compare each scanLine against each scene line (node bounds etc)
         for (Line scanLine : scanLines) {
             //Given the current scanline find all the intersections with scene lines
-            List<EdgePoint> intersections = getIntersections(scanLine, sceneLines);
+            List<EdgePoint> newIntersections = getIntersections(scanLine, sceneLines);
 
             // find the intersection that is closest to the scanline
-            if (intersections.size() > 0) {
+            if (newIntersections.size() > 0) {
                 intersectionPoints.add(
                     closestPoint(
                         new EdgePoint(0, scanLine.getStartX(), scanLine.getStartY(), 0),
-                        intersections
+                        newIntersections
                     )
                 );
             }

@@ -58,7 +58,7 @@ public class ShadowsDemoController implements Initializable {
         shadowView.ambientLightIntensity.bind(ambientLightSlider.valueProperty());
 
         EdgePoint currentPoint = new EdgePoint(0, 0, 0, 0);
-        los = new LineOfSight(currentPoint, 50);
+        los = new LineOfSight(currentPoint, 150);
         
         shadowView.addLoS(los);
     
