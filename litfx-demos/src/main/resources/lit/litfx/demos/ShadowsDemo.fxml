@@ -88,7 +88,7 @@
                         </VBox>
                         <VBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
                            <children>
-                              <CheckBox fx:id="wireframeCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Wireframe" />
+                              <CheckBox fx:id="wireframeCheckBox" mnemonicParsing="false" prefWidth="150.0" text="Enable Wireframe" />
                               <ColorPicker fx:id="wireframeColorPicker" prefHeight="50.0" prefWidth="200.0">
                                  <value>
                                     <Color blue="1.0" green="0.0" red="0.0" />

@@ -116,7 +116,13 @@ public class ShadowView extends Region {
     }
 
     private void drawWireframe() {
-        //@TODO SMP
+        gc.setStroke(wireframeColor.get().deriveColor(1, 1, 1, 0.25));
+//        gc.setFill(wireframeColor.get().deriveColor(1, 1, 1, 0.25));
+        gc.setLineWidth(3.0);
+        for(Line line : nodeLines) {
+            gc.strokeLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+        }
+        gc.setLineWidth(1.0); //default
     }
     
     private void drawIntersections() {
