@@ -2,10 +2,7 @@ package lit.litfx.demos.controllers;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.ResourceBundle;
-import static java.util.stream.Collectors.toList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -13,8 +10,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Line;
-import lit.litfx.core.NodeTools;
 import lit.litfx.core.ShadowView;
 import lit.litfx.core.components.EdgePoint;
 import lit.litfx.core.components.LineOfSight;
@@ -33,11 +28,6 @@ public class ShadowsDemoController implements Initializable {
     
     @FXML
     Slider ambientLightSlider;    
-
-//    @FXML
-//    ColorPicker chainLightningColorPicker;
-//    @FXML
-//    CheckBox repeatCheckBox;
     
     ShadowView shadowView;
     ArrayList<Node> centerChildren;     
@@ -63,9 +53,8 @@ public class ShadowsDemoController implements Initializable {
         shadowView.addLoS(los);
     
         // capture mouse position
-        centerStackPane.addEventFilter(MouseEvent.ANY, e -> {
+        centerStackPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
             los.centerPoint.set(new EdgePoint(0, e.getX(), e.getY(), 0));
-            shadowView.refreshView();
         });        
     }    
 }

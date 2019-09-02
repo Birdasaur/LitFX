@@ -23,8 +23,8 @@ public class LineOfSight {
         this.scanLength = new SimpleDoubleProperty(scanLength);
     }
 
-    public void updateScan(List<Line> nodeLines) {
-        scanLines = createScanLines(0, 360, 1);
+    public void updateScan(List<Line> nodeLines, double scanlines) {
+        scanLines = createScanLines(0, 360, scanlines);
 //        System.out.println("Scan Lines count: " + scanLines.size());
         intersections = getIntersectionPoints(scanLines, nodeLines);
 //        System.out.println("Intersections In Range: " + intersections.size());
@@ -41,9 +41,12 @@ public class LineOfSight {
      * https://gist.github.com/Roland09
      */
     public List<Line> createScanLines(double angleStart, double angleEnd, double angleStep) {
+        double angleStartRads = Math.toRadians(angleStart);
+        double angleEndRads = Math.toRadians(angleEnd);
+        double angleStepRads = Math.toRadians(angleStep);
         //Create a new collection to store the scan lines
         List<Line> newScanLines = new ArrayList<>();
-        for (double angle = angleStart; angle < angleEnd; angle += angleStep) {
+        for (double angle = angleStartRads; angle < angleEndRads; angle += angleStepRads) {
             //find the endpoint based on the current angle
             double x = centerPoint.get().getX() + Math.cos(angle) * scanLength.get();
             double y = centerPoint.get().getY() + Math.sin(angle) * scanLength.get();
