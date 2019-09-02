@@ -40,10 +40,21 @@ public class ShadowView extends Region {
     public static final double DEFAULT_AMBIENT_OPACITY = 0.2;
     public static final Color DEFAULT_SHADOW_COLOR = Color.BLACK;
     public static final Color DEFAULT_LIGHT_COLOR = Color.TRANSPARENT;
+    public static final Color DEFAULT_INTERSECTION_COLOR = Color.CYAN;
+    public static final Color DEFAULT_WIREFRAME_COLOR = Color.BLUE;
     private Region shadowedRegion;
+
     public SimpleDoubleProperty ambientLightIntensity;
     public SimpleObjectProperty<Color> shadowColor;
     public SimpleObjectProperty<Color> lightColor;
+    public SimpleObjectProperty<Color> intersectionColor;
+    public SimpleObjectProperty<Color> wireframeColor;
+
+    public SimpleBooleanProperty shadowEnabled;
+    public SimpleBooleanProperty lightEnabled;
+    public SimpleBooleanProperty intersectionEnabled;
+    public SimpleBooleanProperty wireframeEnabled;
+
     public ObservableList<LineOfSight> losList;
 
     private List<Line> nodeLines;    
@@ -90,6 +101,11 @@ public class ShadowView extends Region {
         gc.closePath();
         gc.fill();
         
+        if(intersectionEnabled.get())
+            drawIntersections();
+        if(wireframeEnabled.get())
+            drawWireframe();
+        
 //        //now redraw the line of sight shape (in case the "light" has a color)
 //        gc.setFill(lightColor.get());
 //        gc.beginPath();
@@ -97,6 +113,25 @@ public class ShadowView extends Region {
 //        gc.closePath();
 //        gc.fill();
         
+    }
+
+    private void drawWireframe() {
+        //@TODO SMP
+    }
+    
+    private void drawIntersections() {
+        gc.setStroke(intersectionColor.get());
+        gc.setFill(intersectionColor.get().deriveColor(1, 1, 1, 0.25));
+        
+        //draw intersection points
+        double w = 2;
+        double h = w;
+        for(LineOfSight los : losList) {
+            for(EdgePoint point: los.intersections) {
+                gc.strokeOval(point.getX() - w / 2, point.getY() - h / 2, w, h);
+                gc.fillOval(point.getX() - w / 2, point.getY() - h / 2, w, h);
+            }
+        }        
     }
     
     private void initLosTask() {
@@ -138,16 +173,6 @@ public class ShadowView extends Region {
     }
     
     private Path drawLosShape() {
-//        gc.setStroke(Color.YELLOW);
-//        gc.setFill(Color.YELLOW.deriveColor(1, 1, 1, 0.25));
-//        
-//        //draw intersection points
-//        double w = 2;
-//        double h = w;
-//        for( EdgePoint point: intersections) {
-//            gc.strokeOval(point.getX() - w / 2, point.getY() - h / 2, w, h);
-//            gc.fillOval(point.getX() - w / 2, point.getY() - h / 2, w, h);
-//        }
         Path losShape = new Path();       
         //go through each line of sight object and draw it to a path
         for(LineOfSight los : losList) {
@@ -179,6 +204,13 @@ public class ShadowView extends Region {
         ambientLightIntensity.addListener(event -> shadowChange());
         shadowColor = new SimpleObjectProperty<>(deriveShadow(DEFAULT_SHADOW_COLOR));        
         lightColor  = new SimpleObjectProperty<>(deriveShadow(DEFAULT_LIGHT_COLOR));
+        intersectionColor  = new SimpleObjectProperty<>(DEFAULT_INTERSECTION_COLOR);
+        wireframeColor  = new SimpleObjectProperty<>(DEFAULT_WIREFRAME_COLOR);
+        
+        shadowEnabled = new SimpleBooleanProperty(true);
+        lightEnabled = new SimpleBooleanProperty(true);
+        intersectionEnabled = new SimpleBooleanProperty(true);
+        wireframeEnabled = new SimpleBooleanProperty(true);
     }
     private void shadowChange() {
         Color color = deriveShadow(shadowColor.get());

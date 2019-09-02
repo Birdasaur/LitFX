@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -25,6 +27,25 @@ public class ShadowsDemoController implements Initializable {
     GridPane centerPane;
     @FXML
     StackPane centerStackPane;
+    
+    @FXML
+    ColorPicker shadowColorPicker;
+    @FXML
+    ColorPicker lightColorPicker;
+    @FXML
+    ColorPicker intersectionsColorPicker;
+    @FXML
+    ColorPicker wireframeColorPicker;
+
+    @FXML
+    CheckBox shadowCheckBox;
+    @FXML
+    CheckBox lightCheckBox;
+    @FXML
+    CheckBox intersectionsCheckBox;
+    @FXML
+    CheckBox wireframeCheckBox;
+
     
     @FXML
     Slider ambientLightSlider;    
@@ -55,6 +76,17 @@ public class ShadowsDemoController implements Initializable {
         // capture mouse position
         centerStackPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
             los.centerPoint.set(new EdgePoint(0, e.getX(), e.getY(), 0));
-        });        
+        });  
+        
+//        shadowView.shadowColor.bind(shadowColorPicker.valueProperty());
+        shadowView.lightColor.bind(lightColorPicker.valueProperty());
+        shadowView.intersectionColor.bind(intersectionsColorPicker.valueProperty());
+        shadowView.wireframeColor.bind(wireframeColorPicker.valueProperty());
+        
+        shadowView.shadowEnabled.bind(shadowCheckBox.selectedProperty());
+        shadowView.lightEnabled.bind(lightCheckBox.selectedProperty());
+        shadowView.intersectionEnabled.bind(intersectionsCheckBox.selectedProperty());
+        shadowView.wireframeEnabled.bind(wireframeCheckBox.selectedProperty());
+        
     }    
 }

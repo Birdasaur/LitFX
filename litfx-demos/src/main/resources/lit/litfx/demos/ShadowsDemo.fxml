@@ -37,9 +37,9 @@
                         <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <VBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <VBox alignment="CENTER" spacing="20.0" GridPane.rowIndex="2">
                            <children>
-                              <CheckBox fx:id="enableShadowCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Shadow Layer" />
+                              <CheckBox fx:id="shadowCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Shadow Layer" />
                               <ColorPicker fx:id="shadowColorPicker" prefHeight="50.0" prefWidth="200.0">
                                 <value>
                                     <Color blue="0.0" green="0.0" red="0.0" />
@@ -57,8 +57,8 @@
                         </ImageView>
                         <VBox alignment="CENTER" layoutX="10.0" layoutY="420.0" spacing="20.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                            <children>
-                              <CheckBox fx:id="enablePrimaryCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Primary Light" />
-                              <ColorPicker fx:id="primaryLightColorPicker" prefHeight="50.0" prefWidth="200.0">
+                              <CheckBox fx:id="lightCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Primary Light" />
+                              <ColorPicker fx:id="lightColorPicker" prefHeight="50.0" prefWidth="200.0">
                                  <value>
                                     <Color blue="0.9411765" green="0.972549" red="1.0" />
                                  </value>
@@ -72,6 +72,32 @@
                            <children>
                               <TextArea fx:id="lyricsTextArea" prefHeight="150.0" text="I'm talking about my life. I can't seem to get that through to you. I'm not just talking about one person, I'm talking about everybody, I'm talking about form, I'm talking about content, I'm talking about interrelationships. &#10;&#10;I'm talking about God, the devil, hell, heaven.&#10;&#10;Do you understand? Finally!" wrapText="true" />
                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <CheckBox fx:id="intersectionsCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable LOS Points" />
+                              <ColorPicker fx:id="intersectionsColorPicker" prefHeight="50.0" prefWidth="200.0">
+                                 <value>
+                                    <Color blue="1.0" green="1.0" red="0.0" />
+                                 </value>
+                              </ColorPicker>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                        <VBox alignment="CENTER" spacing="20.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                           <children>
+                              <CheckBox fx:id="wireframeCheckBox" mnemonicParsing="false" prefWidth="150.0" selected="true" text="Enable Wireframe" />
+                              <ColorPicker fx:id="wireframeColorPicker" prefHeight="50.0" prefWidth="200.0">
+                                 <value>
+                                    <Color blue="1.0" green="0.0" red="0.0" />
+                                 </value>
+                              </ColorPicker>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
                         </VBox>
                      </children>
                   </GridPane>
