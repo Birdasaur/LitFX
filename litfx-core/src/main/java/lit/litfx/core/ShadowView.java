@@ -82,19 +82,25 @@ public class ShadowView extends Region {
 
     }
     private void drawShapes() {
+        //create a shape that covers the canvas
         Rectangle rect = new Rectangle(0,0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
         rect.setFill(shadowColor.get());
 
+        //create "lighting" shape
         Path losShape = drawLosShape();
-        
+        // punch hole in rectangle based on the shape of the light
         Shape newShape = Shape.subtract(rect, losShape);
         String svgShape = ShapeConverter.shapeToSvgString(newShape);
-
+        
         //clear screen
         gc.clearRect(0,0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        
         // draw rectangle
-        gc.setFill(shadowColor.get());
-
+        if(shadowEnabled.get())
+            gc.setFill(shadowColor.get());
+        else
+            gc.setFill(Color.TRANSPARENT);
+        
         // punch hole in rectangle
         gc.beginPath();
         gc.appendSVGPath(svgShape);
