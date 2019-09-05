@@ -219,6 +219,8 @@ public class ShadowView extends Region {
         ambientLightIntensity = new SimpleDoubleProperty(DEFAULT_AMBIENT_OPACITY);        
         ambientLightIntensity.addListener(event -> shadowChange());
         shadowColor = new SimpleObjectProperty<>(deriveShadow(DEFAULT_SHADOW_COLOR));        
+//        shadowColor.addListener(event -> shadowChange());
+
         lightColor  = new SimpleObjectProperty<>(deriveShadow(DEFAULT_LIGHT_COLOR));
         intersectionColor  = new SimpleObjectProperty<>(DEFAULT_INTERSECTION_COLOR);
         wireframeColor  = new SimpleObjectProperty<>(DEFAULT_WIREFRAME_COLOR);
@@ -238,6 +240,9 @@ public class ShadowView extends Region {
             color.getRed(), color.getGreen(), 
             color.getBlue(), 1.0 - ambientLightIntensity.get());        
         return newColor;
+    }
+    public void setShadowColor(Color color) {
+        shadowColor.set(deriveShadow(color));        
     }
     public void scanShadowRegion() {
         //get the Node children in traversal order
