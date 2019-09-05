@@ -89,12 +89,15 @@ public class ShadowView extends Region {
         //create "lighting" shape
         Path losShape = drawLosShape();
         // punch hole in rectangle based on the shape of the light
-        Shape newShape = Shape.subtract(rect, losShape);
+        Shape newShape;
+        if(lightEnabled.get())
+            newShape = Shape.subtract(rect, losShape);
+        else
+            newShape = rect;
         String svgShape = ShapeConverter.shapeToSvgString(newShape);
         
         //clear screen
         gc.clearRect(0,0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-        
         // draw rectangle
         if(shadowEnabled.get())
             gc.setFill(shadowColor.get());
@@ -112,6 +115,7 @@ public class ShadowView extends Region {
         if(wireframeEnabled.get())
             drawWireframe();
         
+
 //        //now redraw the line of sight shape (in case the "light" has a color)
 //        gc.setFill(lightColor.get());
 //        gc.beginPath();
