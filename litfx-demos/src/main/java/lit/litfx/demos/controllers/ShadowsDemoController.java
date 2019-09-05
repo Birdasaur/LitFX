@@ -45,7 +45,8 @@ public class ShadowsDemoController implements Initializable {
     CheckBox intersectionsCheckBox;
     @FXML
     CheckBox wireframeCheckBox;
-
+    @FXML
+    CheckBox lightColorCheckBox;
     
     @FXML
     Slider ambientLightSlider;    
@@ -93,6 +94,6 @@ public class ShadowsDemoController implements Initializable {
         shadowView.lightEnabled.bind(lightCheckBox.selectedProperty());
         shadowView.intersectionEnabled.bind(intersectionsCheckBox.selectedProperty());
         shadowView.wireframeEnabled.bind(wireframeCheckBox.selectedProperty());
-        
+        shadowView.lightColorEnabled.bind(lightColorCheckBox.selectedProperty());
     }    
 }

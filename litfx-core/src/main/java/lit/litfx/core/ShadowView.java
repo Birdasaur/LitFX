@@ -1,6 +1,5 @@
 package lit.litfx.core;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +28,6 @@ import javafx.scene.shape.Shape;
 import jfxtras.labs.util.ShapeConverter;
 import lit.litfx.core.components.EdgePoint;
 import lit.litfx.core.components.LineOfSight;
-import lit.litfx.core.utils.Utils;
 
 /**
  *
@@ -52,6 +50,7 @@ public class ShadowView extends Region {
 
     public SimpleBooleanProperty shadowEnabled;
     public SimpleBooleanProperty lightEnabled;
+    public SimpleBooleanProperty lightColorEnabled;
     public SimpleBooleanProperty intersectionEnabled;
     public SimpleBooleanProperty wireframeEnabled;
 
@@ -79,7 +78,6 @@ public class ShadowView extends Region {
         initCanvas();
         initColorProperties();
         initLosTask();
-
     }
     private void drawShapes() {
         //create a shape that covers the canvas
@@ -115,14 +113,14 @@ public class ShadowView extends Region {
         if(wireframeEnabled.get())
             drawWireframe();
         
-
-//        //now redraw the line of sight shape (in case the "light" has a color)
-//        gc.setFill(lightColor.get());
-//        gc.beginPath();
-//        gc.appendSVGPath(ShapeConverter.shapeToSvgString(losShape));
-//        gc.closePath();
-//        gc.fill();
-        
+        //redraw the line of sight shape (in case the "light" has a color)
+        if(lightColorEnabled.get()) {
+            gc.setFill(lightColor.get());
+            gc.beginPath();
+            gc.appendSVGPath(ShapeConverter.shapeToSvgString(losShape));
+            gc.closePath();
+            gc.fill();
+        }
     }
 
     private void drawWireframe() {
@@ -158,17 +156,17 @@ public class ShadowView extends Region {
                 double scalar = 360.0 * 2.0;
                 double scanlineStep = 360.0 / scalar; //degrees 
                 
-                long time = System.nanoTime();
+                //long time = System.nanoTime();
                 while(animating.get()) {
-                    System.out.print("animating...");
-                    time = System.nanoTime();
+                    //System.out.print("animating...");
+                    //time = System.nanoTime();
                     //Thread.onSpinWait();
                     losList.stream().forEach(los -> los.updateScan(nodeLines, scanlineStep));
                     Platform.runLater(() -> {
                         drawShapes();                    
                     });
                     //How fast could we do this?
-                    Utils.printTotalTime(time);
+                    //Utils.printTotalTime(time);
                     
                     Thread.sleep(animationSleepMilli.get());
                     if(this.isCancelled() || this.isDone())
@@ -219,7 +217,6 @@ public class ShadowView extends Region {
         ambientLightIntensity = new SimpleDoubleProperty(DEFAULT_AMBIENT_OPACITY);        
         ambientLightIntensity.addListener(event -> shadowChange());
         shadowColor = new SimpleObjectProperty<>(deriveShadow(DEFAULT_SHADOW_COLOR));        
-//        shadowColor.addListener(event -> shadowChange());
 
         lightColor  = new SimpleObjectProperty<>(deriveShadow(DEFAULT_LIGHT_COLOR));
         intersectionColor  = new SimpleObjectProperty<>(DEFAULT_INTERSECTION_COLOR);
@@ -227,8 +224,9 @@ public class ShadowView extends Region {
         
         shadowEnabled = new SimpleBooleanProperty(true);
         lightEnabled = new SimpleBooleanProperty(true);
+        lightColorEnabled = new SimpleBooleanProperty(false);
         intersectionEnabled = new SimpleBooleanProperty(true);
-        wireframeEnabled = new SimpleBooleanProperty(true);
+        wireframeEnabled = new SimpleBooleanProperty(false);
     }
     private void shadowChange() {
         Color color = deriveShadow(shadowColor.get());
@@ -259,7 +257,6 @@ public class ShadowView extends Region {
             .flatMap(Collection::stream)
             .collect(toList());
         //        System.out.println("Node Lines count: " + nodeLines.size()); 
-
     }
     
     public void addLoS(LineOfSight los) {
@@ -268,5 +265,4 @@ public class ShadowView extends Region {
     public void removeLoS(LineOfSight los) {
         losList.remove(los);
     }
-    
 }
