@@ -8,7 +8,7 @@ import javafx.scene.shape.Polyline;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public abstract class AnimatedEdge extends Polyline implements AnimatedEffect{
     public EdgePoint start;

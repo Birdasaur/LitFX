@@ -14,7 +14,7 @@ import lit.litfx.core.Algorithms;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  * @inspiredby https://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
  * 
  */

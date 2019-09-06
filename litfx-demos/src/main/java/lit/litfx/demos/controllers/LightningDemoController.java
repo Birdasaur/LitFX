@@ -22,7 +22,7 @@ import lit.litfx.core.components.Bolt;
 /**
  * FXML Controller class
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class LightningDemoController implements Initializable {
 

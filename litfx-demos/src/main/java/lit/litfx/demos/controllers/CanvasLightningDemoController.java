@@ -1,8 +1,5 @@
 package lit.litfx.demos.controllers;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -12,22 +9,21 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
-import javafx.scene.effect.Bloom;
-import javafx.scene.effect.BlurType;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
-import javafx.scene.effect.Glow;
-import javafx.scene.effect.SepiaTone;
+import javafx.scene.effect.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import lit.litfx.core.components.BranchLightning;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+
 /**
  * FXML Controller class
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class CanvasLightningDemoController implements Initializable {
     @FXML
@@ -84,7 +80,9 @@ public class CanvasLightningDemoController implements Initializable {
     ArrayList<BranchLightning> bolts = new ArrayList<>();
     Point2D start;
     Point2D end;
-    
+
+    Effect primaryBoltEffect = null;
+    Effect branchEffect = null;
     /**
      * Initializes the controller class.
      * @param url
@@ -128,8 +126,14 @@ public class CanvasLightningDemoController implements Initializable {
         centerCanvas.heightProperty().bind(centerPane.heightProperty());
         
         tabPane.setOnMouseEntered(event -> tabPane.requestFocus());
-    }    
+    }
     public void updateBolts() {
+        if (primaryBoltEffect == null) {
+            primaryBoltEffect = collectEffects(BranchLightning.Member.PRIMARYBOLT);
+        }
+        if (branchEffect == null) {
+            branchEffect = collectEffects(BranchLightning.Member.BRANCH);
+        }
         GraphicsContext gc = centerCanvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, centerPane.getWidth(), centerPane.getHeight());
@@ -144,7 +148,7 @@ public class CanvasLightningDemoController implements Initializable {
         gc.setStroke(Color.ALICEBLUE.deriveColor(
             Color.ALICEBLUE.getRed(), Color.ALICEBLUE.getGreen(), 
             Color.ALICEBLUE.getBlue(), boltOpacitySlider.getValue()));
-//        gc.setEffect(collectEffects(BranchLightning.Member.PRIMARYBOLT));
+        gc.setEffect(primaryBoltEffect);
         gc.setLineWidth(boltThicknessSlider.getValue());
             gc.strokePolyline(branch.primaryBolt.getXpointArray(), 
                 branch.primaryBolt.getYpointArray(), branch.primaryBolt.getVisibleLength());
@@ -152,7 +156,7 @@ public class CanvasLightningDemoController implements Initializable {
         gc.setStroke(Color.STEELBLUE.deriveColor(
             Color.STEELBLUE.getRed(), Color.STEELBLUE.getGreen(), 
             Color.STEELBLUE.getBlue(), branchOpacitySlider.getValue()));
-//        gc.setEffect(collectEffects(BranchLightning.Member.BRANCH));
+        gc.setEffect(branchEffect);
         gc.setLineWidth(branchThicknessSlider.getValue());
         branch.branchList.forEach(branchBolt -> {
             gc.strokePolyline(branchBolt.getXpointArray(), 
@@ -164,19 +168,25 @@ public class CanvasLightningDemoController implements Initializable {
         if(member == BranchLightning.Member.PRIMARYBOLT) {
             SepiaTone st = new SepiaTone(boltSepiaSlider.getValue());
             Bloom bloom = new Bloom(boltBloomSlider.getValue());
+            bloom.thresholdProperty().bind(boltBloomSlider.valueProperty());
             bloom.setInput(st);
             Glow glow = new Glow(boltGlowSlider.getValue());
+            glow.levelProperty().bind(boltGlowSlider.valueProperty());
             glow.setInput(bloom);
             DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.AZURE, boltShadowSlider.getValue(), 0.5, 0, 0);
+            shadow.radiusProperty().bind(boltShadowSlider.valueProperty());
             shadow.setInput(glow);
             return shadow; 
         } else {
             SepiaTone st = new SepiaTone(branchSepiaSlider.getValue());
             Bloom bloom = new Bloom(branchBloomSlider.getValue());
+            bloom.thresholdProperty().bind(branchBloomSlider.valueProperty());
             bloom.setInput(st);
             Glow glow = new Glow(branchGlowSlider.getValue());
+            glow.levelProperty().bind(branchGlowSlider.valueProperty());
             glow.setInput(bloom);
             DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.AZURE, branchShadowSlider.getValue(), 0.5, 0, 0);
+            shadow.radiusProperty().bind(branchShadowSlider.valueProperty());
             shadow.setInput(glow);
             return shadow; 
         }

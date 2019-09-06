@@ -12,7 +12,7 @@ import lit.litfx.core.Algorithms;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  * 
  */
 public class BranchLightning extends Group {
