@@ -1,33 +1,22 @@
 package lit.litfx.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import static java.util.stream.Collectors.toList;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ClosePath;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import jfxtras.labs.util.ShapeConverter;
 import lit.litfx.core.components.EdgePoint;
 import lit.litfx.core.components.LineOfSight;
+
+import java.util.Collection;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  *
@@ -42,31 +31,27 @@ public class ShadowView extends Region {
     public static final Color DEFAULT_WIREFRAME_COLOR = Color.BLUE;
     private Region shadowedRegion;
 
-    public SimpleDoubleProperty ambientLightIntensity;
-    public SimpleObjectProperty<Color> shadowColor;
-    public SimpleObjectProperty<Color> lightColor;
-    public SimpleObjectProperty<Color> intersectionColor;
-    public SimpleObjectProperty<Color> wireframeColor;
+    public DoubleProperty ambientLightIntensity;
+    public ObjectProperty<Color> shadowColor;
+    public ObjectProperty<Color> lightColor;
+    public ObjectProperty<Color> intersectionColor;
+    public ObjectProperty<Color> wireframeColor;
 
-    public SimpleBooleanProperty shadowEnabled;
-    public SimpleBooleanProperty lightEnabled;
-    public SimpleBooleanProperty lightColorEnabled;
-    public SimpleBooleanProperty intersectionEnabled;
-    public SimpleBooleanProperty wireframeEnabled;
+    public BooleanProperty shadowEnabled;
+    public BooleanProperty lightEnabled;
+    public BooleanProperty lightColorEnabled;
+    public BooleanProperty intersectionEnabled;
+    public BooleanProperty wireframeEnabled;
 
-    public ObservableList<LineOfSight> losList;
+    public List<LineOfSight> losList;
 
     private List<Line> nodeLines;    
     private Canvas shadowCanvas;
     private GraphicsContext gc;
-    ArrayList<Node> shadowedNodes;  
-    
-    public SimpleBooleanProperty animating = new SimpleBooleanProperty(false);
-    public SimpleLongProperty animationSleepMilli = new SimpleLongProperty(33);
-    WritableImage srcImage;
-    WritableImage srcMask;
-    WritableImage dest; 
-    
+
+    public BooleanProperty animating = new SimpleBooleanProperty(false);
+    public LongProperty animationSleepMilli = new SimpleLongProperty(33);
+
     public ShadowView(Region parentToOverlay) {
         shadowedRegion = parentToOverlay;
         prefWidthProperty().bind(shadowedRegion.widthProperty());
@@ -161,10 +146,8 @@ public class ShadowView extends Region {
                     //System.out.print("animating...");
                     //time = System.nanoTime();
                     //Thread.onSpinWait();
-                    losList.stream().forEach(los -> los.updateScan(nodeLines, scanlineStep));
-                    Platform.runLater(() -> {
-                        drawShapes();                    
-                    });
+                    losList.forEach(los -> los.updateScan(nodeLines, scanlineStep));
+                    Platform.runLater(() -> drawShapes());
                     //How fast could we do this?
                     //Utils.printTotalTime(time);
                     
@@ -244,19 +227,14 @@ public class ShadowView extends Region {
     }
     public void scanShadowRegion() {
         //get the Node children in traversal order
-        shadowedNodes = new ArrayList<>();
         //This way is ... pretty close... but JavaFX currently does not publically
         //expose a method or means to find the true focus traversable order. :-(
-        shadowedNodes.addAll(
-            NodeTools.getAllChildren(shadowedRegion).stream()
+        nodeLines = NodeTools.getAllChildren(shadowedRegion).stream()
                 .filter(node -> node.isFocusTraversable())
-                .collect(toList()));
-        
-        nodeLines = shadowedNodes.stream()
-            .map(node -> NodeTools.boundsToLines(node))
-            .flatMap(Collection::stream)
-            .collect(toList());
-        //        System.out.println("Node Lines count: " + nodeLines.size()); 
+                .map(node -> NodeTools.boundsToLines(node))
+                .flatMap(Collection::stream)
+                .collect(toList());
+        //        System.out.println("Node Lines count: " + nodeLines.size());
     }
     
     public void addLoS(LineOfSight los) {
