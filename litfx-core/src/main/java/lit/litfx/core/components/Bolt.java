@@ -1,9 +1,5 @@
 package lit.litfx.core.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -11,6 +7,11 @@ import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 import lit.litfx.core.Algorithms;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
@@ -23,7 +24,7 @@ public class Bolt extends AnimatedEdge {
     double jitter;
     double envelopeSize = 0.75;
     double envelopeScaler = 0.1;
-    Timeline timeline;    
+    private Timeline timeline;
             
     public Bolt(EdgePoint start, EdgePoint end, BoltDynamics dynamics) {
         this(start.toPoint2D(), end.toPoint2D(), dynamics.density, dynamics.sway,
@@ -113,13 +114,20 @@ public class Bolt extends AnimatedEdge {
     public void animate(Duration milliseconds) {
         getPoints().clear();
         pointIndexProperty.set(0);
-        timeline = new Timeline();
+        if (timeline != null) {
+            timeline.stop();
+            timeline.getKeyFrames().clear();
+        } else {
+            timeline = new Timeline();
+            animating.set(true);
+            timeline.setOnFinished(event -> animating.set(false));
+        }
+
         timeline.getKeyFrames().add(new KeyFrame(milliseconds,
                 new KeyValue(pointIndexProperty, getEdgePoints().size(), Interpolator.EASE_OUT)
             )
         );
-        animating.set(true);
-        timeline.setOnFinished(event -> animating.set(false));
+
         timeline.play();
     }   
     @Override
