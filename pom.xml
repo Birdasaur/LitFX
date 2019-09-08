@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
@@ -9,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>lit.litfx</groupId>
     <artifactId>LitFX</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.3</version>
 
     <modules>
         <module>litfx-core</module>
@@ -24,7 +23,7 @@
         <maven.compiler.target>12</maven.compiler.target>
         <release.version>12</release.version>
 
-        <lit.version>${project.version}</lit.version>
+        <lit.version>0.0.3-SNAPSHOT</lit.version>
         <jfx.version>12.0.1</jfx.version>
 
         <maven.compiler.version>3.8.0</maven.compiler.version>
@@ -72,7 +71,7 @@
         <connection>scm:git:git://github.com/Birdasaur/LitFX.git</connection>
         <developerConnection>scm:git:git@github.com:Birdasaur/LitFX.git</developerConnection>
         <url>https://github.com/Birdasaur/LitFX</url>
-        <tag>HEAD</tag>
+        <tag>LitFX-0.0.3</tag>
     </scm>    
 
     <build>
