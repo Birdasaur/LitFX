@@ -3,7 +3,7 @@
     <parent>
         <artifactId>LitFX</artifactId>
         <groupId>lit.litfx</groupId>
-        <version>0.0.3</version>
+        <version>0.0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>lit.litfx</groupId>
             <artifactId>litfx-core</artifactId>
-            <version>0.0.3</version>
+            <version>0.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
