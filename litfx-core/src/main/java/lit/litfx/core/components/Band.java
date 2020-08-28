@@ -10,9 +10,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.QuadCurveTo;
@@ -24,29 +23,26 @@ import javafx.util.Duration;
  */
 public class Band extends Group {
 
+    Paint pointFill = Color.TRANSPARENT;
     Path path;
     ArrayList<SlopeVector> slopeVectors;
     double centerX;
     double centerY;
+    private double velocity;
     SimpleDoubleProperty magnitudeProperty = new SimpleDoubleProperty(1.0);
     Timeline animation;
     ChangeListener<Number> magCL;
+    ArrayList<Circle> pointCircles;
     
-    public Band(double x, double y, double... doubles) {
+    
+    public Band(double x, double y, double velocity, double... doubles) {
+        this.centerX = x;
+        this.centerY = y;
+        this.velocity = velocity;
         path = new Path();
         updateQuadPath(doubles);
         getChildren().add(path);
-        path.setStroke(Color.rgb(200, 200, 255));
-        RadialGradient gradient1 = new RadialGradient(0, 0.1, 0.5, 0.5,  
-            0.55, true, CycleMethod.NO_CYCLE,  
-            new Stop(0, Color.BLUE.deriveColor(1, 1, 1, 0.2)),  
-            new Stop(0.6, Color.YELLOW.deriveColor(1, 1, 1, 0.8)),  
-            new Stop(1, Color.RED.deriveColor(1, 1, 1, 0.8))  
-        );
-
-        path.setFill(gradient1);
-        this.centerX = x;
-        this.centerY = y;
+        path.setStroke(Color.ALICEBLUE);
         slopeVectors = calcSlopeVectors(doubles, magnitudeProperty.get());
         magCL = new ChangeListener<Number>() {
             @Override
@@ -77,24 +73,14 @@ public class Band extends Group {
         animation = new Timeline(
             new KeyFrame(Duration.ZERO, new KeyValue(magnitudeProperty, 1.0)),
             new KeyFrame(Duration.seconds(1), new KeyValue(opacityProperty(), 1)),
-            new KeyFrame(Duration.seconds(3), new KeyValue(magnitudeProperty, 1.2)),
+            new KeyFrame(Duration.seconds(3), new KeyValue(magnitudeProperty, velocity)),
             new KeyFrame(Duration.seconds(3), new KeyValue(opacityProperty(), 0))
         );        
     }
-    
-    private ArrayList<SlopeVector> calcSlopeVectors(double [] doubles, double magnitude) {
-        ArrayList<SlopeVector> pointSlopes = new ArrayList<>(doubles.length / 2);
-        for (int i = 0; i < doubles.length; i += 2) {
-            pointSlopes.add(new SlopeVector(doubles[i], doubles[i+1], magnitude));
-        }     
-        return pointSlopes;
-    }
 
-    private Point2D getMidpoint(double x1, double y1, double x2, double y2) {
-        return new Point2D(x1, y1).midpoint(x2, y2);
-    }
-    
     private void updateQuadPath(double[] points){
+        //Remove any points from the group that might exist
+        getChildren().removeIf(t -> t instanceof Circle);
         //Go through the points, using points as a control points and midpoint 
         // of line segments as points for quad curves
         double startX, startY, nextX, nextY;
@@ -136,6 +122,9 @@ public class Band extends Group {
             }
             //use the midpoint at the target point for the curve
             Point2D midPoint = getMidpoint(startX, startY, nextX, nextY);
+            //Add point to the group
+            Circle circle = new Circle(midPoint.getX(), midPoint.getY(), 3.0, pointFill);
+            getChildren().add(circle);
             //@DEBUG SMP visual starting point with unique circle
             //getChildren().add(new Circle(midPoint.getX(), midPoint.getY(), 3.0, 
             //    Color.DARKBLUE.deriveColor(1, 1, 1, 0.7)));
@@ -145,4 +134,34 @@ public class Band extends Group {
             path.getElements().add(qct); //add our curve to the path
         }
     }        
+    private ArrayList<SlopeVector> calcSlopeVectors(double [] doubles, double magnitude) {
+        ArrayList<SlopeVector> pointSlopes = new ArrayList<>(doubles.length / 2);
+        for (int i = 0; i < doubles.length; i += 2) {
+            pointSlopes.add(new SlopeVector(doubles[i], doubles[i+1], magnitude));
+        }     
+        return pointSlopes;
+    }
+
+    private Point2D getMidpoint(double x1, double y1, double x2, double y2) {
+        return new Point2D(x1, y1).midpoint(x2, y2);
+    }
+    
+    public void setPointFill(Color color) {
+        pointFill = color;
+        getChildren().stream().filter(n -> n instanceof Circle)
+            .forEach(t -> ((Circle)t).setFill(pointFill));
+    }
+    /**
+     * @return the velocity
+     */
+    public double getVelocity() {
+        return velocity;
+    }
+
+    /**
+     * @param velocity the velocity to set
+     */
+    public void setVelocity(double velocity) {
+        this.velocity = velocity;
+    }
 }

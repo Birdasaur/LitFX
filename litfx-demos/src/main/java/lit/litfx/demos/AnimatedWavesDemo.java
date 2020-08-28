@@ -19,7 +19,7 @@ public class AnimatedWavesDemo extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("AnimatedWavesDemo.fxml"));
         Parent parent = loader.load();
-        scene = new Scene(parent, 800, 800, Color.BLACK);
+        scene = new Scene(parent, Color.BLACK);
         String CSS = getClass().getResource("styles.css").toExternalForm();
         scene.getStylesheets().add(CSS);  
         

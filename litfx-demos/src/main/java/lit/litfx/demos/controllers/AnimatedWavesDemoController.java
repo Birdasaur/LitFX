@@ -12,6 +12,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
@@ -19,6 +20,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import lit.litfx.core.components.BandEmitter;
 
@@ -70,7 +74,14 @@ public class AnimatedWavesDemoController implements Initializable {
     SimpleLongProperty timeDelayProp = new SimpleLongProperty(500);    
 
     ArrayList<BandEmitter> bandEmitters = new ArrayList<>();
-    
+
+    RadialGradient gradient1 = new RadialGradient(0, 0.1, 0.5, 0.5,  
+        0.55, true, CycleMethod.NO_CYCLE,  
+        new Stop(0, Color.BLUE.deriveColor(1, 1, 1, 0.1)),  
+        new Stop(0.7, Color.YELLOW.deriveColor(1, 1, 1, 0.2)),  
+        new Stop(0.8, Color.YELLOW.deriveColor(1, 1, 1, 0.8)),  
+        new Stop(1, Color.RED.deriveColor(1, 1, 1, 0.8))  
+    );    
     /**
      * Initializes the controller class.
      * @param url
@@ -98,16 +109,7 @@ public class AnimatedWavesDemoController implements Initializable {
 //            else if(event.getButton() == MouseButton.SECONDARY)
 //                end = new Point2D(event.getX(), event.getY());
         });
-//        centerPane.widthProperty().addListener((obs, oV, nV)-> {
-//            start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0);    
-//        });
-//        centerPane.heightProperty().addListener((obs, oV, nV)-> {
-//            start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0);    
-//        });
-//
-//        start = new Point2D(centerPane.getWidth() / 2.0, centerPane.getHeight() / 2.0); 
-//        end = new Point2D(centerPane.getWidth()-10.0, centerPane.getHeight() / 2.0); 
-        
+ 
         timeDelayProp.bind(updateDelaySlider.valueProperty());
         
         Task animationTask = new Task() {
@@ -137,45 +139,31 @@ public class AnimatedWavesDemoController implements Initializable {
     }
     public void updateBands() {
         Platform.runLater(()-> {
-//            centerPane.getChildren().clear();
             bandEmitters.stream().forEach(be -> {
                 be.setPolygonPoints(Double.valueOf(pointsSlider.getValue()).intValue());
                 be.setInitialRadius(radiusSlider.getValue());
                 be.setEdgeVariation(pointDivergenceSlider.getValue());
                 be.setVelocity(velocitySlider.getValue());
                 be.createQuadBand();
-//            branch.setBoltThickness(boltThicknessSlider.getValue());
-//            branch.setBranchThickness(pathThicknessSlider.getValue());
-//            branch.setEffect(collectEffects(BranchLightning.Member.PRIMARYBOLT), 
-//                    BranchLightning.Member.PRIMARYBOLT);
-//            branch.setEffect(collectEffects(BranchLightning.Member.BRANCH), 
-//                    BranchLightning.Member.BRANCH);
-//            branch.setOpacity(boltOpacitySlider.getValue(), BranchLightning.Member.PRIMARYBOLT);
-//            branch.setOpacity(opacitySlider.getValue(), BranchLightning.Member.BRANCH);
-
+                be.setPathThickness(pathThicknessSlider.getValue());
+                be.setEffect(collectEffects());
+                be.setOpacity(opacitySlider.getValue());
+                be.setShowPoints(showControlPoints.isSelected());
+                if(showPathLines.isSelected())
+                    be.setCustomStroke(BandEmitter.DEFAULT_STROKE);
+                else
+                    be.setCustomStroke(Color.TRANSPARENT);
+                if(enableGradientFill.isSelected())
+                    be.setCustomFill(gradient1);
+                else
+                    be.setCustomFill(BandEmitter.DEFAULT_FILL);
             });
-   
         });
     }    
-//    private Effect collectEffects(BranchLightning.Member member) {
-//        if(member == BranchLightning.Member.PRIMARYBOLT) {
-//            SepiaTone st = new SepiaTone(boltSepiaSlider.getValue());
-//            Bloom bloom = new Bloom(boltBloomSlider.getValue());
-//            bloom.setInput(st);
-//            Glow glow = new Glow(boltGlowSlider.getValue());
-//            glow.setInput(bloom);
-//            DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.AZURE, boltShadowSlider.getValue(), 0.5, 0, 0);
-//            shadow.setInput(glow);
-//            return shadow; 
-//        } else {
-//            SepiaTone st = new SepiaTone(branchSepiaSlider.getValue());
-//            Bloom bloom = new Bloom(branchBloomSlider.getValue());
-//            bloom.setInput(st);
-//            Glow glow = new Glow(glowSlider.getValue());
-//            glow.setInput(bloom);
-//            DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.AZURE, shadowSlider.getValue(), 0.5, 0, 0);
-//            shadow.setInput(glow);
-//            return shadow; 
-//        }
-//    }    
+    private Effect collectEffects() {
+        Glow glow = new Glow(glowSlider.getValue());
+        DropShadow shadow = new DropShadow(BlurType.GAUSSIAN, Color.AZURE, shadowSlider.getValue(), 0.5, 0, 0);
+        shadow.setInput(glow);
+        return shadow; 
+    }    
 }

@@ -6,6 +6,11 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.util.Duration;
 
 /**
@@ -17,12 +22,19 @@ import javafx.util.Duration;
  * createQuadBand method is called. Bands grow and fade out over 3 seconds
  */
 public class BandEmitter extends Group {
+
     private int polygonPoints;
     private double initialRadius;
     private double edgeVariation;
     private double generatorCenterX = 100.0;
     private double generatorCenterY = 100.0;
     private double velocity; 
+    private double pathThickness;
+    private boolean showPoints;
+    public Paint fill;
+    public Paint stroke;
+    public static Paint DEFAULT_FILL = Color.ALICEBLUE.deriveColor(1, 1, 1, 0.05);
+    public static Paint DEFAULT_STROKE = Color.ALICEBLUE;
     
     private Timeline generate = new Timeline(
         new KeyFrame(Duration.seconds(0.5), new EventHandler<ActionEvent>() {
@@ -33,12 +45,15 @@ public class BandEmitter extends Group {
         })
     );
 
+
     public BandEmitter(int points, double initialRadius, double edgeVariation) {
         this.polygonPoints = points;
         this.initialRadius = initialRadius;
         this.edgeVariation = edgeVariation;
         velocity = 0.0;
         generate.setCycleCount(Timeline.INDEFINITE);
+        fill = DEFAULT_FILL;
+        stroke = DEFAULT_STROKE;
     }
 
     public void createQuadBand() {
@@ -70,7 +85,14 @@ public class BandEmitter extends Group {
             //    Color.ALICEBLUE.deriveColor(1, 1, 1, 0.7)));
         }
 
-        final Band band = new Band(getGeneratorCenterX(), getGeneratorCenterY(), doubles);
+        Band band = new Band(getGeneratorCenterX(), getGeneratorCenterY(), velocity, doubles);
+        band.path.setStrokeWidth(pathThickness);
+        band.path.setFill(fill);
+        band.path.setStroke(stroke);
+        if(showPoints)
+            band.setPointFill(Color.ALICEBLUE);
+        else
+            band.setPointFill(Color.TRANSPARENT);
         getChildren().add(band);
         band.animation.play();
 
@@ -86,6 +108,12 @@ public class BandEmitter extends Group {
         remover.play();
     }
 
+    public void setCustomFill(Paint fill) {
+        this.fill = fill;
+    }
+    public void setCustomStroke(Paint stroke) {
+        this.stroke = stroke;
+    }    
     public void startGenerating() {
         generate.play();
     }
@@ -171,4 +199,25 @@ public class BandEmitter extends Group {
     public void setVelocity(double velocity) {
         this.velocity = velocity;
     }    
+
+    /**
+     * @return the pathThickness
+     */
+    public double getPathThickness() {
+        return pathThickness;
+    }
+
+    /**
+     * @param pathThickness the pathThickness to set
+     */
+    public void setPathThickness(double pathThickness) {
+        this.pathThickness = pathThickness;
+    }    
+
+    /**
+     * @param showPoints the showPoints to set
+     */
+    public void setShowPoints(boolean showPoints) {
+        this.showPoints = showPoints;
+    }
 }

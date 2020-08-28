@@ -32,7 +32,7 @@
                               <Label text="Initial Radius" />
                               <Slider fx:id="radiusSlider" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
                               <Label layoutX="10.0" layoutY="10.0" text="Velocity" />
-                              <Slider fx:id="velocitySlider" blockIncrement="1.0" layoutX="10.0" layoutY="10.0" majorTickUnit="1.0" max="5.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
+                              <Slider fx:id="velocitySlider" blockIncrement="1.0" layoutX="10.0" layoutY="10.0" majorTickUnit="0.5" max="5.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
                               <Label layoutX="10.0" layoutY="175.0" text="Update Delay" />
                               <Slider fx:id="updateDelaySlider" blockIncrement="100.0" layoutX="10.0" layoutY="192.0" majorTickUnit="100.0" max="1000.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" />
                            </children>
@@ -55,19 +55,19 @@
                            <children>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                                  <children>
-                                    <CheckBox mnemonicParsing="false" text="Show Path Lines" />
-                                    <CheckBox mnemonicParsing="false" text="Show Control Points" />
-                                    <CheckBox mnemonicParsing="false" text="Enable Gradient Fill" />
+                                    <CheckBox fx:id="showPathLines" mnemonicParsing="false" text="Show Path Lines" />
+                                    <CheckBox fx:id="showControlPoints" mnemonicParsing="false" text="Show Control Points" />
+                                    <CheckBox fx:id="enableGradientFill" mnemonicParsing="false" text="Enable Gradient Fill" />
                                  </children>
                               </HBox>
                               <Label text="Path Thickness" />
-                              <Slider fx:id="branchThicknessSlider" blockIncrement="5.0" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="3.0" />
+                              <Slider fx:id="pathThicknessSlider" blockIncrement="2.0" majorTickUnit="1.0" max="10.0" minorTickCount="9" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" />
                               <Label text="glow" />
-                              <Slider fx:id="branchGlowSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.75" />
+                              <Slider fx:id="glowSlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" />
                               <Label text="Shadow" />
-                              <Slider fx:id="branchShadowSlider" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="60.0" />
+                              <Slider fx:id="shadowSlider" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" />
                               <Label text="opacity" />
-                              <Slider fx:id="branchOpacitySlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
+                              <Slider fx:id="opacitySlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -92,7 +92,7 @@
                </image>
             </ImageView>
             <Circle fx:id="circle1" fill="#1f93ff21" layoutX="193.0" layoutY="235.0" radius="50.0" stroke="#07aaf523" strokeType="INSIDE" />
-            <Circle fx:id="circle2" fill="#1f93ff21" layoutX="365.0" layoutY="189.0" radius="50.0" stroke="#07b2f560" strokeType="INSIDE" />
+            <Circle fx:id="circle2" fill="#1f93ff21" layoutX="361.0" layoutY="189.0" radius="50.0" stroke="#07b5f585" strokeType="INSIDE" />
          </children></Pane>
    </center>
 </BorderPane>
