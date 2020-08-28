@@ -12,7 +12,7 @@
     <artifactId>litfx-demos</artifactId>
 
     <properties>
-        <mainClassName>lit.litfx.demos.AnimatedWavesDemo</mainClassName>
+        <mainClassName>lit.litfx.demos.RideDemo</mainClassName>
     </properties>
 
     <dependencies>
