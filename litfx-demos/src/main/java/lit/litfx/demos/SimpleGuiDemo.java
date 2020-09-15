@@ -25,7 +25,7 @@ import lit.litfx.core.components.BoltDynamics;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class SimpleGuiDemo extends Application {
 

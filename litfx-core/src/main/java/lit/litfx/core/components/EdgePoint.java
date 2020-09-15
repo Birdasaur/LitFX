@@ -5,7 +5,7 @@ import javafx.geometry.Point3D;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class EdgePoint extends Point3D {
     

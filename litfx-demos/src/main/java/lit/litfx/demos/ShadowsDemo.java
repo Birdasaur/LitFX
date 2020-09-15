@@ -12,18 +12,18 @@ import javafx.stage.Stage;
  *
  * @author Birdasaur
  */
-public class CanvasLightningDemo extends Application {
+public class ShadowsDemo extends Application {
     private Scene scene;
     
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("CanvasLightningDemo.fxml"));
-        Parent parent = loader.load();
-        scene = new Scene(parent, 800, 800, Color.BLACK);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ShadowsDemo.fxml"));
+        Parent parent = loader.load();        
+        scene = new Scene(parent, 800, 800, Color.DARKGRAY);
         String CSS = getClass().getResource("styles.css").toExternalForm();
         scene.getStylesheets().add(CSS);  
         
-        primaryStage.setTitle("LitFX Canvas Lightning!");
+        primaryStage.setTitle("Shadows That Move");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -33,5 +33,5 @@ public class CanvasLightningDemo extends Application {
      */
     public static void main(String[] args) {
         launch(args);
-    }
+    }   
 }

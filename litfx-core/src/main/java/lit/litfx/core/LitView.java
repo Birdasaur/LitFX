@@ -117,15 +117,14 @@ public class LitView extends Region {
     /**
      * Remove a Node to Node AnimatedEdge from the view. 
      * 
-     * @param node1
-     * @param node2
+     * @param node1 The first Node in the NodeLink
+     * @param node2 The second Node in the NodeLink
      */     
     public void removeArc(Node node1, Node node2) {
         NodeLink nodeLink = new NodeLink(node1, node2);
         if(nodeLinkToEffectMap.containsKey(nodeLink)) {
             getChildren().remove(nodeLinkToEffectMap.get(nodeLink));
             nodeLinkToEffectMap.remove(nodeLink);
-            //@TODO SMP Remove change listeners here
         }
     }     
     /**
@@ -133,13 +132,12 @@ public class LitView extends Region {
      * 
      */     
     public void clearAll() {
-        //@TODO SMPRemove All listeners
         nodeLinkToEffectMap.clear();
         getChildren().clear();
     }
     /**
      * Get a list of all the AnimatedEdge objects in the mapping
-     * @return 
+     * @return Collection of AnimatedEffect objects in the mapping
      */ 
     public Collection<AnimatedEffect> getEffects() {
         return nodeLinkToEffectMap.values();

@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class BranchLightningDemo extends Application {
     private Scene scene;
