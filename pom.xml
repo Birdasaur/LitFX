@@ -71,7 +71,7 @@
         <connection>scm:git:git://github.com/Birdasaur/LitFX.git</connection>
         <developerConnection>scm:git:git@github.com:Birdasaur/LitFX.git</developerConnection>
         <url>https://github.com/Birdasaur/LitFX</url>
-        <tag>LitFX-0.0.3</tag>
+        <tag>LitFX-0.0.4</tag>
     </scm>    
 
     <build>
