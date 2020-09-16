@@ -24,7 +24,7 @@ import lit.litfx.core.components.NodeLink;
 /**
  *
  * @author Birdasaur
- * Manages Lit components & tracks any associated Nodes
+ * Manages Lit components and tracks any associated Nodes
  */
 public class LitView extends Region {
     /**
@@ -107,7 +107,7 @@ public class LitView extends Region {
      * Provides lookup mechanism to find any edge that is currently 
      * managed in the view.
      * @param node1 the Node to Node connection that has an AnimatedEdge 
-     * @param node2 
+     * @param node2 the second node in this connection
      * @return The AnimatedEffect. If no NodeLink exists that matches then returns null.
      */
     public AnimatedEffect lookupByNode(Node node1, Node node2) {
