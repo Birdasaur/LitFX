@@ -2,7 +2,7 @@ package lit.litfx.core.components;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 public class SlopeVector {
 
