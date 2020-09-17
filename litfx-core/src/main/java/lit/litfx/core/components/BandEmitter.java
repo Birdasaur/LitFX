@@ -1,21 +1,15 @@
 package lit.litfx.core.components;
 
-import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Paint;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
 import javafx.util.Duration;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 /**
  * Generates contour line bands on the screen whenever the

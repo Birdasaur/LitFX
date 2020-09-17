@@ -102,11 +102,12 @@ public class LineOfSight {
     }
     
     /**
-     * Find intersecting lines.
+     * Find List of EdgePoints for any intersecting lines.
      *
-     * @param scanLine
-     * @param sceneLines
-     * @return
+     * @param scanLine The line shooting out
+     * @param sceneLines List of Line objects to test against
+     * @return List of EdgePoints of each location where an intersection on a 
+     * Line in the scene occurs
      */
     public List<EdgePoint> getIntersections(Line scanLine, List<Line> sceneLines) {
 

@@ -55,17 +55,23 @@ public class Band extends Group {
                 //tweak the points position based on the change in magnitude
                 double [] currentPoints = new double[slopeVectors.size()*2];
                 double changeX, changeY;
+                //for each point we need to calculate the change in location 
                 for(int i=0; i<slopeVectors.size();i++) {
+                    //calculate the amount of change in the x direction 
                     changeX = slopeVectors.get(i).getRun() * magnitudeProperty.get() 
                         - slopeVectors.get(i).getRun();
+                    //if original point is left of center radiate AWAY using a negative value
                     if(slopeVectors.get(i).getRun() < centerX)
-                        changeX *= -1;
+                        changeX *= -1; 
+                    //update the current point's x value
                     currentPoints[2*i] = slopeVectors.get(i).getRun() + changeX;
-
+                    //calculate the amount of change in the x direction 
                     changeY = slopeVectors.get(i).getRise() * magnitudeProperty.get() 
                         - slopeVectors.get(i).getRise();
+                    //if the original point is above the center, radiate away using a negative value
                     if(slopeVectors.get(i).getRise() < centerY)
                         changeY *= -1;
+                    //update current point's y value
                     currentPoints[2*i+1] = slopeVectors.get(i).getRise() + changeY;
                 }
                 //System.out.println("Drifting First point: " + currentPoints[0] + ", " + currentPoints[1]);

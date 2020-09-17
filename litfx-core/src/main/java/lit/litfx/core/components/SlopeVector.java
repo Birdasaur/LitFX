@@ -9,11 +9,13 @@ public class SlopeVector {
     private double rise;
     private double run;
     private double magnitude;
+    private double ratio;
 
     public SlopeVector(double run, double rise, double magnitude) {
         this.rise = rise;
         this.run = run;
         this.magnitude = magnitude;
+        ratio = rise/run;
     }
     /**
      * @return the rise
@@ -55,5 +57,12 @@ public class SlopeVector {
      */
     public void setMagnitude(double magnitude) {
         this.magnitude = magnitude;
+    }
+
+    /**
+     * @return the rate
+     */
+    public double getRatio() {
+        return ratio;
     }
 }
