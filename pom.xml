@@ -13,6 +13,7 @@
     <modules>
         <module>litfx-core</module>
         <module>litfx-demos</module>
+        <module>litfx-controls</module>
     </modules>
 
     <packaging>pom</packaging>
