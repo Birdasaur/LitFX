@@ -1,21 +1,15 @@
 package lit.litfx.core.components;
 
-import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Paint;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
 import javafx.util.Duration;
 
 /**
  *
- * @author phillsm1
+ * @author Birdasaur
  */
 /**
  * Generates contour line bands on the screen whenever the
@@ -23,6 +17,11 @@ import javafx.util.Duration;
  */
 public class BandEmitter extends Group {
 
+    public static Paint DEFAULT_FILL = Color.ALICEBLUE.deriveColor(1, 1, 1, 0.05);
+    public static Paint DEFAULT_STROKE = Color.ALICEBLUE;
+    public static double DEFAULT_GENERATION_SECONDS = 0.5;
+    public static double DEFAULT_TIMETOLIVE_SECONDS = 4.0;
+    
     private int polygonPoints;
     private double initialRadius;
     private double edgeVariation;
@@ -31,80 +30,54 @@ public class BandEmitter extends Group {
     private double velocity; 
     private double pathThickness;
     private boolean showPoints;
+    private double generationSeconds;
+    private double timeToLiveSeconds;
+    
     public Paint fill;
     public Paint stroke;
-    public static Paint DEFAULT_FILL = Color.ALICEBLUE.deriveColor(1, 1, 1, 0.05);
-    public static Paint DEFAULT_STROKE = Color.ALICEBLUE;
-    
-    private Timeline generate = new Timeline(
-        new KeyFrame(Duration.seconds(0.5), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                createQuadBand();
-            }
-        })
-    );
+    private QuadBandCreator quadBandCreator;
+    private Timeline generate;
 
-
-    public BandEmitter(int points, double initialRadius, double edgeVariation) {
+    public BandEmitter(int points, double velocity, double initialRadius, double edgeVariation) {
         this.polygonPoints = points;
         this.initialRadius = initialRadius;
         this.edgeVariation = edgeVariation;
-        velocity = 0.0;
-        generate.setCycleCount(Timeline.INDEFINITE);
+        //Velocity of 0.0 means the band will not visually move when it animates
+        //Negative velocity will animate inward towards the center and positive outward
+        this.velocity = velocity;
+        //Create a circle quad band by default
+        quadBandCreator = new CircleQuadBandCreator(points, edgeVariation, 
+            generatorCenterX, generatorCenterY, velocity, initialRadius);
         fill = DEFAULT_FILL;
         stroke = DEFAULT_STROKE;
+        generationSeconds = DEFAULT_GENERATION_SECONDS;
+        timeToLiveSeconds = DEFAULT_TIMETOLIVE_SECONDS;
+        //Default band generaton capability which can be started and stopped 
+        //users can manage generation of bands themselves by simply calling the createQuadBand()
+        generate = new Timeline(new KeyFrame(Duration.seconds(generationSeconds), e -> createQuadBand()));
+        generate.setCycleCount(Timeline.INDEFINITE);
     }
 
     public void createQuadBand() {
-        //create a random polygon around the center point
-        Random random = new Random();
-        double [] doubles = new double[getPolygonPoints()*2];
-        double angleRadiansSlice  = 6.283185 / getPolygonPoints(); 
-        double randomLength, angleRadians = 0.0;
-
-        //get a randomly perturbed length based on a set radius
-        randomLength = getInitialRadius() + (getEdgeVariation() * random.nextGaussian()); 
-        //setup first segment with a radian angle of 0.0
-        doubles[0] = getGeneratorCenterX() + (Math.cos(angleRadians) * randomLength);
-        doubles[1] = getGeneratorCenterY() + (Math.sin(angleRadians) * randomLength);
-        //@DEBUG SMP create a circle showing the first point
-        //getChildren().add(new Circle(doubles[0], doubles[1], 5.0, 
-        //    Color.GREEN.deriveColor(1, 1, 1, 0.7)));
-        //For each point, compute the coordinats    
-        for(int i=1;i<getPolygonPoints();i++) {
-            //jog the angle forward
-            angleRadians += angleRadiansSlice;
-            //get a new random length
-            randomLength = getInitialRadius() + (getEdgeVariation() * random.nextGaussian()); 
-            //create new end point
-            doubles[2*i] = getGeneratorCenterX() + (Math.cos(angleRadians) * randomLength);
-            doubles[2*i+1] = getGeneratorCenterY() + (Math.sin(angleRadians) * randomLength);
-            //@DEBUG SMP Test circle to visualize points
-            //getChildren().add(new Circle(doubles[2*i], doubles[2*i+1], 3.0, 
-            //    Color.ALICEBLUE.deriveColor(1, 1, 1, 0.7)));
-        }
-
-        Band band = new Band(getGeneratorCenterX(), getGeneratorCenterY(), velocity, doubles);
+        Band band = quadBandCreator.createQuadBand();
         band.path.setStrokeWidth(pathThickness);
         band.path.setFill(fill);
         band.path.setStroke(stroke);
+        band.setVelocity(velocity);
+        band.setTimeToLiveSeconds(timeToLiveSeconds);
         if(showPoints)
             band.setPointFill(Color.ALICEBLUE);
         else
             band.setPointFill(Color.TRANSPARENT);
         getChildren().add(band);
+        //starts the animation of the band by applying the velocity to the band.
         band.animation.play();
 
-        Timeline remover = new Timeline(
-            new KeyFrame(Duration.seconds(3), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    getChildren().remove(band);
-                    band.animation.stop();
-                }
-            })
-        );
+        Timeline remover = new Timeline(new KeyFrame(
+            Duration.seconds(timeToLiveSeconds), e -> {
+            getChildren().remove(band);
+            band.animation.stop();
+        }));
         remover.play();
     }
 
@@ -124,10 +97,12 @@ public class BandEmitter extends Group {
 
     public void setGeneratorCenterX(double generatorCenterX) {
         this.generatorCenterX = generatorCenterX;
+        quadBandCreator.setGeneratorCenterX(generatorCenterX);
     }
 
     public void setGeneratorCenterY(double generatorCenterY) {
         this.generatorCenterY = generatorCenterY;
+        quadBandCreator.setGeneratorCenterY(generatorCenterY);
     }
 
     /**
@@ -142,6 +117,7 @@ public class BandEmitter extends Group {
      */
     public void setPolygonPoints(int polygonPoints) {
         this.polygonPoints = polygonPoints;
+        quadBandCreator.setPolygonPoints(polygonPoints);
     }
 
     /**
@@ -170,6 +146,7 @@ public class BandEmitter extends Group {
      */
     public void setEdgeVariation(double edgeVariation) {
         this.edgeVariation = edgeVariation;
+        quadBandCreator.setEdgeVariation(edgeVariation);
     }
 
     /**
@@ -219,5 +196,21 @@ public class BandEmitter extends Group {
      */
     public void setShowPoints(boolean showPoints) {
         this.showPoints = showPoints;
+    }
+
+    /**
+     * @return the quadBandCreator
+     */
+    public QuadBandCreator getQuadBandCreator() {
+        return quadBandCreator;
+    }
+
+    /**
+     * @param quadBandCreator the quadBandCreator to set
+     */
+    public void setQuadBandCreator(QuadBandCreator quadBandCreator) {
+        this.quadBandCreator = quadBandCreator;
+        this.quadBandCreator.setGeneratorCenterX(generatorCenterX);
+        this.quadBandCreator.setGeneratorCenterY(generatorCenterY);
     }
 }

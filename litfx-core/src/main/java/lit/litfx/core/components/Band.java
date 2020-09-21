@@ -23,18 +23,22 @@ import javafx.util.Duration;
  */
 public class Band extends Group {
 
+    public static double DEFAULT_VELOCITY = 1.0;
     Paint pointFill = Color.TRANSPARENT;
     Path path;
     ArrayList<SlopeVector> slopeVectors;
     double centerX;
     double centerY;
-    private double velocity;
+    double velocity;
+    private double timeToLiveSeconds = 3.0;    
     SimpleDoubleProperty magnitudeProperty = new SimpleDoubleProperty(1.0);
     Timeline animation;
     ChangeListener<Number> magCL;
     ArrayList<Circle> pointCircles;
-    
-    
+        
+    public Band(double x, double y, double... doubles) {
+        this(x, y, DEFAULT_VELOCITY, doubles);
+    }
     public Band(double x, double y, double velocity, double... doubles) {
         this.centerX = x;
         this.centerY = y;
@@ -51,17 +55,23 @@ public class Band extends Group {
                 //tweak the points position based on the change in magnitude
                 double [] currentPoints = new double[slopeVectors.size()*2];
                 double changeX, changeY;
+                //for each point we need to calculate the change in location 
                 for(int i=0; i<slopeVectors.size();i++) {
+                    //calculate the amount of change in the x direction 
                     changeX = slopeVectors.get(i).getRun() * magnitudeProperty.get() 
                         - slopeVectors.get(i).getRun();
+                    //if original point is left of center radiate AWAY using a negative value
                     if(slopeVectors.get(i).getRun() < centerX)
-                        changeX *= -1;
+                        changeX *= -1; 
+                    //update the current point's x value
                     currentPoints[2*i] = slopeVectors.get(i).getRun() + changeX;
-
+                    //calculate the amount of change in the x direction 
                     changeY = slopeVectors.get(i).getRise() * magnitudeProperty.get() 
                         - slopeVectors.get(i).getRise();
+                    //if the original point is above the center, radiate away using a negative value
                     if(slopeVectors.get(i).getRise() < centerY)
                         changeY *= -1;
+                    //update current point's y value
                     currentPoints[2*i+1] = slopeVectors.get(i).getRise() + changeY;
                 }
                 //System.out.println("Drifting First point: " + currentPoints[0] + ", " + currentPoints[1]);
@@ -73,9 +83,9 @@ public class Band extends Group {
         animation = new Timeline(
             new KeyFrame(Duration.ZERO, new KeyValue(magnitudeProperty, 1.0)),
             new KeyFrame(Duration.seconds(1), new KeyValue(opacityProperty(), 1)),
-            new KeyFrame(Duration.seconds(3), new KeyValue(magnitudeProperty, velocity)),
-            new KeyFrame(Duration.seconds(3), new KeyValue(opacityProperty(), 0))
-        );        
+            new KeyFrame(Duration.seconds(getTimeToLiveSeconds()), new KeyValue(magnitudeProperty, getVelocity())),
+            new KeyFrame(Duration.seconds(getTimeToLiveSeconds()), new KeyValue(opacityProperty(), 0))
+        ); 
     }
 
     private void updateQuadPath(double[] points){
@@ -164,4 +174,18 @@ public class Band extends Group {
     public void setVelocity(double velocity) {
         this.velocity = velocity;
     }
+
+    /**
+     * @return the timeToLiveSeconds
+     */
+    public double getTimeToLiveSeconds() {
+        return timeToLiveSeconds;
+    }
+
+    /**
+     * @param timeToLiveSeconds the timeToLiveSeconds to set
+     */
+    public void setTimeToLiveSeconds(double timeToLiveSeconds) {
+        this.timeToLiveSeconds = timeToLiveSeconds;
+    }    
 }

@@ -7,10 +7,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>litfx-demos</artifactId>
+    <artifactId>litfx-controls</artifactId>
 
     <properties>
-        <mainClassName>lit.litfx.demos.LitRadialMenuDemo</mainClassName>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
@@ -27,57 +26,9 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${jfx.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.github.birdasaur.litfx</groupId>
-            <artifactId>litfx-controls</artifactId>
-            <version>0.0.5</version>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>${jfx.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <configuration>
-                            <mainClass>${mainClassName}</mainClass>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>debug</id>
-                        <configuration>
-                            <debug>true</debug>
-                            <debuglevel>lines,vars,source</debuglevel>
-                            <options>
-                                <options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${jpda.address}</options>
-                            </options>
-                            <mainClass>${mainClassName}</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
-
-                <configuration>
-                    <mainClass>${mainClassName}</mainClass>
-                    <stripDebug>true</stripDebug>
-                    <compress>2</compress>
-                    <noHeaderFiles>true</noHeaderFiles>
-                    <noManPages>true</noManPages>
-                    <launcher>lit</launcher>
-                    <jlinkImageName>litfx</jlinkImageName>
-                    <jlinkZipName>litfxzip</jlinkZipName>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    
     <profiles>
         <profile>
             <id>release-sign-artifacts</id>

@@ -8,27 +8,24 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.birdasaur.litfx</groupId>
     <artifactId>LitFX</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 
     <modules>
         <module>litfx-core</module>
         <module>litfx-demos</module>
+        <module>litfx-controls</module>
     </modules>
 
     <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>12</maven.compiler.source>
-        <maven.compiler.target>12</maven.compiler.target>
+        <maven.compiler.source>14</maven.compiler.source>
+        <maven.compiler.target>14</maven.compiler.target>
         <release.version>12</release.version>
-
-        <lit.version>0.0.4</lit.version>
-        <jfx.version>12.0.1</jfx.version>
-
+        <jfx.version>14</jfx.version>
         <maven.compiler.version>3.8.0</maven.compiler.version>
-        <jfx.plugin.version>0.0.3</jfx.plugin.version>
-
+        <jfx.plugin.version>0.0.4</jfx.plugin.version>
         <junit.jupiter.version>5.5.1</junit.jupiter.version>
     </properties>
 
@@ -71,7 +68,7 @@
         <connection>scm:git:git://github.com/Birdasaur/LitFX.git</connection>
         <developerConnection>scm:git:git@github.com:Birdasaur/LitFX.git</developerConnection>
         <url>https://github.com/Birdasaur/LitFX</url>
-        <tag>LitFX-0.0.4</tag>
+        <tag>LitFX-0.0.5</tag>
     </scm>    
 
     <build>
@@ -87,39 +84,10 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
-                    <configuration>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>attach-javadoc</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>    
-                        </execution>  
-                    </executions>
-                </plugin>        
-			
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>3.0.0</version>
                     <configuration>
+                        <skip>true></skip>
                         <localCheckout>true</localCheckout>
                         <pushChanges>false</pushChanges>
                         <mavenExecutorId>forked-path</mavenExecutorId>
@@ -151,32 +119,78 @@
 			
             </plugins>
         </pluginManagement>
-		<plugins>
-			<plugin>
-				  <groupId>org.apache.maven.plugins</groupId>
-				  <artifactId>maven-gpg-plugin</artifactId>
-				  <version>1.6</version>
-				  <executions>
-					<execution>
-					  <id>sign-artifacts</id>
-					  <phase>verify</phase>
-					  <goals>
-						<goal>sign</goal>
-					  </goals>
-					</execution>
-				  </executions>
-			</plugin>		
-		   <plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>  			
-		</plugins>
+     
+        <plugins>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>  			
+        </plugins>
     </build>
+        
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>    
+                            </execution>  
+                        </executions>
+                    </plugin>                          
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>   
 </project>

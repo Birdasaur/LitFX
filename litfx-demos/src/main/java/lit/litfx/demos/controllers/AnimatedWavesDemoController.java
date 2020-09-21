@@ -25,6 +25,7 @@ import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import lit.litfx.core.components.BandEmitter;
+import lit.litfx.core.components.CircleQuadBandCreator;
 
 /**
  * FXML Controller class
@@ -131,20 +132,22 @@ public class AnimatedWavesDemoController implements Initializable {
     
     private BandEmitter createBandEmitter(double x, double y, int points,
             double initialRadius, double divergence, double velocity) {
-        BandEmitter be = new BandEmitter(points,initialRadius, divergence);
+        BandEmitter be = new BandEmitter(points, velocity, initialRadius, divergence);
         be.setGeneratorCenterX(x);
         be.setGeneratorCenterY(y);
-        be.setVelocity(velocity);
         return be;
     }
     public void updateBands() {
         Platform.runLater(()-> {
             bandEmitters.stream().forEach(be -> {
+                //QuadBandCreator fields
                 be.setPolygonPoints(Double.valueOf(pointsSlider.getValue()).intValue());
-                be.setInitialRadius(radiusSlider.getValue());
                 be.setEdgeVariation(pointDivergenceSlider.getValue());
-                be.setVelocity(velocitySlider.getValue());
-                be.createQuadBand();
+                //CircleQuadBandCreator specific fields
+                CircleQuadBandCreator cqbc = (CircleQuadBandCreator) be.getQuadBandCreator();
+                cqbc.setInitialRadius(radiusSlider.getValue());
+                //Band specific factors
+                cqbc.setVelocity(velocitySlider.getValue());
                 be.setPathThickness(pathThicknessSlider.getValue());
                 be.setEffect(collectEffects());
                 be.setOpacity(opacitySlider.getValue());
@@ -157,6 +160,7 @@ public class AnimatedWavesDemoController implements Initializable {
                     be.setCustomFill(gradient1);
                 else
                     be.setCustomFill(BandEmitter.DEFAULT_FILL);
+                be.createQuadBand();                
             });
         });
     }    

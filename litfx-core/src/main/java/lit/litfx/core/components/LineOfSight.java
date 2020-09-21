@@ -17,14 +17,30 @@ public class LineOfSight {
     public SimpleDoubleProperty scanLength;
     public List<Line> scanLines = new ArrayList<>();
     public List<EdgePoint> intersections = new ArrayList<>();
-            
+
+    /**
+     * Creates LineOfSight calculator based on the initial center point
+     * and length of scan line.
+     *
+     * @param centerPoint The EdgePoint representing the screen coordinates to 
+     * shoot the scan line rays from
+     * @param scanLength The length (in pixels) to shoot the scan line ray
+     */            
     public LineOfSight(EdgePoint centerPoint, double scanLength) {
         this.centerPoint = new SimpleObjectProperty<>(centerPoint);
         this.scanLength = new SimpleDoubleProperty(scanLength);
     }
 
-    public void updateScan(List<Line> nodeLines, double scanlines) {
-        scanLines = createScanLines(0, 360, scanlines);
+    /**
+     * Triggers calculation of both the scanlines and subsequent intersections
+     * that exist given the density of scanlines and the List of Lines.
+     *
+     * @param nodeLines The List of Lines to check against
+     * @param angleStep The angle in degrees between generated scanlines in a 
+     * circle around the current centerPoint.
+     */       
+    public void updateScan(List<Line> nodeLines, double angleStep) {
+        scanLines = createScanLines(0, 360, angleStep);
 //        System.out.println("Scan Lines count: " + scanLines.size());
         intersections = getIntersectionPoints(scanLines, nodeLines);
 //        System.out.println("Intersections In Range: " + intersections.size());
@@ -34,9 +50,9 @@ public class LineOfSight {
      * Sweep around the given circle with the given distance and create the scan
      * lines
      *
-     * @param angleStart
-     * @param angleEnd
-     * @param angleStep
+     * @param angleStart Starting angle in degrees
+     * @param angleEnd Ending angle in degrees
+     * @param angleStep size of increment in degrees
      * @return List of type Line Inspired by examples at
      * https://gist.github.com/Roland09
      */
@@ -61,9 +77,9 @@ public class LineOfSight {
      * Get all the intersecting points for the given scan lines and the given
      * scene lines.
      *
-     * @param scanLines
-     * @param sceneLines
-     * @return
+     * @param scanLines set of lines to test for    
+     * @param sceneLines the set of lines in the scene to compare against
+     * @return List of EdgePoints aggregated from all scanLines vs all scenLines
      */
     public List<EdgePoint> getIntersectionPoints(List<Line> scanLines, List<Line> sceneLines) {
         List<EdgePoint> intersectionPoints = new ArrayList<>();
@@ -102,11 +118,12 @@ public class LineOfSight {
     }
     
     /**
-     * Find intersecting lines.
+     * Find List of EdgePoints for any intersecting lines.
      *
-     * @param scanLine
-     * @param sceneLines
-     * @return
+     * @param scanLine The line shooting out
+     * @param sceneLines List of Line objects to test against
+     * @return List of EdgePoints of each location where an intersection on a 
+     * Line in the scene occurs
      */
     public List<EdgePoint> getIntersections(Line scanLine, List<Line> sceneLines) {
 
