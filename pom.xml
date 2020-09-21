@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.birdasaur.litfx</groupId>
     <artifactId>LitFX</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.0.5</version>
 
     <modules>
         <module>litfx-core</module>
@@ -68,7 +68,7 @@
         <connection>scm:git:git://github.com/Birdasaur/LitFX.git</connection>
         <developerConnection>scm:git:git@github.com:Birdasaur/LitFX.git</developerConnection>
         <url>https://github.com/Birdasaur/LitFX</url>
-        <tag>LitFX-0.0.5-SNAPSHOT</tag>
+        <tag>LitFX-0.0.5</tag>
     </scm>    
 
     <build>
