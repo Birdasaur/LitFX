@@ -1,5 +1,8 @@
 /**
- * RadialCheckMenuItem.java
+ * Below is the original source code license header from the original version
+ * found in JFXtras Labs. 
+ * 
+* RadialCheckMenuItem.java
  *
  * Copyright (c) 2011-2015, JFXtras
  * All rights reserved.
@@ -36,29 +39,29 @@ package lit.litfx.controls;
 import javafx.scene.Node;
 import javafx.scene.paint.Paint;
 
-public class RadialCheckMenuItem extends RadialMenuItem {
+public class LitRadialCheckMenuItem extends LitRadialMenuItem {
 
     protected boolean selected = false;
     protected Paint selectedColor;
     protected Paint selectedMouseOnColor;
 
-    public RadialCheckMenuItem(final double menuSize, final Node graphic) {
+    public LitRadialCheckMenuItem(final double menuSize, final Node graphic) {
 	super(menuSize, graphic);
     }
 
-    public RadialCheckMenuItem(final double menuSize, final Node graphic,
+    public LitRadialCheckMenuItem(final double menuSize, final Node graphic,
 	    final boolean selected) {
 	this(menuSize, graphic);
 	this.selected = selected;
     }
 
-    public RadialCheckMenuItem(final double menuSize, final Node graphic,
+    public LitRadialCheckMenuItem(final double menuSize, final Node graphic,
 	    final boolean selected, final Paint selectedColor) {
 	this(menuSize, graphic, selected);
 	this.selectedColor = selectedColor;
     }
 
-    public RadialCheckMenuItem(final double menuSize, final Node graphic,
+    public LitRadialCheckMenuItem(final double menuSize, final Node graphic,
 	    final boolean selected, final Paint selectedColor,
 	    final Paint selectedMouseOnColor) {
 	this(menuSize, graphic, selected);

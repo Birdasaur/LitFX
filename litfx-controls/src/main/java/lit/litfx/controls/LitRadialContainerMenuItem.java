@@ -1,4 +1,7 @@
 /**
+ * Below is the original source code license header from the original version
+ * found in JFXtras Labs. 
+ * 
  * RadialContainerMenuItem.java
  *
  * Copyright (c) 2011-2015, JFXtras
@@ -47,21 +50,21 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
-public class RadialContainerMenuItem extends RadialMenuItem {
+public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 
     private boolean selected = false;
     private final Group childAnimGroup = new Group();
     private FadeTransition fadeIn = null;
     private FadeTransition fadeOut = null;
-    protected List<RadialMenuItem> items = new ArrayList<RadialMenuItem>();
+    protected List<LitRadialMenuItem> items = new ArrayList<LitRadialMenuItem>();
     protected Polyline arrow = new Polyline(-5.0, -5.0, 5.0, 0.0, -5.0, 5.0, -5.0, -5.0);
 
-    public RadialContainerMenuItem(final double menuSize, final Node graphic) {
+    public LitRadialContainerMenuItem(final double menuSize, final Node graphic) {
 	super(menuSize, graphic);
 	initialize();
     }
 
-    public RadialContainerMenuItem(final double menuSize, final String text,
+    public LitRadialContainerMenuItem(final double menuSize, final String text,
 	    final Node graphic) {
 	super(menuSize, text, graphic);
 	initialize();
@@ -99,7 +102,7 @@ public class RadialContainerMenuItem extends RadialMenuItem {
 	getChildren().add(arrow);
     }
 
-    public void addMenuItem(final RadialMenuItem item) {
+    public void addMenuItem(final LitRadialMenuItem item) {
 	item.backgroundColorProperty().bind(backgroundColor);
 	item.backgroundMouseOnColorProperty().bind(backgroundMouseOnColor);
 	item.innerRadiusProperty().bind(radius);
@@ -114,13 +117,13 @@ public class RadialContainerMenuItem extends RadialMenuItem {
 	items.add(item);
 	childAnimGroup.getChildren().add(item);
 	double currentOffset = 0;
-	for (final RadialMenuItem it : items) {
+	for (final LitRadialMenuItem it : items) {
 	    it.startAngleProperty().bind(startAngleProperty().add(currentOffset));
 	    currentOffset += it.getMenuSize();
 	}
     }
 
-    public void removeMenuItem(final RadialMenuItem item) {
+    public void removeMenuItem(final LitRadialMenuItem item) {
 	items.remove(item);
 	childAnimGroup.getChildren().remove(item);
 	item.backgroundColorProperty().unbind();
@@ -136,7 +139,7 @@ public class RadialContainerMenuItem extends RadialMenuItem {
     }
 
     public void removeMenuItem(final int itemIndex) {
-	final RadialMenuItem item = items.get(itemIndex);
+	final LitRadialMenuItem item = items.get(itemIndex);
 	removeMenuItem(item);
     }
 

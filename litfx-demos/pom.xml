@@ -10,7 +10,7 @@
     <artifactId>litfx-demos</artifactId>
 
     <properties>
-        <mainClassName>lit.litfx.demos.AnimatedWavesDemo</mainClassName>
+        <mainClassName>lit.litfx.demos.LitRadialMenuDemo</mainClassName>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
@@ -26,6 +26,12 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${jfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.birdasaur.litfx</groupId>
+            <artifactId>litfx-controls</artifactId>
+            <version>0.0.5-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 

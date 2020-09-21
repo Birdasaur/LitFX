@@ -1,4 +1,7 @@
 /**
+ * Below is the original source code license header from the original version
+ * found in JFXtras Labs. 
+ * 
  * RadialMenuItem.java
  *
  * Copyright (c) 2011-2015, JFXtras
@@ -56,7 +59,7 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
-public class RadialMenuItem extends Group implements ChangeListener<Object> {
+public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 
     protected DoubleProperty startAngle = new SimpleDoubleProperty();
     protected DoubleProperty menuSize = new SimpleDoubleProperty(45);
@@ -106,7 +109,7 @@ public class RadialMenuItem extends Group implements ChangeListener<Object> {
     protected Node graphic;
     protected String text;
 
-    public RadialMenuItem() {
+    public LitRadialMenuItem() {
         menuSize = new SimpleDoubleProperty(45);
         menuSize.addListener(this);
         innerRadius.addListener(this);
@@ -165,7 +168,7 @@ public class RadialMenuItem extends Group implements ChangeListener<Object> {
 	});
     }
 
-    public RadialMenuItem(final double menuSize, final Node graphic) {
+    public LitRadialMenuItem(final double menuSize, final Node graphic) {
 	this();
         this.menuSize.set(menuSize);
 	this.graphic = graphic;
@@ -174,7 +177,7 @@ public class RadialMenuItem extends Group implements ChangeListener<Object> {
 	redraw();
     }
 
-    public RadialMenuItem(final double menuSize, final Node graphic,
+    public LitRadialMenuItem(final double menuSize, final Node graphic,
 	    final EventHandler<ActionEvent> actionHandler) {
 	this(menuSize, graphic);
 	addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -183,19 +186,23 @@ public class RadialMenuItem extends Group implements ChangeListener<Object> {
 	redraw();
     }
 
-    public RadialMenuItem(final double menuSize, final String text, final Node graphic) {
+    public LitRadialMenuItem(final double menuSize, final String text, final Node graphic) {
 	this(menuSize, graphic);
 	this.text = text;
 	redraw();
     }
 
-    public RadialMenuItem(final double menuSize, final String text,
+    public LitRadialMenuItem(final double menuSize, final String text,
 	    final Node graphic, final EventHandler<ActionEvent> actionHandler) {
 	this(menuSize, graphic, actionHandler);
 	this.text = text;
 	redraw();
     }
     //<editor-fold defaultstate="collapsed" desc="Properties">
+    public Path getPath() {
+        return path;
+    }
+    
     public double getMenuSize() {
         return menuSize.get();
     }
