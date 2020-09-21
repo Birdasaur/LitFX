@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  *
  * @author Birdasaur
- * @inspiredby https://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
+ * inspired by https://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
  * 
  */
 public class Bolt extends AnimatedEdge {
