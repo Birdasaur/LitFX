@@ -3,7 +3,6 @@ package lit.litfx.demos.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
@@ -14,7 +13,7 @@ import lit.litfx.core.components.BandWaves;
 import lit.litfx.core.components.BandWavesBuilder;
 import lit.litfx.core.components.CanvasOverlayPane;
 import lit.litfx.core.components.DroidGroup;
-
+import lit.litfx.core.NodeTools;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -84,7 +83,7 @@ public class AlternateAnimatedWavesDemoController implements Initializable {
 
     protected void generateBrainActivity(MouseEvent event) {
         // get the center of droid head
-        double[] centerPt = getCenterOfNodeFromParent(droidGroup);
+        double[] centerPt = NodeTools.getCenterOfNodeFromParent(droidGroup);
 
         // start offset away from droid head
         int initialRadius = (int) Math.max(
@@ -115,13 +114,4 @@ public class AlternateAnimatedWavesDemoController implements Initializable {
 
         bandWaves.animate();
     }
-
-    double[] getCenterOfNodeFromParent(Node node) {
-        double [] centerPt = new double[2];
-        centerPt[0] = node.getBoundsInParent().getCenterX();
-        centerPt[1] = node.getBoundsInParent().getCenterY();
-        return centerPt;
-    }
 }
-
-
