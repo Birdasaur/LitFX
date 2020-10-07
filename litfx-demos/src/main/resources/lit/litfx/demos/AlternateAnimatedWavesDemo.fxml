@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="557.0" prefWidth="396.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.demos.controllers.AlternateAnimatedWavesDemoController">
+   <bottom>
+      <TabPane fx:id="tabPane" style="-fx-background-color: #000000;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+         <tabs>
+            <Tab closable="false" text="Wave Style">
+               <content>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
+                     <content>
+                        <VBox alignment="TOP_CENTER" prefWidth="369.0" spacing="3.0">
+                           <children>
+                              <Label text="Angle Width" />
+                              <Slider fx:id="angleWidthSlider" blockIncrement="5.0" majorTickUnit="5.0" max="360.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="30.0" />
+                              <Label layoutX="10.0" layoutY="65.0" text="Band Thickness" />
+                              <Slider fx:id="bandThicknessSlider" blockIncrement="1.0" layoutX="10.0" layoutY="82.0" majorTickUnit="5.0" max="15.0" min="1.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" />
+                              <Label text="Gap Space" />
+                              <Slider fx:id="gapSpaceSlider" blockIncrement="1.0" majorTickUnit="5.0" max="15.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="4.0" />
+                              <Label layoutX="10.0" layoutY="10.0" text="Glow" />
+                              <Slider fx:id="glowSlider" blockIncrement="0.1" layoutX="10.0" layoutY="10.0" majorTickUnit="0.1" max="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
+                              <Label layoutX="10.0" layoutY="175.0" text="Wave Color" />
+                              <ColorPicker fx:id="beamColorChooser" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </ScrollPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </bottom>
+   <center>
+      <StackPane fx:id="centerPane" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
