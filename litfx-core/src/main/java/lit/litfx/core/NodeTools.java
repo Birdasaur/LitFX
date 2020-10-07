@@ -141,4 +141,11 @@ public enum NodeTools {
     public static double transformY(double dataYcoord, double domain, double range) {
         return (dataYcoord * range) / domain;
     }
+
+    public static double[] getCenterOfNodeFromParent(Node node) {
+        double [] centerPt = new double[2];
+        centerPt[0] = node.getBoundsInParent().getCenterX();
+        centerPt[1] = node.getBoundsInParent().getCenterY();
+        return centerPt;
+    }    
 }
