@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.github.birdasaur.litfx</groupId>
             <artifactId>litfx-core</artifactId>
-            <version>0.0.5</version>
+            <version>0.0.6</version>
         </dependency>
 
         <dependency>
