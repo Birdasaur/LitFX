@@ -3,14 +3,14 @@
     <parent>
         <artifactId>LitFX</artifactId>
         <groupId>com.github.birdasaur.litfx</groupId>
-        <version>0.0.6</version>
+        <version>0.0.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>litfx-demos</artifactId>
 
     <properties>
-        <mainClassName>lit.litfx.demos.AlternateAnimatedWavesDemo</mainClassName>
+        <mainClassName>lit.litfx.demos.LitLogDemo</mainClassName>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.github.birdasaur.litfx</groupId>
             <artifactId>litfx-core</artifactId>
-            <version>0.0.6</version>
+            <version>0.0.7</version>
         </dependency>
 
         <dependency>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.github.birdasaur.litfx</groupId>
             <artifactId>litfx-controls</artifactId>
-            <version>0.0.6</version>
+            <version>0.0.7</version>
             <type>jar</type>
         </dependency>
     </dependencies>

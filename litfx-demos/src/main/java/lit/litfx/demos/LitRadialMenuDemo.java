@@ -43,8 +43,8 @@ import javafx.util.Duration;
 import lit.litfx.core.components.BandEmitter;
 import lit.litfx.core.components.CircleQuadBandCreator;
 import lit.litfx.core.components.PathQuadBandCreator;
-import lit.litfx.controls.LitRadialMenu;
-import lit.litfx.controls.LitRadialMenuItem;
+import lit.litfx.controls.menus.LitRadialMenu;
+import lit.litfx.controls.menus.LitRadialMenuItem;
 
 /**
  * @author Birdasaur

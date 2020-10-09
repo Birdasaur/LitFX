@@ -4,6 +4,56 @@
 .label {
     -fx-text-fill: aliceblue;
 }
+
+.litlog-text {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-fill: green; 
+    -fx-font-size: 16; 
+}
+.litlog-textarea {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-text-fill: green;
+    -fx-display-caret: true;
+    -fx-highlight-fill: #00ff00;
+    -fx-highlight-text-fill: #000000;    
+    -fx-background-insets: 0px ;
+    -fx-font-size: 16;  
+}
+
+.litlog-textarea .content {
+    -fx-background-color: transparent;   
+}
+
+.litlog-textarea .scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 5 5 5 5;  
+    -fx-pannable: true;
+}
+.litlog-textarea .scroll-pane .scroll-bar {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-shape: null;
+    -fx-opacity: 0;
+}
+
+
+.litlog-textarea .scroll-pane .corner {
+    -fx-background-color: #000000;
+    -fx-background-radius: 0 0 0 0;
+    -fx-background-insets: 1 0 0 1;    
+}
+
+.litlog-textarea .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+.litlog-textarea .scroll-pane .content{
+    -fx-background-color: transparent;
+}
+
+
 .spinner > .label {
     -fx-text-fill: aliceblue;
 }
@@ -397,7 +447,8 @@
     -fx-font-size: 11pt;
     -fx-border-width: 2px;
     -fx-borders-style: solid; 
-    -fx-border-color: aliceblue;
+    /*-fx-border-color: aliceblue;*/
+    -fx-border-color: darkslategray;
 }
 
 /* Text color of non-focused items in the list */
@@ -410,29 +461,33 @@
     -fx-text-fill: aliceblue;
     -fx-opacity: 0.8;    
 }
+
 .choice-box .label:hover {
     -fx-text-fill: aliceblue;
 }
 
-
 .choice-box:hover {
-    -fx-background-color: transparent, transparent, transparent, #d2d2d2;
+    -fx-background-color: transparent, transparent, transparent, transparent;
     -fx-border-color: #a1e1e1;    
 }
 
 .choice-box:focused {
-    -fx-background-color: transparent, transparent, transparent, #d2d2d2;
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-border-color: #a1e1e1
 }
 
 .choice-box:focused:hover  {
-    -fx-background-color: transparent, transparent, transparent, #d2d2d2;
+    -fx-background-color: transparent, transparent, transparent, transparent;
+    -fx-border-color: #a1e1e1
 }
-/*.choicebox-base:focused:hover .arrow {*/
+
 .choice-box:focused:hover .arrow {
-    -fx-background-color: black;
+    -fx-border-color: #55c4fe;
+    -fx-background-color: #55c4fe;
 }
 .choice-box:hover .arrow {
-    -fx-background-color: black;
+    -fx-border-color: #55c4fe;
+    -fx-background-color: #55c4fe;    
 }
 
 .choice-box:disabled {
@@ -451,12 +506,7 @@
     -fx-background-insets: 0 0 0 0, 0;
     -fx-background-color: silver;
 }
-.choice-box .label {
-    -fx-font-size: 12pt;
-    -fx-font-family: "Segoe UI Semibold";
-    -fx-text-fill: darkslategray;
-    -fx-opacity: 0.6;    
-}
+
 
 .dialog-pane .choice-box  {
     -fx-background-color: transparent;
@@ -766,16 +816,18 @@
  *                                                                             *
  ******************************************************************************/
 .text-field {
-    -fx-background-color: #FFFFFF22;
+    -fx-background-color: #FFFFFF77;
+    /*-fx-background-color: darkslategray;*/
     -fx-padding: 0em 0.166667em 0em 0.166667em; /* 0 2px 0 2px*/
     -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     -fx-font-size: 16pt;
-    -fx-border-width: 2px;
+    -fx-border-width: 1px;
+    -fx-border-color: #d1d1d122;
     -fx-borders-style: solid; 
 }
 .text-input{
     /*-fx-background-radius: 0, 0;*/
-    -fx-background-color: black;
+    -fx-background-color: darkslategray;
     /*-fx-background-insets: 0;*/
     -fx-prompt-text-fill: #818181;
     -fx-highlight-fill: #008287;  
@@ -925,7 +977,8 @@
    -fx-background-color: transparent;
 }
 .scroll-pane {
-   -fx-background-color: transparent;
+    -fx-pannable: true;
+    -fx-background-color: transparent;
     -fx-background-insets: 5 5 5 5; /* have the square on the corner be centered */
 }
 /*******************************************************************************
