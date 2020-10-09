@@ -36,7 +36,10 @@ import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToWidth;
 import static lit.litfx.controls.covalent.BindablePointBuilder.bindYToHeight;
 import static lit.litfx.controls.covalent.BindablePointBuilder.xTo;
 import static lit.litfx.controls.covalent.BindablePointBuilder.yTo;
-import static lit.litfx.controls.covalent.RESIZE_DIRECTION.*;
+import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
+import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
+import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
+import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
 
 /*
  notes: https://stackoverflow.com/questions/47213156/how-to-get-length-of-path
@@ -48,35 +51,35 @@ public class PathWindow {
 
     private Map<Integer, Line> lineSegmentMap = new HashMap<>();
 
-    private static Map<RESIZE_DIRECTION, Cursor> cursorMap = new HashMap<>();
-    static {
-        cursorMap.put(NW, Cursor.NW_RESIZE);
-        cursorMap.put(N, Cursor.N_RESIZE);
-        cursorMap.put(NE, Cursor.NE_RESIZE);
-        cursorMap.put(E, Cursor.E_RESIZE);
-        cursorMap.put(SE, Cursor.SE_RESIZE);
-        cursorMap.put(S, Cursor.S_RESIZE);
-        cursorMap.put(SW, Cursor.SW_RESIZE);
-        cursorMap.put(W, Cursor.W_RESIZE);
-    }
-    private static RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
+//    private static Map<RESIZE_DIRECTION, Cursor> cursorMap = new HashMap<>();
+//    static {
+//        cursorMap.put(RESIZE_DIRECTION.NW, Cursor.NW_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.N, Cursor.N_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.NE, Cursor.NE_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.E, Cursor.E_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.SE, Cursor.SE_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.S, Cursor.S_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.SW, Cursor.SW_RESIZE);
+//        cursorMap.put(RESIZE_DIRECTION.W, Cursor.W_RESIZE);
+//    }
+//    private static RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
-    static {
-        cursorSegmentArray[0] = N;
-        cursorSegmentArray[1] = NE;
-        cursorSegmentArray[2] = E;
-        cursorSegmentArray[3] = SE;
-        cursorSegmentArray[4] = S;
-        cursorSegmentArray[5] = S;
-        cursorSegmentArray[6] = S;
-        cursorSegmentArray[7] = SW;
-        cursorSegmentArray[8] = W;
-        cursorSegmentArray[9] = W;
-        cursorSegmentArray[10] = W;
-        cursorSegmentArray[11] = NW;
-        cursorSegmentArray[12] = NW;
-        cursorSegmentArray[13] = NW;
-    }
+//    static {
+//        cursorSegmentArray[0] = RESIZE_DIRECTION.N;
+//        cursorSegmentArray[1] = RESIZE_DIRECTION.NE;
+//        cursorSegmentArray[2] = RESIZE_DIRECTION.E;
+//        cursorSegmentArray[3] = RESIZE_DIRECTION.SE;
+//        cursorSegmentArray[4] = RESIZE_DIRECTION.S;
+//        cursorSegmentArray[5] = RESIZE_DIRECTION.S;
+//        cursorSegmentArray[6] = S;
+//        cursorSegmentArray[7] = SW;
+//        cursorSegmentArray[8] = W;
+//        cursorSegmentArray[9] = W;
+//        cursorSegmentArray[10] = W;
+//        cursorSegmentArray[11] = NW;
+//        cursorSegmentArray[12] = NW;
+//        cursorSegmentArray[13] = NW;
+//    }
 
     private Path outerFrame = null; //new Path();
 
@@ -212,7 +215,22 @@ public class PathWindow {
                     mainContentBorderFrame);
             enterScene.play();
         });
-        control.setScene(new Scene(new StackPane(animButton), 200, 100 ));
+        Text popPane = new Text("Pop Pane");
+//        popPane.setOnMouseClicked( actionEvent -> {
+//            Animation enterScene = createEnterAnimation(
+//                    stage,
+//                    windowButtons,
+//                    mainTitleArea,
+//                    leftAccent,
+//                    leftTab,
+//                    outerFrame,
+//                    mainContentBorderFrame);
+//            enterScene.play();
+//        });
+        Text closeAll = new Text("Close Panes");
+        HBox hbox = new HBox(5, animButton, popPane, closeAll);
+
+        control.setScene(new Scene(new StackPane(hbox), 200, 100 ));
         control.show();
     }
 

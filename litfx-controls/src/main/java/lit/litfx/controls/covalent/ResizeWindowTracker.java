@@ -3,6 +3,7 @@ package lit.litfx.controls.covalent;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
 import javafx.stage.Stage;
+import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
 
 /**
  * This class tracks the window's state. The following items are being maintained:
@@ -13,7 +14,7 @@ import javafx.stage.Stage;
  *     <li>The current segment index of the PathWindow to update the cursor resize direction.</li>
  * </ul>
  */
-class ResizeWindowTracker {
+public class ResizeWindowTracker {
     Stage stage;
 
     ObjectProperty<Point2D> anchorStageXYCoordValue = new SimpleObjectProperty<>();
@@ -108,11 +109,4 @@ class ResizeWindowTracker {
         this.mouseDragged = mouseDragged;
     }
 
-}
-
-/**
- * The 8 cursor directions to resize the current window.
- */
-enum RESIZE_DIRECTION {
-    NONE, NW, N, NE, E, SE, S, SW, W
 }
