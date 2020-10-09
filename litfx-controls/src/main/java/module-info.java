@@ -6,4 +6,5 @@ module lit.litfx.controls {
     requires javafx.controls;
     exports lit.litfx.controls.menus;
     exports lit.litfx.controls.output;
+    exports lit.litfx.controls.covalent;
 }
