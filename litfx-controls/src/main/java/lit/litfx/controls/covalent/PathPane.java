@@ -119,6 +119,8 @@ public class PathPane extends Group{
         // build bottom area
         Path mainContentBorderFrame = createMainContentViewArea(root);
 
+        getChildren().addAll(pane, windowButtons, mainTitleArea, 
+            leftAccent, leftTab, outerFrame, mainContentBorderFrame);
         enterScene = createEnterAnimation(
                 pane,
                 windowButtons,

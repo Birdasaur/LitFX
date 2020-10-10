@@ -1,4 +1,4 @@
-package lit.litfx.controls.covalent.events;
+package lit.litfx.controls.covalent;
 
 import javafx.scene.input.MouseEvent;
 
