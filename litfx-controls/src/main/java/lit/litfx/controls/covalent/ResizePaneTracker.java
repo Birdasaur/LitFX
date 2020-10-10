@@ -34,8 +34,8 @@ public class ResizePaneTracker {
     DoubleProperty anchorHeightSizeValue = new SimpleDoubleProperty();
     DoubleProperty resizeWidthValue = new SimpleDoubleProperty();
     DoubleProperty resizeHeightValue = new SimpleDoubleProperty();
-    MousePressed mousePressed;
-    MouseDragged mouseDragged;
+    PaneMousePressed mousePressed;
+    PaneMouseDragged mouseDragged;
     SimpleObjectProperty<RESIZE_DIRECTION> currentResizeDirection = new SimpleObjectProperty<>(RESIZE_DIRECTION.NONE);
     IntegerProperty currentSegmentIndex = new SimpleIntegerProperty(-1);
 
@@ -111,11 +111,11 @@ public class ResizePaneTracker {
 
     // ================================= SET-UP MOUSE EVENTS ==========================
 
-    public void setOnMousePressed(MousePressed mousePressed) {
+    public void setOnMousePressed(PaneMousePressed mousePressed) {
         this.mousePressed = mousePressed;
     }
 
-    public void setOnMouseDragged(MouseDragged mouseDragged) {
+    public void setOnMouseDragged(PaneMouseDragged mouseDragged) {
         this.mouseDragged = mouseDragged;
     }
 

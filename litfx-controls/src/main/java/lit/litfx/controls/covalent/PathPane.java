@@ -14,7 +14,6 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.event.EventType;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -24,7 +23,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ClosePath;
 import javafx.scene.shape.Line;
@@ -35,7 +33,6 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToPrevX;
 import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToWidth;
@@ -58,6 +55,7 @@ public class PathPane extends Group{
     private Path outerFrame = null; //new Path();
     private Point2D anchorPt;
     private Point2D previousLocation;
+    Animation enterScene;
 
     public PathPane(Scene scene, Pane pane) {
         this.scene = scene;
@@ -121,7 +119,7 @@ public class PathPane extends Group{
         // build bottom area
         Path mainContentBorderFrame = createMainContentViewArea(root);
 
-        Animation enterScene = createEnterAnimation(
+        enterScene = createEnterAnimation(
                 pane,
                 windowButtons,
                 mainTitleArea,
@@ -129,7 +127,7 @@ public class PathPane extends Group{
                 leftTab,
                 outerFrame,
                 mainContentBorderFrame);
-
+        
         // starting initial anchor point
 //        root.setOnMousePressed(mouseEvent -> {
 //            int segment = resizeWindowTracker.currentSegmentIndex.get();
@@ -204,7 +202,7 @@ public class PathPane extends Group{
 
         SequentialTransition sequentialTransition = new SequentialTransition();
 
-        Animation anim0 = createFadeAnim(pane.getScene().getRoot()); //createEnterRootAnim(1000, stage);
+        Animation anim0 = createFadeAnim(pane); //createEnterRootAnim(1000, stage);
         ParallelTransition parallelTransition = new ParallelTransition();
         Animation anim1 = createEnterBorderAnimation(outerBorderFrame);
         Animation anim2 = createEnterBorderAnimation(mainBorderFrame);
@@ -387,11 +385,11 @@ public class PathPane extends Group{
          */
 
 
-        Text text1 = new Text("AIRCRAFT ");
+        Text text1 = new Text("Cyber Battlespace ");
         text1.setFill(Color.WHITE);
         text1.getStyleClass().add("main-title-text");
 
-        Text text2 = new Text("GLOBAL POSITION");
+        Text text2 = new Text("Event Detection");
         text2.setFill(Color.WHITE);
         text2.getStyleClass().add("main-title-text2");
 
@@ -455,6 +453,7 @@ public class PathPane extends Group{
     public void show() {
         //@TODO SMP Replace with "restore" action which shows/animates back to previous state
 //        stage.show();
+        enterScene.play();
         
     }
 
@@ -491,6 +490,8 @@ public class PathPane extends Group{
         });
 
         resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
+
+//        resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
             RESIZE_DIRECTION direction = wt.currentResizeDirection.get();
 
             switch (direction) {
@@ -689,9 +690,9 @@ public class PathPane extends Group{
     }
 }
 
-interface MousePressed {
+interface PaneMousePressed {
     void pressed(MouseEvent mouseEvent, ResizePaneTracker paneTracker);
 }
-interface MouseDragged {
+interface PaneMouseDragged {
     void dragged(MouseEvent mouseEvent, ResizePaneTracker paneTracker);
 }

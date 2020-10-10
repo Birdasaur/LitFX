@@ -10,7 +10,7 @@
     <artifactId>litfx-demos</artifactId>
 
     <properties>
-        <mainClassName>lit.litfx.demos.CovalentUIDemo</mainClassName>
+        <mainClassName>lit.litfx.demos.CovalentPaneDemo</mainClassName>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
@@ -45,6 +45,18 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>${jfx.plugin.version}</version>
+                <configuration>
+                    <mainClass>${mainClassName}</mainClass>
+                    <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>                    
+<!--                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>lit</launcher>
+                    <jlinkImageName>litfx</jlinkImageName>
+                    <jlinkZipName>litfxzip</jlinkZipName>-->
+                </configuration>
+            
                 <executions>
                     <execution>
                         <id>default-cli</id>
@@ -58,23 +70,14 @@
                             <debug>true</debug>
                             <debuglevel>lines,vars,source</debuglevel>
                             <options>
-                                <options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${jpda.address}</options>
+                                <option>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</option>
                             </options>
                             <mainClass>${mainClassName}</mainClass>
+                            <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>
                         </configuration>
                     </execution>
                 </executions>
 
-                <configuration>
-                    <mainClass>${mainClassName}</mainClass>
-                    <stripDebug>true</stripDebug>
-                    <compress>2</compress>
-                    <noHeaderFiles>true</noHeaderFiles>
-                    <noManPages>true</noManPages>
-                    <launcher>lit</launcher>
-                    <jlinkImageName>litfx</jlinkImageName>
-                    <jlinkZipName>litfxzip</jlinkZipName>
-                </configuration>
             </plugin>
         </plugins>
     </build>
