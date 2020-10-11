@@ -14,6 +14,7 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -47,8 +48,11 @@ import lit.litfx.controls.covalent.events.CovalentPaneEvent;
 
 public class PathPane extends Group{
 
+    public SimpleStringProperty mainTitleTextProperty = new SimpleStringProperty("");
+    public SimpleStringProperty mainTitleText2Property = new SimpleStringProperty("");
     private Scene scene;
     private Pane pane;
+    private double borderTimeMs, contentTimeMs;
     private ResizePaneTracker resizePaneTracker;
     private Map<Integer, Line> lineSegmentMap = new HashMap<>();
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
@@ -57,10 +61,14 @@ public class PathPane extends Group{
     private Point2D previousLocation;
     Animation enterScene;
 
-    public PathPane(Scene scene, Pane pane) {
+    public PathPane(Scene scene, Pane pane, String mainTitleText, String mainTitleText2,
+        double borderTimeMs, double contentTimeMs) {
         this.scene = scene;
         this.pane = pane;
-
+        this.borderTimeMs = borderTimeMs;
+        this.contentTimeMs = contentTimeMs;
+        mainTitleTextProperty.set(null != mainTitleText ? mainTitleText : "");
+        mainTitleText2Property.set(null != mainTitleText2 ? mainTitleText2 : "");
         AnchorPane root = new AnchorPane();
         root.getStyleClass().add("path-window-background");
         getStylesheets().add(PathPane.class.getResource("main.css").toExternalForm());
@@ -175,21 +183,18 @@ public class PathPane extends Group{
     }
 
 
-    private Animation createEnterBorderAnimation(Path borderFrame) {
+    private Animation createEnterBorderAnimation(Path borderFrame, double totalMS) {
         double totalLength = Utils.getTotalLength(borderFrame);
         borderFrame.getStrokeDashArray().add(totalLength);
         borderFrame.setStrokeDashOffset(totalLength);
         KeyValue strokeOffsetStart = new KeyValue(borderFrame.strokeDashOffsetProperty(), totalLength);
         KeyValue visible = new KeyValue(borderFrame.visibleProperty(), true);
         KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1), strokeOffsetStart, visible);
-
         KeyValue strokeOffsetEnd = new KeyValue(borderFrame.strokeDashOffsetProperty(), 0);
         KeyFrame keyFrame2 = new KeyFrame(Duration.millis(1000), handler -> {
             System.out.println("done.");
             borderFrame.getStrokeDashArray().clear();
         }, strokeOffsetEnd);
-
-
 
         Timeline anim = new Timeline(keyFrame1, keyFrame2);
         return anim;
@@ -202,27 +207,28 @@ public class PathPane extends Group{
                                         Path outerBorderFrame,
                                         Path mainBorderFrame) {
 
+        ParallelTransition borderParallelTransition = new ParallelTransition();
+        Animation anim1 = createEnterBorderAnimation(outerBorderFrame, borderTimeMs);
+        Animation anim2 = createEnterBorderAnimation(mainBorderFrame, borderTimeMs);
+        borderParallelTransition.getChildren().addAll(anim1, anim2);
+
+        ParallelTransition windowParallelTransition = new ParallelTransition();
+        Animation anim3 = createFadeAnim(windowButtons, contentTimeMs);
+        Animation anim4 = createFadeAnim(mainTitleArea, contentTimeMs);
+        Animation anim5 = createFadeAnim(leftAccent, contentTimeMs);
+        Animation anim6 = createFadeAnim(leftTab, contentTimeMs);
+        windowParallelTransition.getChildren().addAll(anim3, anim4, anim5, anim6);
+        
+        Animation anim7 = createFadeAnim(pane, contentTimeMs); //createEnterRootAnim(1000, stage);
         SequentialTransition sequentialTransition = new SequentialTransition();
-
-        Animation anim0 = createFadeAnim(pane); //createEnterRootAnim(1000, stage);
-        ParallelTransition parallelTransition = new ParallelTransition();
-        Animation anim1 = createEnterBorderAnimation(outerBorderFrame);
-        Animation anim2 = createEnterBorderAnimation(mainBorderFrame);
-        Animation anim3 = createFadeAnim(windowButtons);
-        Animation anim4 = createFadeAnim(mainTitleArea);
-        Animation anim5 = createFadeAnim(leftAccent);
-        Animation anim6 = createFadeAnim(leftTab);
-        parallelTransition.getChildren().addAll(anim1, anim2);
-
         sequentialTransition
                 .getChildren()
-                .addAll(anim0,
-                    parallelTransition,
-                    anim3,
-                    anim4,
-                    anim5,
-                    anim6);
-
+                .addAll(
+                    anim7,
+                    borderParallelTransition,
+                    windowParallelTransition);                    
+//                    anim7); //show content last
+//                    anim3, anim4, anim5, anim6);
         return sequentialTransition;
     }
 
@@ -242,11 +248,12 @@ public class PathPane extends Group{
 //        return new Timeline(start, end);
 //    }
 
-    private Animation createFadeAnim(Node view) {
+    private Animation createFadeAnim(Node view, double totalTimeMs) {
         FadeTransition fadeTransition = new FadeTransition();
         fadeTransition.setNode(view);
         fadeTransition.setFromValue(0.0);
         fadeTransition.setToValue(1.0);
+        fadeTransition.setDuration(Duration.millis(totalTimeMs));
         return fadeTransition;
     }
 
@@ -375,26 +382,15 @@ public class PathPane extends Group{
         titlePathAsClip.setFill(Color.WHITE);
         nestedPane.setClip(titlePathAsClip);
 
-        /*
-        ext text1 = new Text("Big italic red text");
-     text1.setFill(Color.RED);
-     text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 40));
-     Text text2 = new Text(" little bold blue text");
-     text2.setFill(Color.BLUE);
-     text2.setFont(Font.font("Helvetica", FontWeight.BOLD, 10));
-     TextFlow textFlow = new TextFlow(text1, text2);
-
-         */
-
-
-        Text text1 = new Text("Cyber Battlespace ");
+        Text text1 = new Text(mainTitleTextProperty.get() + " ");
+        text1.textProperty().bind(mainTitleTextProperty);
         text1.setFill(Color.WHITE);
         text1.getStyleClass().add("main-title-text");
 
-        Text text2 = new Text("Event Detection");
+        Text text2 = new Text(mainTitleText2Property.get());
+        text2.textProperty().bind(mainTitleText2Property);
         text2.setFill(Color.WHITE);
         text2.getStyleClass().add("main-title-text2");
-
 
         TextFlow textFlow = new TextFlow(text1, text2);
         AnchorPane.setLeftAnchor(textFlow, 20.0);

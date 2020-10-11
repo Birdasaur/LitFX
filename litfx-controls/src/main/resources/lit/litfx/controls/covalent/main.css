@@ -24,7 +24,7 @@
 
 .path-window-background {
 
-    -fx-background-color: blue;
+    /*-fx-background-color: blue;*/
 /*    -fx-border-color: -white-ish;
     -fx-border-style: solid;
     -fx-border-insets: 6 6 6 6;

@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -27,8 +28,11 @@ public class CovalentPaneDemo extends Application {
         Background transBack = new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY));
         BorderPane root = new BorderPane();
         Button newPaneButton = new Button("Create Pane");
-        
-        HBox hbox = new HBox(5, newPaneButton);
+        Spinner borderTimeSpinner = new Spinner(100.0, 1000.0, 500.0, 50.0);
+        Spinner contentTimeSpinner = new Spinner(100.0, 1000.0, 500.0, 50.0);
+        Button closePanesButton = new Button("Close Panes");
+        HBox hbox = new HBox(5, newPaneButton, borderTimeSpinner, contentTimeSpinner, closePanesButton);
+
         StackPane stackPane = new StackPane();
         root.setCenter(stackPane);
         root.setTop(hbox);
@@ -47,10 +51,17 @@ public class CovalentPaneDemo extends Application {
             someContentPane.setMinSize(400, 200);
             someContentPane.setBackground(new Background(
                 new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
-            PathPane newPane = new PathPane(scene, someContentPane);
+            PathPane newPane = new PathPane(scene, someContentPane, 
+                "Cyber Battlespace", "Notifications",
+                (double)borderTimeSpinner.getValue(), (double)contentTimeSpinner.getValue());
             stackPane.getChildren().add(newPane);
             newPane.show();
         });
+        
+        closePanesButton.setOnAction(e -> {
+            stackPane.getChildren().clear();
+        });
+        
         //Make the view look pretty
         String CSS = this.getClass().getResource("styles.css").toExternalForm();
         scene.getStylesheets().add(CSS);

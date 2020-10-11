@@ -24,7 +24,7 @@
 
 .path-window-background {
 
-    -fx-background-color: blue;
+    /*-fx-background-color: -clear-ish;*/
 /*    -fx-border-color: -white-ish;
     -fx-border-style: solid;
     -fx-border-insets: 6 6 6 6;
@@ -95,7 +95,7 @@
 }
 .main-content-view {
 
-    -fx-background-color: #328BDB;
+    -fx-background-color: red;
 /*
     -fx-border-color: white;
     -fx-border-style: solid;
@@ -107,7 +107,7 @@
 
 .main-content-inner-path {
     /*-fx-fill: -clear-ish;*/
-    -fx-fill: #074addaa;
+    -fx-fill: blue;
     -fx-stroke: -grey-ish;
     -fx-stroke-type: inside;
     -fx-stroke-width: 2;
