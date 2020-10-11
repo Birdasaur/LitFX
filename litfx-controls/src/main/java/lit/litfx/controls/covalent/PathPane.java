@@ -51,12 +51,18 @@ public class PathPane extends Group{
     public SimpleStringProperty mainTitleTextProperty = new SimpleStringProperty("");
     public SimpleStringProperty mainTitleText2Property = new SimpleStringProperty("");
     private Scene scene;
-    private Pane pane;
     private double borderTimeMs, contentTimeMs;
     private ResizePaneTracker resizePaneTracker;
     private Map<Integer, Line> lineSegmentMap = new HashMap<>();
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
-    private Path outerFrame = null; //new Path();
+    public Pane contentPane;
+    public Path outerFrame = null; //new Path();
+    public Path mainContentBorderFrame;    
+    public Node leftAccent;
+    public Node leftTab;
+    public Pane windowButtons;
+    public Pane mainTitleArea;
+
     private Point2D anchorPt;
     private Point2D previousLocation;
     Animation enterScene;
@@ -64,7 +70,7 @@ public class PathPane extends Group{
     public PathPane(Scene scene, Pane pane, String mainTitleText, String mainTitleText2,
         double borderTimeMs, double contentTimeMs) {
         this.scene = scene;
-        this.pane = pane;
+        this.contentPane = pane;
         this.borderTimeMs = borderTimeMs;
         this.contentTimeMs = contentTimeMs;
         mainTitleTextProperty.set(null != mainTitleText ? mainTitleText : "");
@@ -73,7 +79,7 @@ public class PathPane extends Group{
         root.getStyleClass().add("path-window-background");
         getStylesheets().add(PathPane.class.getResource("main.css").toExternalForm());
 
-        outerFrame = createFramePath(this.pane);
+        outerFrame = createFramePath(this.contentPane);
         outerFrame.getStyleClass().add("outer-path-frame");
 
         setOnMouseMoved(me -> {
@@ -92,7 +98,7 @@ public class PathPane extends Group{
         root.getChildren().add(outerFrame);
 
         // createWindowButtons
-        Pane windowButtons = createWindowButtons(root);
+        windowButtons = createWindowButtons(root);
 
         // drag window buttons area.
         windowButtons.setOnMouseDragged( mouseEvent -> {
@@ -116,21 +122,21 @@ public class PathPane extends Group{
 
         });
         // createLeftAccent
-        Node leftAccent = createLeftAccent(root);
+        leftAccent = createLeftAccent(root);
 
         // createLeftTab
-        Node leftTab = createLeftTab(root);
+        leftTab = createLeftTab(root);
 
         // createMainTitleArea
-        Pane mainTitleArea = createMainTitleArea(root);
+        mainTitleArea = createMainTitleArea(root);
 
         // build bottom area
-        Path mainContentBorderFrame = createMainContentViewArea(root);
+        mainContentBorderFrame = createMainContentViewArea(root);
 
-        getChildren().addAll(pane, windowButtons, mainTitleArea, 
+        getChildren().addAll(this.contentPane, windowButtons, mainTitleArea, 
             leftAccent, leftTab, outerFrame, mainContentBorderFrame);
         enterScene = createEnterAnimation(
-                pane,
+                this.contentPane,
                 windowButtons,
                 mainTitleArea,
                 leftAccent,
@@ -260,7 +266,7 @@ public class PathPane extends Group{
 
     private Node createLeftAccent(AnchorPane root) {
         // create the accent shape left
-        ShapedPath accentShape = ShapedPathBuilder.create(pane)
+        ShapedPath accentShape = ShapedPathBuilder.create(contentPane)
                 .addStyleClass("window-accent-shape")
                 .moveTo(20, 9)
                 .horzSeg(35)
@@ -276,7 +282,7 @@ public class PathPane extends Group{
     }
 
     private Node createLeftTab(AnchorPane root) {
-        ShapedPath leftTabShape = ShapedPathBuilder.create(pane)
+        ShapedPath leftTabShape = ShapedPathBuilder.create(contentPane)
                 .addStyleClass("left-tab-shape")
                 .moveTo(5, 30+3)
                 .lineSeg(xTo(13).yTo(9+15))
@@ -462,7 +468,7 @@ public class PathPane extends Group{
     }
 
     private void wireListeners() {
-        resizePaneTracker = new ResizePaneTracker(pane);
+        resizePaneTracker = new ResizePaneTracker(contentPane);
 
         resizePaneTracker.setOnMousePressed((mouseEvent, wt) -> {
             // store anchor x,y of the stage
@@ -476,8 +482,8 @@ public class PathPane extends Group{
             wt.anchorCoordValue.set(new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
 
             // current width and height
-            wt.anchorWidthSizeValue.set(pane.getWidth());
-            wt.anchorHeightSizeValue.set(pane.getHeight());
+            wt.anchorWidthSizeValue.set(contentPane.getWidth());
+            wt.anchorHeightSizeValue.set(contentPane.getHeight());
             System.out.println("press mouseX = " + mouseEvent.getX() + " translateX = " + getTranslateX());
 
             // current resize direction
