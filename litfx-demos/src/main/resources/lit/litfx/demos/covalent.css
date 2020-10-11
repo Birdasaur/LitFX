@@ -93,10 +93,11 @@
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
 }
-.main-content-view {
 
-    -fx-background-color: red;
+.main-content-view {
 /*
+    -fx-background-color: red;
+
     -fx-border-color: white;
     -fx-border-style: solid;
     -fx-border-insets: 6 6 6 6;
@@ -106,11 +107,14 @@
 }
 
 .main-content-inner-path {
-    /*-fx-fill: -clear-ish;*/
-    -fx-fill: blue;
+    -fx-fill: -clear-ish;
+    /*-fx-fill: blue;*/
     -fx-stroke: -grey-ish;
     -fx-stroke-type: inside;
     -fx-stroke-width: 2;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
+}
+.main-content-pane {
+    -fx-padding: 15;
 }

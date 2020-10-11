@@ -1,23 +1,11 @@
 package lit.litfx.controls.covalent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -25,28 +13,21 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ClosePath;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToPrevX;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToWidth;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindYToHeight;
-import static lit.litfx.controls.covalent.BindablePointBuilder.xTo;
-import static lit.litfx.controls.covalent.BindablePointBuilder.yTo;
 import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
+import lit.litfx.controls.covalent.events.CovalentPaneEvent;
+
+import java.util.*;
+
+import static lit.litfx.controls.covalent.BindablePointBuilder.*;
 import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
 import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
 import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
-import lit.litfx.controls.covalent.events.CovalentPaneEvent;
 
-public class PathPane extends Group{
+public class PathPane extends AnchorPane {
 
     public SimpleStringProperty mainTitleTextProperty = new SimpleStringProperty("");
     public SimpleStringProperty mainTitleText2Property = new SimpleStringProperty("");
@@ -57,7 +38,7 @@ public class PathPane extends Group{
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
     public Pane contentPane;
     public Path outerFrame = null; //new Path();
-    public Path mainContentBorderFrame;    
+    public MainContentViewArea mainContentBorderFrame;
     public Node leftAccent;
     public Node leftTab;
     public Pane windowButtons;
@@ -67,22 +48,30 @@ public class PathPane extends Group{
     private Point2D previousLocation;
     Animation enterScene;
 
-    public PathPane(Scene scene, Pane pane, String mainTitleText, String mainTitleText2,
-        double borderTimeMs, double contentTimeMs) {
+    public PathPane(Scene scene,
+                    int width,
+                    int height,
+                    Pane userContent,
+                    String mainTitleText,
+                    String mainTitleText2,
+                    double borderTimeMs,
+                    double contentTimeMs) {
         this.scene = scene;
-        this.contentPane = pane;
+        this.contentPane = userContent;
         this.borderTimeMs = borderTimeMs;
         this.contentTimeMs = contentTimeMs;
         mainTitleTextProperty.set(null != mainTitleText ? mainTitleText : "");
         mainTitleText2Property.set(null != mainTitleText2 ? mainTitleText2 : "");
-        AnchorPane root = new AnchorPane();
-        root.getStyleClass().add("path-window-background");
-        getStylesheets().add(PathPane.class.getResource("main.css").toExternalForm());
+        setWidth(width);
+        setHeight(height);
+        //AnchorPane root = new AnchorPane();
+        getStyleClass().add("path-window-background");
+//        getStylesheets().add(PathPane.class.getResource("main.css").toExternalForm());
 
-        outerFrame = createFramePath(this.contentPane);
+        outerFrame = createFramePath(this);
         outerFrame.getStyleClass().add("outer-path-frame");
 
-        setOnMouseMoved(me -> {
+        scene.setOnMouseMoved(me -> {
             // update segment listener (s0 s2, s2, none...)
             // when segment listener's invalidation occurs fire cursor to change.
             logLineSegment(me.getSceneX(), me.getSceneY());
@@ -90,15 +79,15 @@ public class PathPane extends Group{
         });
 
         // reset cursor
-        setOnMouseExited( mouseEvent -> {
+        scene.setOnMouseExited( mouseEvent -> {
             segmentSelected.set(-1);
             System.out.println("mouse exited group");
         });
 
-        root.getChildren().add(outerFrame);
+        //getChildren().add(outerFrame);
 
         // createWindowButtons
-        windowButtons = createWindowButtons(root);
+        windowButtons = createWindowButtons(this);
 
         // drag window buttons area.
         windowButtons.setOnMouseDragged( mouseEvent -> {
@@ -122,18 +111,24 @@ public class PathPane extends Group{
 
         });
         // createLeftAccent
-        leftAccent = createLeftAccent(root);
+        leftAccent = createLeftAccent(this);
 
         // createLeftTab
-        leftTab = createLeftTab(root);
+        leftTab = createLeftTab(this);
 
         // createMainTitleArea
-        mainTitleArea = createMainTitleArea(root);
+        mainTitleArea = createMainTitleArea(this);
 
         // build bottom area
-        mainContentBorderFrame = createMainContentViewArea(root);
+        mainContentBorderFrame = createMainContentViewArea(this);
+        // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
+        AnchorPane.setTopAnchor(contentPane, 15.0);
+        AnchorPane.setLeftAnchor(contentPane, 15.0);
+        AnchorPane.setRightAnchor(contentPane, 15.0);
+        AnchorPane.setBottomAnchor(contentPane, 15.0);
+        mainContentBorderFrame.getMainContentPane().getChildren().add(this.contentPane);
 
-        getChildren().addAll(this.contentPane, windowButtons, mainTitleArea, 
+        getChildren().addAll(windowButtons, mainTitleArea,
             leftAccent, leftTab, outerFrame, mainContentBorderFrame);
         enterScene = createEnterAnimation(
                 this.contentPane,
@@ -142,7 +137,7 @@ public class PathPane extends Group{
                 leftAccent,
                 leftTab,
                 outerFrame,
-                mainContentBorderFrame);
+                mainContentBorderFrame.getMainContentInnerPath());
         
         // starting initial anchor point
 //        root.setOnMousePressed(mouseEvent -> {
@@ -170,7 +165,7 @@ public class PathPane extends Group{
 //        });
 
         // Set the new previous to the current mouse xTo,yTo coordinate
-        root.setOnMouseReleased(mouseEvent -> {
+        setOnMouseReleased(mouseEvent -> {
             int segment = resizePaneTracker.currentSegmentIndex.get();
             //if (segment == -1) {
                 previousLocation = new Point2D(getTranslateX(),getTranslateY());
@@ -266,7 +261,7 @@ public class PathPane extends Group{
 
     private Node createLeftAccent(AnchorPane root) {
         // create the accent shape left
-        ShapedPath accentShape = ShapedPathBuilder.create(contentPane)
+        ShapedPath accentShape = ShapedPathBuilder.create(root)
                 .addStyleClass("window-accent-shape")
                 .moveTo(20, 9)
                 .horzSeg(35)
@@ -277,12 +272,12 @@ public class PathPane extends Group{
                 .closeSeg()
                 .build();
 
-        root.getChildren().add(accentShape);
+        //root.getChildren().add(accentShape);
         return accentShape;
     }
 
     private Node createLeftTab(AnchorPane root) {
-        ShapedPath leftTabShape = ShapedPathBuilder.create(contentPane)
+        ShapedPath leftTabShape = ShapedPathBuilder.create(root)
                 .addStyleClass("left-tab-shape")
                 .moveTo(5, 30+3)
                 .lineSeg(xTo(13).yTo(9+15))
@@ -291,7 +286,7 @@ public class PathPane extends Group{
                 .closeSeg()
                 .build();
 
-        root.getChildren().add(leftTabShape);
+        //root.getChildren().add(leftTabShape);
         return leftTabShape;
     }
     private Pane createWindowButtons(AnchorPane root) {
@@ -333,7 +328,6 @@ public class PathPane extends Group{
 
         windowHeader.getChildren().add(buttonArea);
 
-        root.getChildren().add(windowHeader);
         return windowHeader;
     }
     private Pane createMainTitleArea(AnchorPane root) {
@@ -405,17 +399,17 @@ public class PathPane extends Group{
 
         mainTitleView.getChildren().addAll(titlePath, nestedPane);
 
-        root.getChildren().add(mainTitleView);
+        //root.getChildren().add(mainTitleView);
         return mainTitleView;
 
     }
 
-    private Path createMainContentViewArea(AnchorPane root) {
+    private MainContentViewArea createMainContentViewArea(AnchorPane root) {
         // Create a main content region
         // 1) create pane (transparent style)
         // 2) create path outline
         // 3) use path outline as clip region
-        AnchorPane mainContentView = new AnchorPane();
+        MainContentViewArea mainContentView = new MainContentViewArea();
         mainContentView.getStyleClass().add("main-content-view");
         AnchorPane.setTopAnchor(mainContentView, 90.0);
         double leftAnchor = 10 + 15;
@@ -423,7 +417,7 @@ public class PathPane extends Group{
         double rightAnchor = 15;
         AnchorPane.setRightAnchor(mainContentView, rightAnchor);
         AnchorPane.setBottomAnchor(mainContentView, 10 + 15.0);
-        root.getChildren().add(mainContentView);
+        //root.getChildren().add(mainContentView);
 
         ShapedPath mainContentInnerPath = ShapedPathBuilder.create(mainContentView)
                 .addStyleClass("main-content-inner-path")
@@ -442,16 +436,27 @@ public class PathPane extends Group{
                 .closeSeg()
                 .build();
 
-        AnchorPane nestedPane = new AnchorPane(); // has the clipped
 
+        // THIS IS WHERE THE USER CONTENT IS PLACED INTO!!!!
+        AnchorPane nestedPane = new AnchorPane(); // has the clipped
+        nestedPane.getStyleClass().add("main-content-pane");
+        // clone path for clip region
         Path mainContentInnerPathAsClip = new Path();
         mainContentInnerPathAsClip.getElements().addAll(mainContentInnerPath.getElements());
         mainContentInnerPathAsClip.setFill(Color.WHITE);
+
+        // punch out the path for the main content
         nestedPane.setClip(mainContentInnerPathAsClip);
+
+        // set the nested pane for the caller to put stuff inside.
+        mainContentView.setMainContentPane(nestedPane);
 
         mainContentView.getChildren().addAll(nestedPane, mainContentInnerPath);
 
-        return mainContentInnerPath;
+        mainContentView.setMainContentInnerPath(mainContentInnerPath);
+
+        return mainContentView;
+        //return mainContentInnerPath;
     }
 
     public void show() {
