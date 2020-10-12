@@ -45,6 +45,32 @@
 .window-header {
     -fx-background-color: -grey-ish;
 }
+.window-header-text {
+    -fx-font-family: "Roboto Regular";
+    -fx-font-weight: 300;
+    -fx-font-size: 12;
+    -fx-fill: blue;
+}
+.window-header-minimize-button {
+    -fx-fill:#FFFFFFAA;
+    -fx-stroke: -grey-ish;
+    -fx-width:50;
+    -fx-height:10;
+}
+
+.window-header-maximize-button {
+    -fx-fill: #0000FFAA;
+    -fx-stroke: -grey-ish;
+    -fx-width:50;
+    -fx-height:10;
+}
+
+.window-header-close-button {
+    -fx-fill:#FF0000AA;
+    -fx-stroke: -grey-ish;
+    -fx-width:50;
+    -fx-height:10;
+}
 
 .window-accent-shape {
     -fx-fill:-lighter-orange-ish;
@@ -62,12 +88,7 @@
     -fx-stroke-line-join: round;
 }
 
-.window-header-text {
-    -fx-font-family: "Roboto Regular";
-    -fx-font-weight: 300;
-    -fx-font-size: 12;
-    -fx-fill: blue;
-}
+
 
 .main-title-text {
     -fx-font-family: "Roboto Black";

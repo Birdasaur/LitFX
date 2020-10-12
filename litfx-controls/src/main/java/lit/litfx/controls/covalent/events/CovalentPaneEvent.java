@@ -14,7 +14,9 @@ public class CovalentPaneEvent extends Event{
     public static final EventType<CovalentPaneEvent> COVALENT_PANE_SHOWN  = new EventType("COVALENT_PANE_SHOWN");
     public static final EventType<CovalentPaneEvent> COVALENT_PANE_HIDING  = new EventType("COVALENT_PANE_HIDING");
     public static final EventType<CovalentPaneEvent> COVALENT_PANE_HIDDEN  = new EventType("COVALENT_PANE_HIDDEN");
-    public static final EventType<CovalentPaneEvent> COVALENT_PANE_CLOSE_REQUEST  = new EventType("COVALENT_PANE_CLOSE_REQUEST");   
+    public static final EventType<CovalentPaneEvent> COVALENT_PANE_MINIMIZE  = new EventType("COVALENT_PANE_MINIMIZE");   
+    public static final EventType<CovalentPaneEvent> COVALENT_PANE_MAXIMIZE  = new EventType("COVALENT_PANE_MAXIMIZE");   
+    public static final EventType<CovalentPaneEvent> COVALENT_PANE_CLOSE  = new EventType("COVALENT_PANE_CLOSE");   
     
     public PathPane pathPane;
     public CovalentPaneEvent(EventType<? extends Event> arg0, PathPane pathPane) {

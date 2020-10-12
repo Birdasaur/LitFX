@@ -14,6 +14,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import lit.litfx.controls.covalent.PathPane;
+import lit.litfx.controls.covalent.events.CovalentPaneEvent;
 
 public class CovalentPaneDemo extends Application {
     Pane desktopPane;
@@ -66,7 +67,6 @@ public class CovalentPaneDemo extends Application {
         root.setBackground(transBack);
         Scene scene = new Scene(root, 1200, 800, Color.BLACK);
         newPaneButton.setOnAction(e -> {
-
             Text text = new Text("Some Styled Content.");
             text.setFont(new Font("Consolas Bold", 26));
             text.setFill(Color.GREEN);
@@ -93,7 +93,9 @@ public class CovalentPaneDemo extends Application {
         closePanesButton.setOnAction(e -> {
             desktopPane.getChildren().clear();
         });
-        
+        scene.getRoot().addEventHandler(CovalentPaneEvent.COVALENT_PANE_CLOSE, e -> {
+            desktopPane.getChildren().remove(e.pathPane);
+        });
         //Make the view look pretty
         String CSS = this.getClass().getResource("styles.css").toExternalForm();
         scene.getStylesheets().add(CSS);

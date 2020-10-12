@@ -19,13 +19,14 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
 import lit.litfx.controls.covalent.events.CovalentPaneEvent;
-
 import java.util.*;
-
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.input.MouseButton;
 import static lit.litfx.controls.covalent.BindablePointBuilder.*;
 import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
 import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
 import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
+import lit.litfx.core.components.StyleableRectangle;
 
 public class PathPane extends AnchorPane {
 
@@ -47,6 +48,7 @@ public class PathPane extends AnchorPane {
     private Point2D anchorPt;
     private Point2D previousLocation;
     Animation enterScene;
+    SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
     public PathPane(Scene scene,
                     int width,
@@ -64,9 +66,7 @@ public class PathPane extends AnchorPane {
         mainTitleText2Property.set(null != mainTitleText2 ? mainTitleText2 : "");
         setWidth(width);
         setHeight(height);
-        //AnchorPane root = new AnchorPane();
         getStyleClass().add("path-window-background");
-//        getStylesheets().add(PathPane.class.getResource("main.css").toExternalForm());
 
         outerFrame = createFramePath(this);
         outerFrame.getStyleClass().add("outer-path-frame");
@@ -83,8 +83,6 @@ public class PathPane extends AnchorPane {
             segmentSelected.set(-1);
             System.out.println("mouse exited group");
         });
-
-        //getChildren().add(outerFrame);
 
         // createWindowButtons
         windowButtons = createWindowButtons(this);
@@ -117,10 +115,10 @@ public class PathPane extends AnchorPane {
         leftTab = createLeftTab(this);
 
         // createMainTitleArea
-        mainTitleArea = createMainTitleArea(this);
+        mainTitleArea = createMainTitleArea();
 
         // build bottom area
-        mainContentBorderFrame = createMainContentViewArea(this);
+        mainContentBorderFrame = createMainContentViewArea();
         // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
         AnchorPane.setTopAnchor(contentPane, 15.0);
         AnchorPane.setLeftAnchor(contentPane, 15.0);
@@ -172,7 +170,14 @@ public class PathPane extends AnchorPane {
             //}
             System.out.println("released");
         });
-
+        
+        addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if(minimizedProperty.get() && 
+                e.getClickCount() > 1 && e.getButton() == MouseButton.PRIMARY) {
+                restore();
+            }
+        });
+        
         // Initialize previousLocation after Stage is shown
         //@TODO SMP Replace Stage oriented Window events with custom versions
         this.scene.addEventHandler(CovalentPaneEvent.COVALENT_PANE_SHOWN,
@@ -258,7 +263,6 @@ public class PathPane extends AnchorPane {
         return fadeTransition;
     }
 
-
     private Node createLeftAccent(AnchorPane root) {
         // create the accent shape left
         ShapedPath accentShape = ShapedPathBuilder.create(root)
@@ -305,21 +309,30 @@ public class PathPane extends AnchorPane {
 
         // create buttons
         HBox buttonArea = new HBox(4);
-        Rectangle b1 = new Rectangle();
-        b1.setWidth(50);
-        b1.setHeight(5);
-        b1.setFill(Color.rgb(253,253,253, .8));
+        StyleableRectangle b1 = new StyleableRectangle(50, 20, Color.rgb(253,253,253, .8));
+        b1.getStyleClass().add("window-header-minimize-button");
+        b1.setOnMouseClicked(e -> {
+            b1.getScene().getRoot().fireEvent(
+                new CovalentPaneEvent(CovalentPaneEvent.COVALENT_PANE_MINIMIZE, this));
+            this.minimize();
+        });
+        
+        StyleableRectangle b2 = new StyleableRectangle(50, 20, Color.rgb(235,235,80, .8));
+        b2.getStyleClass().add("window-header-maximize-button");
+        b2.setOnMouseClicked(e ->{
+            b2.getScene().getRoot().fireEvent(
+                new CovalentPaneEvent(CovalentPaneEvent.COVALENT_PANE_MAXIMIZE, this));
+            this.maximize();
+        });
 
-        Rectangle b2 = new Rectangle();
-        b2.setWidth(50);
-        b2.setHeight(5);
-        b2.setFill(Color.rgb(235,235,80, .8));
-
-        Rectangle b3 = new Rectangle();
-        b3.setWidth(50);
-        b3.setHeight(5);
-        b3.setFill(Color.rgb(250,166,62, .8));
-
+        StyleableRectangle b3 = new StyleableRectangle(50, 20, Color.rgb(250, 50, 50, .8));
+        b3.getStyleClass().add("window-header-close-button");
+        b3.setOnMouseClicked(e -> {
+            b3.getScene().getRoot().fireEvent(
+                new CovalentPaneEvent(CovalentPaneEvent.COVALENT_PANE_CLOSE, this));
+            this.close();
+        });
+        
         buttonArea.getChildren().addAll(b1,b2, b3);
 
         AnchorPane.setTopAnchor(buttonArea, (double)(12-5f)/2);
@@ -330,12 +343,10 @@ public class PathPane extends AnchorPane {
 
         return windowHeader;
     }
-    private Pane createMainTitleArea(AnchorPane root) {
+    private Pane createMainTitleArea() {
 
         AnchorPane mainTitleView = new AnchorPane();
         mainTitleView.setPrefHeight(70);
-        //mainTitleView.getStyleClass().add("main-title-path");
-
         AnchorPane.setTopAnchor(mainTitleView, 30.0);
 
         double leftAnchor = 10 + 15;
@@ -349,7 +360,8 @@ public class PathPane extends AnchorPane {
         MoveTo a0 = new MoveTo(10,5);
         LineTo a1 = new LineTo();
         a1.xProperty().bind(mainTitleView.widthProperty());
-        a1.yProperty().set(10);
+//        a1.yProperty().set(10);
+        a1.yProperty().set(5);
 
         LineTo a2 = new LineTo();
         a2.xProperty().bind(mainTitleView.widthProperty());
@@ -404,7 +416,7 @@ public class PathPane extends AnchorPane {
 
     }
 
-    private MainContentViewArea createMainContentViewArea(AnchorPane root) {
+    private MainContentViewArea createMainContentViewArea() {
         // Create a main content region
         // 1) create pane (transparent style)
         // 2) create path outline
@@ -436,7 +448,6 @@ public class PathPane extends AnchorPane {
                 .closeSeg()
                 .build();
 
-
         // THIS IS WHERE THE USER CONTENT IS PLACED INTO!!!!
         AnchorPane nestedPane = new AnchorPane(); // has the clipped
         nestedPane.getStyleClass().add("main-content-pane");
@@ -450,20 +461,51 @@ public class PathPane extends AnchorPane {
 
         // set the nested pane for the caller to put stuff inside.
         mainContentView.setMainContentPane(nestedPane);
-
-        mainContentView.getChildren().addAll(nestedPane, mainContentInnerPath);
+        //Add the nestedPane containging user content last so it has mouse priority
+        mainContentView.getChildren().addAll(mainContentInnerPath, nestedPane);
 
         mainContentView.setMainContentInnerPath(mainContentInnerPath);
 
         return mainContentView;
-        //return mainContentInnerPath;
     }
-
-    public void show() {
-        //@TODO SMP Replace with "restore" action which shows/animates back to previous state
-//        stage.show();
-        enterScene.play();
+    
+    private Animation createMinimizeAnim(double totalTimeMs) {
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(totalTimeMs), this);
+        scaleTransition.setFromX(1.0);
+        scaleTransition.setFromY(1.0);
+        scaleTransition.setToX(0.10);
+        scaleTransition.setToY(0.10);
+        return scaleTransition;
+    }
+    private Animation createRestoreAnim(double totalTimeMs) {
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(totalTimeMs), this);
+        scaleTransition.setFromX(0.1);
+        scaleTransition.setFromY(0.1);
+        scaleTransition.setToX(1.0);
+        scaleTransition.setToY(1.0);
+        return scaleTransition;
+    }    
+    public void minimize() {
+        System.out.println("Minimize called on Pane: " + this.toString());
+        Animation minimizeAnimation = createMinimizeAnim(contentTimeMs);
+        minimizedProperty.set(true);
+        minimizeAnimation.play();
+    }
+    public void restore() {
+        System.out.println("Restoring Pane: " + this.toString());
+        Animation restoreAnimation = createRestoreAnim(contentTimeMs);
+        minimizedProperty.set(false);
+        restoreAnimation.play();
+    }
+    public void maximize() {
+        System.out.println("Maximize called on Pane: " + this.toString());
         
+    }
+    public void close() {
+        System.out.println("Close called on Pane: " + this.toString());
+    }
+    public void show() {
+        enterScene.play();
     }
 
     private RESIZE_DIRECTION getCurrentResizeDirection() {
