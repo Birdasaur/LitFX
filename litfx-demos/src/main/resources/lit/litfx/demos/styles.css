@@ -53,6 +53,11 @@
     -fx-background-color: transparent;
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * Spinner                                                                     *
+ *                                                                             *
+ ******************************************************************************/
 
 .spinner > .label {
     -fx-text-fill: aliceblue;
@@ -60,6 +65,10 @@
 .spinner > .text-field {
     -fx-text-fill: aliceblue;
 }
+.spinner > .text-field:focused {
+    -fx-text-fill: black;
+}
+
 
 .spinner > .increment-arrow-button,
 .spinner > .decrement-arrow-button {
@@ -1007,7 +1016,6 @@
 .check-box > .box > .mark {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
-    
     -fx-padding:7px;
     -fx-shape: "M9.005,17.766l13.759,14.739h1.716L49.02,0l10.298,8.488L25.997,50.453h-3.629L0,26.897L9.005,17.766z"
 }
@@ -1040,6 +1048,12 @@
 
 .check-box:selected > .box > .mark {
     -fx-background-color: black;
+    -fx-border-color: #55c4fe;
+    -fx-border-width: 0.5px;    
+}
+.check-box:selected:hover > .box > .mark {
+    -fx-border-color: transparent;
+    -fx-border-width: 1px;
 }
 
 .check-box:indeterminate > .box > .mark {

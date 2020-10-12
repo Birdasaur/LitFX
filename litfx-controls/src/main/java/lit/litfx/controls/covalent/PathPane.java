@@ -1,19 +1,9 @@
 package lit.litfx.controls.covalent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -22,85 +12,63 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToPrevX;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToWidth;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindYToHeight;
-import static lit.litfx.controls.covalent.BindablePointBuilder.xTo;
-import static lit.litfx.controls.covalent.BindablePointBuilder.yTo;
 import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
+import lit.litfx.controls.covalent.events.CovalentPaneEvent;
+import java.util.*;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.input.MouseButton;
+import static lit.litfx.controls.covalent.BindablePointBuilder.*;
 import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
 import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
 import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
+import lit.litfx.core.components.StyleableRectangle;
 
-/*
- notes: https://stackoverflow.com/questions/47213156/how-to-get-length-of-path
-  */
-public class PathWindow {
+public class PathPane extends AnchorPane {
 
-    private Stage stage;
-    private ResizeWindowTracker resizeWindowTracker;
-
+    public SimpleStringProperty mainTitleTextProperty = new SimpleStringProperty("");
+    public SimpleStringProperty mainTitleText2Property = new SimpleStringProperty("");
+    private Scene scene;
+    private double borderTimeMs, contentTimeMs;
+    private ResizePaneTracker resizePaneTracker;
     private Map<Integer, Line> lineSegmentMap = new HashMap<>();
-
-//    private static Map<RESIZE_DIRECTION, Cursor> cursorMap = new HashMap<>();
-//    static {
-//        cursorMap.put(RESIZE_DIRECTION.NW, Cursor.NW_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.N, Cursor.N_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.NE, Cursor.NE_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.E, Cursor.E_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.SE, Cursor.SE_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.S, Cursor.S_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.SW, Cursor.SW_RESIZE);
-//        cursorMap.put(RESIZE_DIRECTION.W, Cursor.W_RESIZE);
-//    }
-//    private static RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
-//    static {
-//        cursorSegmentArray[0] = RESIZE_DIRECTION.N;
-//        cursorSegmentArray[1] = RESIZE_DIRECTION.NE;
-//        cursorSegmentArray[2] = RESIZE_DIRECTION.E;
-//        cursorSegmentArray[3] = RESIZE_DIRECTION.SE;
-//        cursorSegmentArray[4] = RESIZE_DIRECTION.S;
-//        cursorSegmentArray[5] = RESIZE_DIRECTION.S;
-//        cursorSegmentArray[6] = S;
-//        cursorSegmentArray[7] = SW;
-//        cursorSegmentArray[8] = W;
-//        cursorSegmentArray[9] = W;
-//        cursorSegmentArray[10] = W;
-//        cursorSegmentArray[11] = NW;
-//        cursorSegmentArray[12] = NW;
-//        cursorSegmentArray[13] = NW;
-//    }
-
-    private Path outerFrame = null; //new Path();
-
+    public Pane contentPane;
+    public Path outerFrame = null; //new Path();
+    public MainContentViewArea mainContentBorderFrame;
+    public Node leftAccent;
+    public Node leftTab;
+    public Pane windowButtons;
+    public Pane mainTitleArea;
 
     private Point2D anchorPt;
     private Point2D previousLocation;
+    Animation enterScene;
+    SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
-    public PathWindow(Stage stage) {
-        this.stage = stage;
-        stage.initStyle(StageStyle.TRANSPARENT);
+    public PathPane(Scene scene,
+                    int width,
+                    int height,
+                    Pane userContent,
+                    String mainTitleText,
+                    String mainTitleText2,
+                    double borderTimeMs,
+                    double contentTimeMs) {
+        this.scene = scene;
+        this.contentPane = userContent;
+        this.borderTimeMs = borderTimeMs;
+        this.contentTimeMs = contentTimeMs;
+        mainTitleTextProperty.set(null != mainTitleText ? mainTitleText : "");
+        mainTitleText2Property.set(null != mainTitleText2 ? mainTitleText2 : "");
+        setWidth(width);
+        setHeight(height);
+        getStyleClass().add("path-window-background");
 
-        AnchorPane root = new AnchorPane();
-        root.getStyleClass().add("path-window-background");
-
-        final Scene scene = new Scene(root,
-                640, 480,
-                Color.rgb(0,0,0,0));
-
-        scene.getStylesheets().add(PathWindow.class.getResource("main.css").toExternalForm());
-
-        outerFrame = createFramePath(stage);
+        outerFrame = createFramePath(this);
         outerFrame.getStyleClass().add("outer-path-frame");
 
         scene.setOnMouseMoved(me -> {
@@ -108,54 +76,50 @@ public class PathWindow {
             // when segment listener's invalidation occurs fire cursor to change.
             logLineSegment(me.getSceneX(), me.getSceneY());
             outerFrame.toBack();
+//            System.out.println("scene mouse moved");
         });
 
         // reset cursor
-        scene.setOnMouseExited( mouseEvent -> {
+        setOnMouseExited( mouseEvent -> {
             segmentSelected.set(-1);
-            System.out.println("mouse exited scene");
+            System.out.println("mouse exited group");
         });
-
-        root.getChildren().add(outerFrame);
-
         // createWindowButtons
-        Pane windowButtons = createWindowButtons(root);
-
-        // drag window buttons area.
-        windowButtons.setOnMouseDragged( mouseEvent -> {
-            System.out.println("drag root sees segment " + resizeWindowTracker.currentSegmentIndex.get());
-            int segment = resizeWindowTracker.currentSegmentIndex.get();
-            if (segment == -1 && anchorPt != null && previousLocation != null) {
-                stage.setX(previousLocation.getX()
-                        + mouseEvent.getScreenX()
-                        - anchorPt.getX());
-                stage.setY(previousLocation.getY()
-                        + mouseEvent.getScreenY()
-                        - anchorPt.getY());
-            }
-        });
-        windowButtons.setOnMousePressed(mouseEvent -> {
-            int segment = resizeWindowTracker.currentSegmentIndex.get();
-            if (segment == -1) {
-                anchorPt = new Point2D(mouseEvent.getScreenX(),
-                        mouseEvent.getScreenY());
-            }
-            System.out.println("press root sees segment " + resizeWindowTracker.currentSegmentIndex.get());
-
-        });
+        windowButtons = createWindowButtons(this);
+        // drag window buttons.
+        windowButtons.setOnMouseDragged( mouseEvent -> handleMouseDragged(mouseEvent));
+        windowButtons.setOnMousePressed(mouseEvent -> handleMousePressed(mouseEvent));
         // createLeftAccent
-        Node leftAccent = createLeftAccent(root);
-
+        leftAccent = createLeftAccent(this);
         // createLeftTab
-        Node leftTab = createLeftTab(root);
-
+        leftTab = createLeftTab(this);
         // createMainTitleArea
-        Pane mainTitleArea = createMainTitleArea(root);
-
+        mainTitleArea = createMainTitleArea();
+        // drag window buttons area. 
+        mainTitleArea.setOnMouseDragged( mouseEvent -> handleMouseDragged(mouseEvent));
+        mainTitleArea.setOnMousePressed(mouseEvent -> handleMousePressed(mouseEvent));
         // build bottom area
-        Path mainContentBorderFrame = createMainContentViewArea(root);
-
-
+        mainContentBorderFrame = createMainContentViewArea();
+        // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
+        AnchorPane.setTopAnchor(contentPane, 15.0);
+        AnchorPane.setLeftAnchor(contentPane, 15.0);
+        AnchorPane.setRightAnchor(contentPane, 15.0);
+        AnchorPane.setBottomAnchor(contentPane, 15.0);
+        mainContentBorderFrame.getMainContentPane().getChildren().add(this.contentPane);
+        //Disable interactions with the content while minimized.
+        contentPane.mouseTransparentProperty().bind(minimizedProperty);
+        
+        getChildren().addAll(windowButtons, mainTitleArea,
+            leftAccent, leftTab, outerFrame, mainContentBorderFrame);
+        enterScene = createEnterAnimation(
+                this.contentPane,
+                windowButtons,
+                mainTitleArea,
+                leftAccent,
+                leftTab,
+                outerFrame,
+                mainContentBorderFrame.getMainContentInnerPath());
+        
         // starting initial anchor point
 //        root.setOnMousePressed(mouseEvent -> {
 //            int segment = resizeWindowTracker.currentSegmentIndex.get();
@@ -182,79 +146,82 @@ public class PathWindow {
 //        });
 
         // Set the new previous to the current mouse xTo,yTo coordinate
-        root.setOnMouseReleased(mouseEvent -> {
-            int segment = resizeWindowTracker.currentSegmentIndex.get();
+        setOnMouseReleased(mouseEvent -> {
+            int segment = resizePaneTracker.currentSegmentIndex.get();
             //if (segment == -1) {
-                previousLocation = new Point2D(stage.getX(),
-                        stage.getY());
+                previousLocation = new Point2D(getTranslateX(),getTranslateY());
             //}
             System.out.println("released");
         });
-
+        //if the pane is minimized, double click to bring it back
+        addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if(minimizedProperty.get() && 
+                e.getClickCount() > 1 && e.getButton() == MouseButton.PRIMARY) {
+                restore();
+            }
+        });
+        //if the pane is minimized, enable all components to handle mouse presses
+        addEventHandler(MouseEvent.MOUSE_PRESSED, me -> {
+            if(minimizedProperty.get()) {
+                handleMousePressed(me);
+                me.consume();
+            }
+        });
+        //if the pane is minimized, enable all components to assist with dragging
+        addEventHandler(MouseEvent.MOUSE_DRAGGED, me -> {
+            if(minimizedProperty.get()) {
+                handleMouseDragged(me);
+                me.consume();
+            }
+        });
+                
         // Initialize previousLocation after Stage is shown
-        stage.addEventHandler(WindowEvent.WINDOW_SHOWN,
-                (WindowEvent t) -> {
-                    previousLocation = new Point2D(stage.getX(),
-                            stage.getY());
-                });
-
-        stage.setScene(scene);
+        //@TODO SMP Replace Stage oriented Window events with custom versions
+        this.scene.addEventHandler(CovalentPaneEvent.COVALENT_PANE_SHOWN,
+            (CovalentPaneEvent t) -> {
+                previousLocation = new Point2D(getTranslateX(),getTranslateY());
+            });
 
         wireListeners();
-
-        Stage control = new Stage();
-        Text animButton = new Text("animate");
-        animButton.setOnMouseClicked( actionEvent -> {
-            Animation enterScene = createEnterAnimation(
-                    stage,
-                    windowButtons,
-                    mainTitleArea,
-                    leftAccent,
-                    leftTab,
-                    outerFrame,
-                    mainContentBorderFrame);
-            enterScene.play();
-        });
-        Text popPane = new Text("Pop Pane");
-//        popPane.setOnMouseClicked( actionEvent -> {
-//            Animation enterScene = createEnterAnimation(
-//                    stage,
-//                    windowButtons,
-//                    mainTitleArea,
-//                    leftAccent,
-//                    leftTab,
-//                    outerFrame,
-//                    mainContentBorderFrame);
-//            enterScene.play();
-//        });
-        Text closeAll = new Text("Close Panes");
-        HBox hbox = new HBox(5, animButton, popPane, closeAll);
-
-        control.setScene(new Scene(new StackPane(hbox), 200, 100 ));
-        control.show();
     }
 
+    private void handleMouseDragged(MouseEvent mouseEvent) {
+        System.out.println("drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
+        int segment = resizePaneTracker.currentSegmentIndex.get();
+        if (segment == -1 && anchorPt != null && previousLocation != null) {
+            this.setTranslateX(previousLocation.getX()
+                    + mouseEvent.getScreenX()
+                    - anchorPt.getX());
+            this.setTranslateY(previousLocation.getY()
+                    + mouseEvent.getScreenY()
+                    - anchorPt.getY());
+        }        
+    }
+    private void handleMousePressed(MouseEvent mouseEvent) {
+        int segment = resizePaneTracker.currentSegmentIndex.get();
+        if (segment == -1) {
+            anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY());
+        }
+        System.out.println("press root sees segment " + resizePaneTracker.currentSegmentIndex.get());        
+    }
 
-    private Animation createEnterBorderAnimation(Path borderFrame) {
+    private Animation createEnterBorderAnimation(Path borderFrame, double totalMS) {
         double totalLength = Utils.getTotalLength(borderFrame);
         borderFrame.getStrokeDashArray().add(totalLength);
         borderFrame.setStrokeDashOffset(totalLength);
         KeyValue strokeOffsetStart = new KeyValue(borderFrame.strokeDashOffsetProperty(), totalLength);
         KeyValue visible = new KeyValue(borderFrame.visibleProperty(), true);
         KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1), strokeOffsetStart, visible);
-
         KeyValue strokeOffsetEnd = new KeyValue(borderFrame.strokeDashOffsetProperty(), 0);
         KeyFrame keyFrame2 = new KeyFrame(Duration.millis(1000), handler -> {
             System.out.println("done.");
             borderFrame.getStrokeDashArray().clear();
         }, strokeOffsetEnd);
 
-
-
         Timeline anim = new Timeline(keyFrame1, keyFrame2);
         return anim;
     }
-    private Animation createEnterAnimation(Stage stage,
+    private Animation createEnterAnimation(Pane pane,
                                         Pane windowButtons,
                                         Pane mainTitleArea,
                                         Node leftAccent,
@@ -262,27 +229,28 @@ public class PathWindow {
                                         Path outerBorderFrame,
                                         Path mainBorderFrame) {
 
+        ParallelTransition borderParallelTransition = new ParallelTransition();
+        Animation anim1 = createEnterBorderAnimation(outerBorderFrame, borderTimeMs);
+        Animation anim2 = createEnterBorderAnimation(mainBorderFrame, borderTimeMs);
+        borderParallelTransition.getChildren().addAll(anim1, anim2);
+
+        ParallelTransition windowParallelTransition = new ParallelTransition();
+        Animation anim3 = createFadeAnim(windowButtons, contentTimeMs);
+        Animation anim4 = createFadeAnim(mainTitleArea, contentTimeMs);
+        Animation anim5 = createFadeAnim(leftAccent, contentTimeMs);
+        Animation anim6 = createFadeAnim(leftTab, contentTimeMs);
+        windowParallelTransition.getChildren().addAll(anim3, anim4, anim5, anim6);
+        
+        Animation anim7 = createFadeAnim(pane, contentTimeMs); //createEnterRootAnim(1000, stage);
         SequentialTransition sequentialTransition = new SequentialTransition();
-
-        Animation anim0 = createFadeAnim(stage.getScene().getRoot()); //createEnterRootAnim(1000, stage);
-        ParallelTransition parallelTransition = new ParallelTransition();
-        Animation anim1 = createEnterBorderAnimation(outerBorderFrame);
-        Animation anim2 = createEnterBorderAnimation(mainBorderFrame);
-        Animation anim3 = createFadeAnim(windowButtons);
-        Animation anim4 = createFadeAnim(mainTitleArea);
-        Animation anim5 = createFadeAnim(leftAccent);
-        Animation anim6 = createFadeAnim(leftTab);
-        parallelTransition.getChildren().addAll(anim1, anim2);
-
         sequentialTransition
                 .getChildren()
-                .addAll(anim0,
-                    parallelTransition,
-                    anim3,
-                    anim4,
-                    anim5,
-                    anim6);
-
+                .addAll(
+                    anim7,
+                    borderParallelTransition,
+                    windowParallelTransition);                    
+//                    anim7); //show content last
+//                    anim3, anim4, anim5, anim6);
         return sequentialTransition;
     }
 
@@ -302,18 +270,18 @@ public class PathWindow {
 //        return new Timeline(start, end);
 //    }
 
-    private Animation createFadeAnim(Node view) {
+    private Animation createFadeAnim(Node view, double totalTimeMs) {
         FadeTransition fadeTransition = new FadeTransition();
         fadeTransition.setNode(view);
         fadeTransition.setFromValue(0.0);
         fadeTransition.setToValue(1.0);
+        fadeTransition.setDuration(Duration.millis(totalTimeMs));
         return fadeTransition;
     }
 
-
     private Node createLeftAccent(AnchorPane root) {
         // create the accent shape left
-        ShapedPath accentShape = ShapedPathBuilder.create(this.stage)
+        ShapedPath accentShape = ShapedPathBuilder.create(root)
                 .addStyleClass("window-accent-shape")
                 .moveTo(20, 9)
                 .horzSeg(35)
@@ -324,12 +292,12 @@ public class PathWindow {
                 .closeSeg()
                 .build();
 
-        root.getChildren().add(accentShape);
+        //root.getChildren().add(accentShape);
         return accentShape;
     }
 
     private Node createLeftTab(AnchorPane root) {
-        ShapedPath leftTabShape = ShapedPathBuilder.create(this.stage)
+        ShapedPath leftTabShape = ShapedPathBuilder.create(root)
                 .addStyleClass("left-tab-shape")
                 .moveTo(5, 30+3)
                 .lineSeg(xTo(13).yTo(9+15))
@@ -338,7 +306,7 @@ public class PathWindow {
                 .closeSeg()
                 .build();
 
-        root.getChildren().add(leftTabShape);
+        //root.getChildren().add(leftTabShape);
         return leftTabShape;
     }
     private Pane createWindowButtons(AnchorPane root) {
@@ -357,21 +325,30 @@ public class PathWindow {
 
         // create buttons
         HBox buttonArea = new HBox(4);
-        Rectangle b1 = new Rectangle();
-        b1.setWidth(50);
-        b1.setHeight(5);
-        b1.setFill(Color.rgb(253,253,253, .8));
+        StyleableRectangle b1 = new StyleableRectangle(50, 20, Color.rgb(253,253,253, .8));
+        b1.getStyleClass().add("window-header-minimize-button");
+        b1.setOnMouseClicked(e -> {
+            b1.getScene().getRoot().fireEvent(
+                new CovalentPaneEvent(CovalentPaneEvent.COVALENT_PANE_MINIMIZE, this));
+            this.minimize();
+        });
+        
+        StyleableRectangle b2 = new StyleableRectangle(50, 20, Color.rgb(235,235,80, .8));
+        b2.getStyleClass().add("window-header-maximize-button");
+        b2.setOnMouseClicked(e ->{
+            b2.getScene().getRoot().fireEvent(
+                new CovalentPaneEvent(CovalentPaneEvent.COVALENT_PANE_MAXIMIZE, this));
+            this.maximize();
+        });
 
-        Rectangle b2 = new Rectangle();
-        b2.setWidth(50);
-        b2.setHeight(5);
-        b2.setFill(Color.rgb(235,235,80, .8));
-
-        Rectangle b3 = new Rectangle();
-        b3.setWidth(50);
-        b3.setHeight(5);
-        b3.setFill(Color.rgb(250,166,62, .8));
-
+        StyleableRectangle b3 = new StyleableRectangle(50, 20, Color.rgb(250, 50, 50, .8));
+        b3.getStyleClass().add("window-header-close-button");
+        b3.setOnMouseClicked(e -> {
+            b3.getScene().getRoot().fireEvent(
+                new CovalentPaneEvent(CovalentPaneEvent.COVALENT_PANE_CLOSE, this));
+            this.close();
+        });
+        
         buttonArea.getChildren().addAll(b1,b2, b3);
 
         AnchorPane.setTopAnchor(buttonArea, (double)(12-5f)/2);
@@ -380,15 +357,12 @@ public class PathWindow {
 
         windowHeader.getChildren().add(buttonArea);
 
-        root.getChildren().add(windowHeader);
         return windowHeader;
     }
-    private Pane createMainTitleArea(AnchorPane root) {
+    private Pane createMainTitleArea() {
 
         AnchorPane mainTitleView = new AnchorPane();
         mainTitleView.setPrefHeight(70);
-        //mainTitleView.getStyleClass().add("main-title-path");
-
         AnchorPane.setTopAnchor(mainTitleView, 30.0);
 
         double leftAnchor = 10 + 15;
@@ -402,7 +376,8 @@ public class PathWindow {
         MoveTo a0 = new MoveTo(10,5);
         LineTo a1 = new LineTo();
         a1.xProperty().bind(mainTitleView.widthProperty());
-        a1.yProperty().set(10);
+//        a1.yProperty().set(10);
+        a1.yProperty().set(5);
 
         LineTo a2 = new LineTo();
         a2.xProperty().bind(mainTitleView.widthProperty());
@@ -435,26 +410,15 @@ public class PathWindow {
         titlePathAsClip.setFill(Color.WHITE);
         nestedPane.setClip(titlePathAsClip);
 
-        /*
-        ext text1 = new Text("Big italic red text");
-     text1.setFill(Color.RED);
-     text1.setFont(Font.font("Helvetica", FontPosture.ITALIC, 40));
-     Text text2 = new Text(" little bold blue text");
-     text2.setFill(Color.BLUE);
-     text2.setFont(Font.font("Helvetica", FontWeight.BOLD, 10));
-     TextFlow textFlow = new TextFlow(text1, text2);
-
-         */
-
-
-        Text text1 = new Text("AIRCRAFT ");
+        Text text1 = new Text(mainTitleTextProperty.get() + " ");
+        text1.textProperty().bind(mainTitleTextProperty);
         text1.setFill(Color.WHITE);
         text1.getStyleClass().add("main-title-text");
 
-        Text text2 = new Text("GLOBAL POSITION");
+        Text text2 = new Text(mainTitleText2Property.get());
+        text2.textProperty().bind(mainTitleText2Property);
         text2.setFill(Color.WHITE);
         text2.getStyleClass().add("main-title-text2");
-
 
         TextFlow textFlow = new TextFlow(text1, text2);
         AnchorPane.setLeftAnchor(textFlow, 20.0);
@@ -463,17 +427,17 @@ public class PathWindow {
 
         mainTitleView.getChildren().addAll(titlePath, nestedPane);
 
-        root.getChildren().add(mainTitleView);
+        //root.getChildren().add(mainTitleView);
         return mainTitleView;
 
     }
 
-    private Path createMainContentViewArea(AnchorPane root) {
+    private MainContentViewArea createMainContentViewArea() {
         // Create a main content region
         // 1) create pane (transparent style)
         // 2) create path outline
         // 3) use path outline as clip region
-        AnchorPane mainContentView = new AnchorPane();
+        MainContentViewArea mainContentView = new MainContentViewArea();
         mainContentView.getStyleClass().add("main-content-view");
         AnchorPane.setTopAnchor(mainContentView, 90.0);
         double leftAnchor = 10 + 15;
@@ -481,7 +445,7 @@ public class PathWindow {
         double rightAnchor = 15;
         AnchorPane.setRightAnchor(mainContentView, rightAnchor);
         AnchorPane.setBottomAnchor(mainContentView, 10 + 15.0);
-        root.getChildren().add(mainContentView);
+        //root.getChildren().add(mainContentView);
 
         ShapedPath mainContentInnerPath = ShapedPathBuilder.create(mainContentView)
                 .addStyleClass("main-content-inner-path")
@@ -500,20 +464,64 @@ public class PathWindow {
                 .closeSeg()
                 .build();
 
+        // THIS IS WHERE THE USER CONTENT IS PLACED INTO!!!!
         AnchorPane nestedPane = new AnchorPane(); // has the clipped
-
+        nestedPane.getStyleClass().add("main-content-pane");
+        // clone path for clip region
         Path mainContentInnerPathAsClip = new Path();
         mainContentInnerPathAsClip.getElements().addAll(mainContentInnerPath.getElements());
         mainContentInnerPathAsClip.setFill(Color.WHITE);
+
+        // punch out the path for the main content
         nestedPane.setClip(mainContentInnerPathAsClip);
 
-        mainContentView.getChildren().addAll(nestedPane, mainContentInnerPath);
+        // set the nested pane for the caller to put stuff inside.
+        mainContentView.setMainContentPane(nestedPane);
+        //Add the nestedPane containging user content last so it has mouse priority
+        mainContentView.getChildren().addAll(mainContentInnerPath, nestedPane);
 
-        return mainContentInnerPath;
+        mainContentView.setMainContentInnerPath(mainContentInnerPath);
+
+        return mainContentView;
     }
-
+    
+    private Animation createMinimizeAnim(double totalTimeMs) {
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(totalTimeMs), this);
+        scaleTransition.setFromX(1.0);
+        scaleTransition.setFromY(1.0);
+        scaleTransition.setToX(0.10);
+        scaleTransition.setToY(0.10);
+        return scaleTransition;
+    }
+    private Animation createRestoreAnim(double totalTimeMs) {
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.millis(totalTimeMs), this);
+        scaleTransition.setFromX(0.1);
+        scaleTransition.setFromY(0.1);
+        scaleTransition.setToX(1.0);
+        scaleTransition.setToY(1.0);
+        return scaleTransition;
+    }    
+    public void minimize() {
+        System.out.println("Minimize called on Pane: " + this.toString());
+        Animation minimizeAnimation = createMinimizeAnim(contentTimeMs);
+        minimizedProperty.set(true);
+        minimizeAnimation.play();
+    }
+    public void restore() {
+        System.out.println("Restoring Pane: " + this.toString());
+        Animation restoreAnimation = createRestoreAnim(contentTimeMs);
+        minimizedProperty.set(false);
+        restoreAnimation.play();
+    }
+    public void maximize() {
+        System.out.println("Maximize called on Pane: " + this.toString());
+        
+    }
+    public void close() {
+        System.out.println("Close called on Pane: " + this.toString());
+    }
     public void show() {
-        stage.show();
+        enterScene.play();
     }
 
     private RESIZE_DIRECTION getCurrentResizeDirection() {
@@ -523,24 +531,23 @@ public class PathWindow {
     }
 
     private void wireListeners() {
-        Scene scene = stage.getScene();
-        resizeWindowTracker = new ResizeWindowTracker(stage);
+        resizePaneTracker = new ResizePaneTracker(contentPane);
 
-        resizeWindowTracker.setOnMousePressed((mouseEvent, wt) -> {
+        resizePaneTracker.setOnMousePressed((mouseEvent, wt) -> {
             // store anchor x,y of the stage
-            wt.anchorStageXYCoordValue.set(new Point2D(stage.getX() , stage.getY()));
+            wt.anchorStageXYCoordValue.set(new Point2D(getTranslateX(), getTranslateY()));
 
             // TODO Revisit code b/c this might be doing the same thing as line above.
-            wt.stageXCoordValue.set(stage.getX());
-            wt.stageYCoordValue.set(stage.getY());
+            wt.paneXCoordValue.set(getTranslateX());
+            wt.paneYCoordValue.set(getTranslateY());
 
             // anchor of the mouse screen x,y position.
             wt.anchorCoordValue.set(new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
 
             // current width and height
-            wt.anchorWidthSizeValue.set(stage.getWidth());
-            wt.anchorHeightSizeValue.set(stage.getHeight());
-            System.out.println("press mouseX = " + mouseEvent.getX() + " stageX = " + stage.getX());
+            wt.anchorWidthSizeValue.set(contentPane.getWidth());
+            wt.anchorHeightSizeValue.set(contentPane.getHeight());
+            System.out.println("press mouseX = " + mouseEvent.getX() + " translateX = " + getTranslateX());
 
             // current resize direction
             wt.currentResizeDirection.set(getCurrentResizeDirection());
@@ -549,7 +556,9 @@ public class PathWindow {
             wt.currentSegmentIndex.set(segmentSelected.get());
         });
 
-        resizeWindowTracker.setOnMouseDragged((mouseEvent, wt) -> {
+        resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
+
+//        resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
             RESIZE_DIRECTION direction = wt.currentResizeDirection.get();
 
             switch (direction) {
@@ -595,70 +604,48 @@ public class PathWindow {
             int index = newv.intValue();
             if (index > -1) {
                 RESIZE_DIRECTION direction = cursorSegmentArray[index];
-                scene.cursorProperty().set(cursorMap.get(direction));
+                cursorProperty().set(cursorMap.get(direction));
             } else {
-                scene.cursorProperty().set(Cursor.DEFAULT);
+                cursorProperty().set(Cursor.DEFAULT);
             }
         });
 
         // populate the lines for the outerframe.
-        stage.onShownProperty().set(windowEvent -> {
+        //@TODO SMP Replace with custom event
+        scene.getRoot().addEventHandler(CovalentPaneEvent.COVALENT_PANE_SHOWN, e -> {
             generateLineMap(outerFrame.getElements());
-
-//            String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-//
-//            BufferedImage screencapture = null;
-//            try {
-//
-//                screencapture = new Robot().createScreenCapture(
-//                        new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())
-//                );
-//            } catch (AWTException e) {
-//                e.printStackTrace();
-//            }
-//
-//            // Save as JPEG
-//            File file = new File("screencapture_test"  + ".jpg");
-//                    try {
-//                        ImageIO.write(screencapture, "jpg", file);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-
-                }
-        );
+        });
     }
 
-
-    private void resizeNorth(MouseEvent mouseEvent, ResizeWindowTracker wt) {
+    private void resizeNorth(MouseEvent mouseEvent, ResizePaneTracker wt) {
         double screenY = mouseEvent.getScreenY();
         double distance = wt.anchorStageXYCoordValue.get().getY() - screenY;
 
-        wt.stageYCoordValue.set(wt.anchorStageXYCoordValue.get().getY() - distance);
+        wt.paneYCoordValue.set(wt.anchorStageXYCoordValue.get().getY() - distance);
         double newHeight = wt.anchorHeightSizeValue.get() + distance;
         wt.resizeHeightValue.set(newHeight);
     }
 
-    private void resizeSouth(MouseEvent mouseEvent, ResizeWindowTracker wt) {
+    private void resizeSouth(MouseEvent mouseEvent, ResizePaneTracker wt) {
         double y = mouseEvent.getScreenY();
         double newHeight = wt.anchorHeightSizeValue.get() + y - wt.anchorCoordValue.get().getY();
         wt.resizeHeightValue.set(newHeight);
         //System.out.println("newHeight " + newHeight + " dragging      xTo " + yTo + ", length " + (yTo - wt.anchorCoordValue.get().getY()));
     }
 
-    private void resizeEast(MouseEvent mouseEvent, ResizeWindowTracker wt) {
+    private void resizeEast(MouseEvent mouseEvent, ResizePaneTracker wt) {
         double x = mouseEvent.getScreenX();
         double newWidth = wt.anchorWidthSizeValue.get() + x - wt.anchorCoordValue.get().getX();
         wt.resizeWidthValue.set(newWidth);
         //System.out.println("newWidth " + newWidth + " dragging      xTo " + xTo + ", length " + (xTo - wt.anchorCoordValue.get().getX()));
     }
 
-    private void resizeWest(MouseEvent mouseEvent, ResizeWindowTracker wt) {
+    private void resizeWest(MouseEvent mouseEvent, ResizePaneTracker wt) {
         double screenX = mouseEvent.getScreenX();
         double offset = wt.currentSegmentIndex.intValue() == 8 ? 10 : 0; // TODO magic numbers fix.
         System.out.println("offset for segment " + offset);
         double distance = wt.anchorStageXYCoordValue.get().getX() - screenX + offset; // offset left side segment 8 (10 pixels)
-        wt.stageXCoordValue.set(wt.anchorStageXYCoordValue.get().getX() - distance);
+        wt.paneXCoordValue.set(wt.anchorStageXYCoordValue.get().getX() - distance);
 
         double newWidth = wt.anchorWidthSizeValue.get() + distance;
         wt.resizeWidthValue.set(newWidth);
@@ -746,9 +733,9 @@ public class PathWindow {
         return line;
     }
 
-    private Path createFramePath(Stage stage) {
+    private Path createFramePath(Pane pane) {
         // draw
-        ShapedPath outerFrame = ShapedPathBuilder.create(stage)
+        ShapedPath newFrame = ShapedPathBuilder.create(pane)
                 .moveTo(20, 0)
                 .horzSeg(bindXToWidth(-10)) // 0
                 .lineSeg(bindXToWidth().yTo(10))  // 1
@@ -766,13 +753,13 @@ public class PathWindow {
                 .closeSeg()
                 .build();
 
-        return outerFrame;
+        return newFrame;
     }
 }
 
-interface MousePressed {
-    void pressed(MouseEvent mouseEvent, ResizeWindowTracker windowTracker);
+interface PaneMousePressed {
+    void pressed(MouseEvent mouseEvent, ResizePaneTracker paneTracker);
 }
-interface MouseDragged {
-    void dragged(MouseEvent mouseEvent, ResizeWindowTracker windowTracker);
+interface PaneMouseDragged {
+    void dragged(MouseEvent mouseEvent, ResizePaneTracker paneTracker);
 }
