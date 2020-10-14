@@ -83,7 +83,7 @@ public class CovalentPaneDemo extends Application {
             PathPane newPane = new PathPane(scene,
                     640,480,
                     someContentPane,
-                "Cyber Battlespace", "Notifications",
+                "Cyber Battlespace ", "Notifications",
                 borderTimeSpinner.getValue(),
                 contentTimeSpinner.getValue());
             desktopPane.getChildren().add(newPane);

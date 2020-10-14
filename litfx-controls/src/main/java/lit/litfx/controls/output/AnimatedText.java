@@ -30,20 +30,31 @@ public class AnimatedText extends Text {
         super(textString);
         this.textString = textString;
         this.animationStyle = animationStyle;
+        getStyleClass().add("litlog-text");        
         setFont(font);
         setFill(color);
+    }
+    public AnimatedText(String textString ) {
+        super(textString);
+        this.textString = textString;
+        this.animationStyle = ANIMATION_STYLE.TYPED;
         getStyleClass().add("litlog-text");        
+    }
+
+    public void animate(String newText) {
+        animateTyped(newText);
     }
     public void animate() {
         switch(getAnimationStyle()) {
-            case TYPED: animateTyped();
+            case TYPED: animateTyped(getText());
         }
     }
-    private void animateTyped() {
+    private void animateTyped(String str) {
         
         final IntegerProperty i = new SimpleIntegerProperty(0);
         Timeline timeline = new Timeline();
-        String animatedString = getText();
+        setText("");
+        String animatedString = str;
         KeyFrame keyFrame1 = new KeyFrame( Duration.millis(getAnimationTimeMS()), event -> {
             if (i.get() > animatedString.length()) {
                 timeline.stop();
