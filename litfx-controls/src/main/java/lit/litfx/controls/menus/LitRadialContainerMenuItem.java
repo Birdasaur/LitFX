@@ -52,7 +52,7 @@ import javafx.util.Duration;
 
 public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 
-    private boolean selected = false;
+    protected boolean selected = false;
     private final Group childAnimGroup = new Group();
     private FadeTransition fadeIn = null;
     private FadeTransition fadeOut = null;
@@ -71,11 +71,10 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
     }
 
     private void initialize() {
-		arrow.setFill(Color.GRAY);
-		arrow.setStroke(null);
+        arrow.setFill(Color.GRAY);
+        arrow.setStroke(null);
 	childAnimGroup.setVisible(false);
 	visibleProperty().addListener(new ChangeListener<Boolean>() {
-
 	    @Override
 	    public void changed(final ObservableValue<? extends Boolean> arg0,
 		    final Boolean arg1, final Boolean arg2) {
@@ -93,12 +92,11 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 	fadeOut.setFromValue(0.0);
 	fadeOut.setToValue(1.0);
 	fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
-
-		    @Override
-		    public void handle(final ActionEvent arg0) {
-			childAnimGroup.setVisible(false);
-		    }
-		});
+            @Override
+            public void handle(final ActionEvent arg0) {
+                childAnimGroup.setVisible(false);
+            }
+        });
 	getChildren().add(arrow);
     }
 

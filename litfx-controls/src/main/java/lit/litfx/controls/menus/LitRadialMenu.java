@@ -117,6 +117,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
 
         itemGroup = new Group();
         getChildren().add(itemGroup);
+        itemGroup.toFront();
         
         itemFitWidth = new SimpleDoubleProperty(innerRadius);
         itemFitWidth.addListener((ov,t,t1) -> {
@@ -194,6 +195,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
             event.consume();
         });
         getChildren().add(centerGroup);
+        centerGroup.toFront();
         this.centerGraphic = new SimpleObjectProperty<Node>(centerGraphic);
         setCenterGraphic(centerGraphic);
         saveStateBeforeAnimation();

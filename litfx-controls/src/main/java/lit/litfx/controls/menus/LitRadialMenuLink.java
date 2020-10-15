@@ -15,37 +15,36 @@ import javafx.scene.shape.Line;
  */
 public class LitRadialMenuLink extends Line {
     
-    protected ObjectProperty<Paint> mouseOnFill;
     protected ObjectProperty<Paint> mouseOnStroke;
     protected ObjectProperty<LitRadialMenuItem> item;
     Node source;
     
     public LitRadialMenuLink(Node source, LitRadialMenuItem item, 
-        Paint fill, Paint stroke, Paint mouseOnFill, Paint mouseOnStroke, double width) {
+        Paint stroke, Paint mouseOnStroke, double width) {
         super();
         this.source = source;
         this.item = new SimpleObjectProperty<>(item);
-        this.mouseOnFill = new SimpleObjectProperty<>(mouseOnFill);
         this.mouseOnStroke = new SimpleObjectProperty<>(mouseOnStroke);
-        setFill(fill);
         setStroke(stroke);
         setStrokeWidth(width);
-        
         connect(this.source);
     }
     
     protected void connect(Node node) {
-        setStartX(node.getTranslateX());
-        setStartY(node.getTranslateY());
-        setEndX(item.get().innerStartX);
-        setEndY(item.get().innerStartY);
-        System.out.println("isX: " + item.get().innerStartX);
-        System.out.println("isY: " + item.get().innerStartY);
+        startXProperty().bind(node.translateXProperty()
+            .add(node.getBoundsInLocal().getCenterX())
+            .subtract(strokeWidthProperty().divide(2.0)));
 
-//        startXProperty().bind(node.translateXProperty());
-//        startYProperty().bind(node.translateYProperty());
-//        endXProperty().bind(item.get().graphic.translateXProperty());
-//        endYProperty().bind(item.get().graphic.translateYProperty());
+        startYProperty().bind(node.translateYProperty()
+            .add(node.getBoundsInLocal().getCenterY())
+            .subtract(strokeWidthProperty().divide(2.0)));
+
+        endXProperty().bind(item.get().graphic.translateXProperty()
+            .add(item.get().graphic.getBoundsInLocal().getCenterX())
+            .subtract(strokeWidthProperty().divide(2.0)));
+        endYProperty().bind(item.get().graphic.translateYProperty()
+            .add(item.get().graphic.getBoundsInLocal().getCenterY())
+            .subtract(strokeWidthProperty().divide(2.0)));
     }
     protected void disconnect() {
         startXProperty().unbind();
@@ -55,20 +54,7 @@ public class LitRadialMenuLink extends Line {
     }
     
 //<editor-fold defaultstate="collapsed" desc="Properties">
-    
-    public Paint getMouseOnFill() {
-        return mouseOnFill.get();
-    }
-
-    public void setMouseOnFill(Paint fill) {
-        this.mouseOnFill.set(fill);
-    }
-
-    public ObjectProperty<Paint> mouseOnFillProperty() {
-        return mouseOnFill;
-    }
-    
-    
+   
     public Paint getMouseOnStroke() {
         return mouseOnStroke.get();
     }

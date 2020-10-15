@@ -22,15 +22,11 @@ import javafx.scene.paint.Paint;
 
 public class LinkedRadialMenu extends LitRadialMenu {
 
-    public static double DEFAULT_LINK_STROKE_WIDTH = 10.0;
-    public static Color DEFAULT_LINK_FILL = Color.ALICEBLUE.deriveColor(1, 1, 1, 0.5);
+    public static double DEFAULT_LINK_STROKE_WIDTH = 5.0;
     public static Color DEFAULT_LINK_STROKE = Color.SKYBLUE.deriveColor(1, 1, 1, 0.5);
-    public static Color DEFAULT_LINK_MOUSEON_FILL = Color.ALICEBLUE;
     public static Color DEFAULT_LINK_MOUSEON_STROKE = Color.SKYBLUE;
     
     protected DoubleProperty linkStrokeWidth;
-    protected ObjectProperty<Paint> linkFill;
-    protected ObjectProperty<Paint> linkMouseOnFill;
     protected ObjectProperty<Paint> linkStroke;
     protected ObjectProperty<Paint> linkMouseOnStroke;
     protected BooleanProperty linksVisible;
@@ -53,19 +49,16 @@ public class LinkedRadialMenu extends LitRadialMenu {
         super(initialAngle, innerRadius, radius, offset, bgFill, bgMouseOnFill, strokeFill, strokeMouseOnFill, clockwise, centerVisibility, centerGraphic);
         this.itemToLinkMap = new HashMap<>();
         linkGroup = new Group();
-        getChildren().add(linkGroup);
+        getChildren().add(0, linkGroup);
+        linkGroup.toBack();
         
         //Size of link
         this.linkStrokeWidth = new SimpleDoubleProperty(DEFAULT_LINK_STROKE_WIDTH);
         linkStrokeWidth.addListener(this);        
         //colors of link
-        this.linkFill = new SimpleObjectProperty<>(DEFAULT_LINK_FILL);
-        this.linkFill.addListener(this);
         this.linkStroke = new SimpleObjectProperty<>(DEFAULT_LINK_STROKE);
         this.linkStroke.addListener(this);
         //colors when mouse over
-        this.linkMouseOnFill = new SimpleObjectProperty<>(DEFAULT_LINK_MOUSEON_FILL);
-        this.linkMouseOnFill.addListener(this);
         this.linkMouseOnStroke = new SimpleObjectProperty<>(DEFAULT_LINK_MOUSEON_STROKE);
         this.linkMouseOnStroke.addListener(this);
         //Can we see the links
@@ -131,16 +124,14 @@ public class LinkedRadialMenu extends LitRadialMenu {
     @Override
     public void addMenuItem(final LitRadialMenuItem item) {
         super.addMenuItem(item);
-        LitRadialMenuLink link = new LitRadialMenuLink(this.centerStrokeShape, item, linkFill.get(), 
-            linkStroke.get(), linkMouseOnFill.get(), linkMouseOnStroke.get(), linkStrokeWidth.get());
+        LitRadialMenuLink link = new LitRadialMenuLink(this.centerStrokeShape, item,  
+            linkStroke.get(), linkMouseOnStroke.get(), linkStrokeWidth.get());
         itemToLinkMap.put(item, link);
         links.add(link);
         linkGroup.getChildren().add(link);
         
         link.visibleProperty().bind(item.visibleProperty());
-        link.fillProperty().bind(linkFill);
         link.strokeProperty().bind(linkStroke);
-        link.mouseOnFillProperty().bind(linkMouseOnFill);
         link.mouseOnStrokeProperty().bind(strokeMouseOnFill);
         link.strokeWidthProperty().bind(linkStrokeWidth);
         link.effectProperty().bind(linkEffect);
@@ -159,7 +150,6 @@ public class LinkedRadialMenu extends LitRadialMenu {
         link.visibleProperty().unbind();
         link.fillProperty().unbind();
         link.strokeProperty().unbind();
-        link.mouseOnFillProperty().unbind();
         link.mouseOnStrokeProperty().unbind();
         link.strokeWidthProperty().unbind();
         link.effectProperty().unbind();
@@ -270,30 +260,6 @@ public class LinkedRadialMenu extends LitRadialMenu {
 //    public BooleanProperty getMouseOnProperty() {
 //        return mouseOnProperty;
 //    }
-    public Paint getLinkFill() {
-        return linkFill.get();
-    }
-
-    public void setLinkFill(final Paint linkFill) {
-        this.linkFill.set(linkFill);
-    }
-
-    public ObjectProperty<Paint> linkFillProperty() {
-        return linkFill;
-    }
-
-    public Paint getLinkMouseOnFill() {
-        return linkMouseOnFill.get();
-    }
-
-    public void setLinkMouseOnFill(Paint fill) {
-        this.linkMouseOnFill.set(fill);
-    }
-
-    public ObjectProperty<Paint> linkMouseOnFillProperty() {
-        return linkMouseOnFill;
-    }
-
     public Paint getLinkStroke() {
         return linkStroke.get();
     }

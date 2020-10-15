@@ -28,15 +28,19 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lit.litfx.controls.menus.LinkedRadialContainerMenuItem;
 import lit.litfx.controls.menus.LinkedRadialMenu;
+import lit.litfx.controls.menus.LitRadialContainerMenuItem;
 import lit.litfx.controls.menus.LitRadialMenu;
 import lit.litfx.controls.menus.LitRadialMenuItem;
 
@@ -56,6 +60,7 @@ public class LinkedRadialMenuDemo extends Application {
     double OFFSET = 20.0;
     double INITIAL_ANGLE = 90.0;
     double STROKE_WIDTH = 1.0;
+    double LINK_STROKE_WIDTH = 5;
 
     Color bgLg1Color = Color.DARKCYAN.deriveColor(1, 1, 1, 0.2);
     Color bgLg2Color = Color.LIGHTBLUE.deriveColor(1, 1, 1, 0.5);
@@ -65,6 +70,11 @@ public class LinkedRadialMenuDemo extends Application {
     Color strokeMouseOnColor = Color.YELLOW;
     Color outlineColor = Color.GREEN;    
     Color outlineMouseOnColor = Color.LIGHTGREEN;
+    Color linkStrokeColor = Color.ALICEBLUE;
+    Color linkStrokeMouseOnColor = Color.ALICEBLUE;
+    Color linkFillColor = Color.SKYBLUE;    
+    Color linkFillMouseOnColor = Color.SKYBLUE;
+    
     
     private ColorPicker bglg1ColorPicker;
     private ColorPicker bglg2ColorPicker;
@@ -74,7 +84,10 @@ public class LinkedRadialMenuDemo extends Application {
     private ColorPicker strokeMoColorPicker;
     private ColorPicker outlineColorPicker;
     private ColorPicker outlineMoColorPicker;
+    private ColorPicker linkStrokeColorPicker;
+    private ColorPicker linkStrokeMoColorPicker;
     
+    private Slider linkStrokeWidthSlider;
     private Slider itemSizeSlider;
     private Slider innerRadiusSlider;
     private Slider itemFitWidthSlider;
@@ -82,6 +95,8 @@ public class LinkedRadialMenuDemo extends Application {
     private Slider offsetSlider;
     private Slider initialAngleSlider;    
     private Slider strokeWidthSlider;
+ 
+    
     private SimpleLongProperty timeDelayProp = new SimpleLongProperty(2000);
     private SimpleBooleanProperty centeredMenu = new SimpleBooleanProperty(true);
 
@@ -98,6 +113,7 @@ public class LinkedRadialMenuDemo extends Application {
         Pane pane = new Pane();
         VBox colors = createColorControls();
         colors.setAlignment(Pos.CENTER);
+        
         VBox controls = createSliderControls();
         BorderPane bp = new BorderPane(pane);
         ScrollPane sp = new ScrollPane(controls);
@@ -139,9 +155,20 @@ public class LinkedRadialMenuDemo extends Application {
         stage.setScene(scene);
         stage.show();
     }
+  
     private VBox createColorControls() {
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
+        linkStrokeColorPicker = new ColorPicker(linkStrokeColor);
+        linkStrokeColorPicker.valueProperty().addListener((ov, t, t1) -> {
+            radialMenu.setLinkStroke(t1);
+        });
+        
+        linkStrokeMoColorPicker = new ColorPicker(linkStrokeMouseOnColor);     
+        linkStrokeMoColorPicker.valueProperty().addListener((ov, t, t1) -> {
+            radialMenu.setLinkMouseOnStroke(t1);
+        });  
+        
         bglg1ColorPicker = new ColorPicker(bgLg1Color);
         bglg1ColorPicker.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setBackgroundFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
@@ -185,13 +212,20 @@ public class LinkedRadialMenuDemo extends Application {
             radialMenu.setOutlineStrokeMouseOnFill(t1);
         });        
         
-        vbox.getChildren().addAll(bglg1ColorPicker, bglg2ColorPicker, bgMolg1ColorPicker, bgMolg2ColorPicker, 
-                    strokeColorPicker, strokeMoColorPicker, outlineColorPicker, outlineMoColorPicker);
+        vbox.getChildren().addAll(linkStrokeColorPicker, linkStrokeMoColorPicker,
+            bglg1ColorPicker, bglg2ColorPicker, bgMolg1ColorPicker, bgMolg2ColorPicker, 
+            strokeColorPicker, strokeMoColorPicker, outlineColorPicker, outlineMoColorPicker);
         return vbox;
     }
 
     private VBox createSliderControls() {
         VBox vbox = new VBox(10);
+
+        linkStrokeWidthSlider = new Slider(1, 50, LINK_STROKE_WIDTH);
+        linkStrokeWidthSlider.valueProperty().addListener((ov, t, t1) -> {
+            radialMenu.setLinkStrokeWidth(ov.getValue().doubleValue());
+        });
+
         itemSizeSlider = new Slider(10, 200, ITEM_SIZE);
         itemSizeSlider.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setMenuItemSize(ov.getValue().doubleValue());
@@ -221,7 +255,7 @@ public class LinkedRadialMenuDemo extends Application {
         strokeWidthSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setStrokeWidth(ov.getValue().doubleValue()));
         
-        vbox.getChildren().addAll(itemSizeSlider, innerRadiusSlider, itemFitWidthSlider, 
+        vbox.getChildren().addAll(linkStrokeWidthSlider, itemSizeSlider, innerRadiusSlider, itemFitWidthSlider, 
             menuSizeSlider, offsetSlider, initialAngleSlider, strokeWidthSlider);
         vbox.setFillWidth(true);
         return vbox;
@@ -343,14 +377,20 @@ public class LinkedRadialMenuDemo extends Application {
         radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Configuration", configuration, handler));
         radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Metrics", metrics, handler));
         radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Scenario Generator", scenariogenerator, handler));
-/* Example from original prototype for adding submenus
-        final RadialContainerMenuItem forwardItem = new RadialContainerMenuItem(50, "forward", forward);
-        forwardItem.addMenuItem(new RadialMenuItem(30, "forward 5'", fiveSec, handler));
-        forwardItem.addMenuItem(new RadialMenuItem(30, "forward 10'", tenSec, handler));
-        forwardItem.addMenuItem(new RadialMenuItem(30, "forward 20'", twentySec, handler));
-        this.radialMenu.addMenuItem(forwardItem);        
-  */      
-        return this.radialMenu;
+        
+        LinkedRadialContainerMenuItem subSubmenu = new LinkedRadialContainerMenuItem(ITEM_SIZE * .9, "subSubmenu", new Text("SubSubmenu"));
+        //Make a 2 layers deep sub menu
+        for(int i=1; i<7;i++)
+            subSubmenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE * .75, "SubSubmenu item " + i, new Text("SubSubmenu Item " + i)));
+
+        LinkedRadialContainerMenuItem submenu = new LinkedRadialContainerMenuItem(ITEM_SIZE, "submenu", new Text("Submenu"));
+//        submenu.addMenuItem(subSubmenu);
+        for(int i=1; i<4;i++)
+            submenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE * .9, "Submenu item " + i, new Text("Submenu Item " + i), handler));
+
+        radialMenu.addMenuItem(submenu);        
+
+        return radialMenu;
     }
 
     public static void main(String[] args) {
