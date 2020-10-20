@@ -47,8 +47,10 @@ public class PathPane extends AnchorPane {
     public Pane windowButtons;
     public Pane mainTitleArea;
 
+    // used for setupMovePaneSupport()
     private Point2D anchorPt;
     private Point2D previousLocation;
+
     Animation enterScene;
     SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
@@ -86,37 +88,37 @@ public class PathPane extends AnchorPane {
             segmentSelected.set(-1);
             System.out.println("mouse exited group");
         });
+
         // createWindowButtons this is the title area and three buttons on top left.
         windowButtons = createWindowButtons(this);
+        setupMovePaneSupport(windowButtons);
 
-        // press, drag, release
-        windowButtons.setOnMousePressed(mouseEvent -> handlePositionWindowMousePressed(mouseEvent));
-        windowButtons.setOnMouseDragged( mouseEvent -> handlePositionWindowMouseDragged(mouseEvent));
-        windowButtons.setOnMouseReleased(mouseEvent -> handlePositionWindowMouseReleased(mouseEvent));
+        // TODO initialize if windows are staggered on the desktop area.
         anchorPt = new Point2D(0,0);
         previousLocation = new Point2D(0,0);
+
         // createLeftAccent
         leftAccent = createLeftAccent(this);
+        setupMovePaneSupport(leftAccent);
+
         // createLeftTab
         leftTab = createLeftTab(this);
+        setupMovePaneSupport(leftTab);
+
         // createMainTitleArea
         mainTitleArea = createMainTitleArea();
-
-        // drag window buttons area.
-        // TODO Since there is only one anchorPt and previousLocation
-        //      the mainTitleArea gets confused.
-//        mainTitleArea.setOnMouseDragged( mouseEvent -> handlePositionWindowMousePressed(mouseEvent));
-//        mainTitleArea.setOnMousePressed(mouseEvent -> handlePositionWindowMouseDragged(mouseEvent));
-//        mainTitleArea.setOnMouseReleased(mouseEvent -> handlePositionWindowMouseReleased(mouseEvent));
+        setupMovePaneSupport(mainTitleArea);
 
         // build bottom area
         mainContentBorderFrame = createMainContentViewArea();
+
         // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
         AnchorPane.setTopAnchor(contentPane, 15.0);
         AnchorPane.setLeftAnchor(contentPane, 15.0);
         AnchorPane.setRightAnchor(contentPane, 15.0);
         AnchorPane.setBottomAnchor(contentPane, 15.0);
         mainContentBorderFrame.getMainContentPane().getChildren().add(this.contentPane);
+
         //Disable interactions with the content while minimized.
         contentPane.mouseTransparentProperty().bind(minimizedProperty);
         
@@ -237,6 +239,19 @@ public class PathPane extends AnchorPane {
     private void handlePositionWindowMouseReleased(MouseEvent mouseEvent) {
         previousLocation = new Point2D(getTranslateX(),getTranslateY());
         System.out.println("released previousLocation: "+ previousLocation);
+    }
+
+    /**
+     * This convient function allows any node to be allow user to drag or position
+     * window in the scene. For example the title bar or left accent allows the
+     * user to move the pane(window).
+     *
+     * @param node
+     */
+    private void setupMovePaneSupport(Node node){
+        node.setOnMousePressed(mouseEvent -> handlePositionWindowMousePressed(mouseEvent));
+        node.setOnMouseDragged(mouseEvent -> handlePositionWindowMouseDragged(mouseEvent));
+        node.setOnMouseReleased(mouseEvent -> handlePositionWindowMouseReleased(mouseEvent));
     }
     private Animation createEnterBorderAnimation(Path borderFrame, double totalMS) {
         double totalLength = Utils.getTotalLength(borderFrame);
