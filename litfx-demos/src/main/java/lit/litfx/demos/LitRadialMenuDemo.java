@@ -310,31 +310,45 @@ public class LitRadialMenuDemo extends Application {
     private VBox createSliderControls() {
         VBox vbox = new VBox(10);
         itemSizeSlider = new Slider(10, 200, ITEM_SIZE);
+        itemSizeSlider.setShowTickMarks(true);
+        itemSizeSlider.setShowTickLabels(true);
         itemSizeSlider.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setMenuItemSize(ov.getValue().doubleValue());
         });
         innerRadiusSlider = new Slider(10, 200, ITEM_SIZE);
+        innerRadiusSlider.setShowTickMarks(true);
+        innerRadiusSlider.setShowTickLabels(true);
         innerRadiusSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setInnerRadius(ov.getValue().doubleValue()));
         
         itemFitWidthSlider = new Slider(10, 200, ITEM_FIT_WIDTH);
+        itemFitWidthSlider.setShowTickMarks(true);
+        itemFitWidthSlider.setShowTickLabels(true);                
         itemFitWidthSlider.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setGraphicsFitWidth(t1.doubleValue());
         });
 
         menuSizeSlider = new Slider(10, 1000, MENU_SIZE);
+        menuSizeSlider.setShowTickMarks(true);
+        menuSizeSlider.setShowTickLabels(true);        
         menuSizeSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setRadius(ov.getValue().doubleValue()));
 
         offsetSlider = new Slider(1, 200, OFFSET);
+        offsetSlider.setShowTickMarks(true);
+        offsetSlider.setShowTickLabels(true);         
         offsetSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setOffset(ov.getValue().doubleValue()));
 
         initialAngleSlider = new Slider(-359, 359, INITIAL_ANGLE); 
+        initialAngleSlider.setShowTickMarks(true);
+        initialAngleSlider.setShowTickLabels(true);         
         initialAngleSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setInitialAngle(ov.getValue().doubleValue()));
         
         strokeWidthSlider = new Slider(0, 10, STROKE_WIDTH);
+        strokeWidthSlider.setShowTickMarks(true);
+        strokeWidthSlider.setShowTickLabels(true);        
         strokeWidthSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setStrokeWidth(ov.getValue().doubleValue()));
         
@@ -464,8 +478,9 @@ public class LitRadialMenuDemo extends Application {
         operatorMenuItem = new LitRadialMenuItem(ITEM_SIZE, "Operator View", operatorView, handler);
         radialMenu.addMenuItem(operatorMenuItem);
         radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Configuration", configuration, handler));
-        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Metrics", metrics, handler));
-        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Scenario Generator", scenariogenerator, handler));
+//        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Metrics", metrics, handler));
+//        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Scenario Generator", scenariogenerator, handler));
+
 /* Example from original prototype for adding submenus
         final RadialContainerMenuItem forwardItem = new RadialContainerMenuItem(50, "forward", forward);
         forwardItem.addMenuItem(new RadialMenuItem(30, "forward 5'", fiveSec, handler));

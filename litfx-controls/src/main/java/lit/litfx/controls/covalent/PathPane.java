@@ -44,7 +44,7 @@ public class PathPane extends AnchorPane {
     public Node leftTab;
     public Pane windowButtons;
     public Pane mainTitleArea;
-
+    private boolean enableDrag = true;
     private Point2D anchorPt;
     private Point2D previousLocation;
     Animation enterScene;
@@ -187,16 +187,18 @@ public class PathPane extends AnchorPane {
     }
 
     private void handleMouseDragged(MouseEvent mouseEvent) {
-        System.out.println("drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
-        int segment = resizePaneTracker.currentSegmentIndex.get();
-        if (segment == -1 && anchorPt != null && previousLocation != null) {
-            this.setTranslateX(previousLocation.getX()
-                    + mouseEvent.getScreenX()
-                    - anchorPt.getX());
-            this.setTranslateY(previousLocation.getY()
-                    + mouseEvent.getScreenY()
-                    - anchorPt.getY());
-        }        
+        if(isEnableDrag()) {
+            System.out.println("drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
+            int segment = resizePaneTracker.currentSegmentIndex.get();
+            if (segment == -1 && anchorPt != null && previousLocation != null) {
+                this.setTranslateX(previousLocation.getX()
+                        + mouseEvent.getScreenX()
+                        - anchorPt.getX());
+                this.setTranslateY(previousLocation.getY()
+                        + mouseEvent.getScreenY()
+                        - anchorPt.getY());
+            }        
+        }
     }
     private void handleMousePressed(MouseEvent mouseEvent) {
         int segment = resizePaneTracker.currentSegmentIndex.get();
@@ -757,6 +759,20 @@ public class PathPane extends AnchorPane {
                 .build();
 
         return newFrame;
+    }
+
+    /**
+     * @return the enableDrag
+     */
+    public boolean isEnableDrag() {
+        return enableDrag;
+    }
+
+    /**
+     * @param enableDrag the enableDrag to set
+     */
+    public void setEnableDrag(boolean enableDrag) {
+        this.enableDrag = enableDrag;
     }
 }
 
