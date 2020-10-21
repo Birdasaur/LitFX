@@ -65,9 +65,9 @@ public class ResizePaneTracker {
         resizeHeightValue.addListener( obs -> {
             System.out.println("setting Pane bindYToHeight: " + resizeHeightValue.get());
 //            this.pane.setHeight(resizeHeightValue.get());
-            this.pane.setMinHeight(resizeWidthValue.get());
-            this.pane.setPrefHeight(resizeWidthValue.get());            
-            this.pane.setMaxHeight(resizeWidthValue.get());            
+            this.pane.setMinHeight(resizeHeightValue.get());
+            this.pane.setPrefHeight(resizeHeightValue.get());            
+            this.pane.setMaxHeight(resizeHeightValue.get());            
         });
 
         // Change stage's upper left corner's X

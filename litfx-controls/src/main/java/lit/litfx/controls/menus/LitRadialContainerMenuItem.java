@@ -181,7 +181,7 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
     }
 
     @Override
-    void setSelected(final boolean selected) {
+    public void setSelected(final boolean selected) {
 	this.selected = selected;
 	if (selected) {
 	    double startOpacity = 0;
@@ -208,8 +208,10 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
     }
 
     @Override
-    boolean isSelected() {
+    public boolean isSelected() {
 	return selected;
     }
-
+    public List<LitRadialMenuItem> getItems() {
+        return items;
+    }
 }

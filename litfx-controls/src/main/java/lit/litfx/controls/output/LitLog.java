@@ -89,19 +89,6 @@ public class LitLog extends BorderPane {
             ParallelTransition pt = new ParallelTransition(fadeTextArea, fadeVBox);
             pt.play();
         });
-//        stackPane.addEventHandler(MouseEvent.MOUSE_PRESSED, e-> {
-//            if(e.isPrimaryButtonDown()) {
-//                selectingProperty.set(true);
-//                vbox.setMouseTransparent(true);
-//            }
-//        });
-//        stackPane.addEventHandler(MouseEvent.MOUSE_RELEASED, e-> { 
-//            if(!e.isPrimaryButtonDown() && selectingProperty.get()) {
-//                vbox.setMouseTransparent(false);
-//                selectingProperty.set(false);
-//                
-//            }
-//        });
         textArea.setOpacity(0);
         getStyleClass().add("litlog-pane");
     }
@@ -112,7 +99,6 @@ public class LitLog extends BorderPane {
         text.setFont(font);
         text.setFill(color);
         appendText(text);
-        
     }
     public void addLine(String line) {
         Text text = new Text(line);

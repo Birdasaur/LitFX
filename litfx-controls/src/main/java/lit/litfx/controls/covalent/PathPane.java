@@ -64,6 +64,7 @@ public class PathPane extends AnchorPane {
         this.contentTimeMs = contentTimeMs;
         mainTitleTextProperty.set(null != mainTitleText ? mainTitleText : "");
         mainTitleText2Property.set(null != mainTitleText2 ? mainTitleText2 : "");
+        setManaged(false);
         setWidth(width);
         setHeight(height);
         getStyleClass().add("path-window-background");
@@ -611,10 +612,12 @@ public class PathPane extends AnchorPane {
         });
 
         // populate the lines for the outerframe.
-        //@TODO SMP Replace with custom event
-        scene.getRoot().addEventHandler(CovalentPaneEvent.COVALENT_PANE_SHOWN, e -> {
-            generateLineMap(outerFrame.getElements());
-        });
+//        //@TODO SMP Replace with custom event
+//        scene.getRoot().addEventHandler(CovalentPaneEvent.COVALENT_PANE_SHOWN, e -> {
+//            System.out.println("generateLineMap");
+//            generateLineMap(outerFrame.getElements());
+//        });
+        generateLineMap(outerFrame.getElements());
     }
 
     private void resizeNorth(MouseEvent mouseEvent, ResizePaneTracker wt) {

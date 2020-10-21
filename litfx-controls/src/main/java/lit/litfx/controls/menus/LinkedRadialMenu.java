@@ -32,9 +32,11 @@ public class LinkedRadialMenu extends LitRadialMenu {
     protected BooleanProperty linksVisible;
     protected ObjectProperty<Effect> linkEffect;
     
-    protected List<LitRadialMenuLink> links = new ArrayList<>();
+//    protected List<LitRadialMenuLink> links = new ArrayList<>();
+    protected List<LitRadialMenuCurvedLink> links = new ArrayList<>();
     protected Group linkGroup;
-    HashMap<LitRadialMenuItem, LitRadialMenuLink> itemToLinkMap;
+//    HashMap<LitRadialMenuItem, LitRadialMenuLink> itemToLinkMap;
+    HashMap<LitRadialMenuItem, LitRadialMenuCurvedLink> itemToLinkMap;
     
     public LinkedRadialMenu() {
         super();
@@ -124,7 +126,9 @@ public class LinkedRadialMenu extends LitRadialMenu {
     @Override
     public void addMenuItem(final LitRadialMenuItem item) {
         super.addMenuItem(item);
-        LitRadialMenuLink link = new LitRadialMenuLink(this.centerStrokeShape, item,  
+//        LitRadialMenuLink link = new LitRadialMenuLink(this.centerStrokeShape, item,  
+//            linkStroke.get(), linkMouseOnStroke.get(), linkStrokeWidth.get());
+        LitRadialMenuCurvedLink link = new LitRadialMenuCurvedLink(this.centerStrokeShape, item,  
             linkStroke.get(), linkMouseOnStroke.get(), linkStrokeWidth.get());
         itemToLinkMap.put(item, link);
         links.add(link);
@@ -143,7 +147,8 @@ public class LinkedRadialMenu extends LitRadialMenu {
     @Override
     public void removeMenuItem(final LitRadialMenuItem item) {
         super.removeMenuItem(item);
-        LitRadialMenuLink link = itemToLinkMap.get(item);
+//        LitRadialMenuLink link = itemToLinkMap.get(item);
+        LitRadialMenuCurvedLink link = itemToLinkMap.get(item);
         links.remove(link);
         linkGroup.getChildren().remove(link);
 

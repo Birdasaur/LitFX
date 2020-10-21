@@ -97,6 +97,14 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
     protected double startY;
     protected double endX;
     protected double endY;
+
+    protected DoubleProperty startXProperty = new SimpleDoubleProperty();
+    protected DoubleProperty startYProperty = new SimpleDoubleProperty();
+    protected DoubleProperty endXProperty = new SimpleDoubleProperty();
+    protected DoubleProperty endYProperty = new SimpleDoubleProperty();
+    protected DoubleProperty translateXProperty = new SimpleDoubleProperty();
+    protected DoubleProperty translateYProperty = new SimpleDoubleProperty();
+
     protected boolean sweep;
     protected double graphicX;
     protected double graphicY;
@@ -359,7 +367,6 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	arcTo.setX(endX + translateX);
 	arcTo.setY(endY + translateY);
 	arcTo.setSweepFlag(sweep);
-
 	arcTo.setRadiusX(radiusValue);
 	arcTo.setRadiusY(radiusValue);
 
@@ -451,6 +458,14 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	    translateY = offsetValue
 		    * Math.sin(Math.toRadians(startAngleValue + (menuSize.get() / 2.0)));
 	}
+        //Update coordinate dependent properties
+        startXProperty.set(startX);
+        startYProperty.set(startY);
+        endXProperty.set(endX);
+        endYProperty.set(endY);
+        translateXProperty.set(translateX);
+        translateYProperty.set(translateY);
+        
     }
     
     @Override

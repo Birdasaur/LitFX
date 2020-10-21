@@ -678,6 +678,7 @@ public class PathWindow {
     }
 
     private void generateLineMap(List<PathElement> framePath) {
+        System.out.print("generateLineMap called...");
         PathElement prev = null;
         int cnt = 0;
 
