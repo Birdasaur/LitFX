@@ -2,12 +2,14 @@ package lit.litfx.controls.covalent;
 
 import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -19,14 +21,14 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
 import lit.litfx.controls.covalent.events.CovalentPaneEvent;
+import lit.litfx.core.components.StyleableRectangle;
+
 import java.util.*;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.input.MouseButton;
+
 import static lit.litfx.controls.covalent.BindablePointBuilder.*;
 import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
 import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
 import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
-import lit.litfx.core.components.StyleableRectangle;
 
 public class PathPane extends AnchorPane {
 
@@ -45,8 +47,10 @@ public class PathPane extends AnchorPane {
     public Pane windowButtons;
     public Pane mainTitleArea;
     private boolean enableDrag = true;
+    // used for setupMovePaneSupport()
     private Point2D anchorPt;
     private Point2D previousLocation;
+
     Animation enterScene;
     SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
@@ -81,32 +85,41 @@ public class PathPane extends AnchorPane {
         });
 
         // reset cursor
-        setOnMouseExited( mouseEvent -> {
+        scene.setOnMouseExited( mouseEvent -> {
             segmentSelected.set(-1);
             System.out.println("mouse exited group");
         });
-        // createWindowButtons
+
+        // createWindowButtons this is the title area and three buttons on top left.
         windowButtons = createWindowButtons(this);
-        // drag window buttons.
-        windowButtons.setOnMouseDragged( mouseEvent -> handleMouseDragged(mouseEvent));
-        windowButtons.setOnMousePressed(mouseEvent -> handleMousePressed(mouseEvent));
+        setupMovePaneSupport(windowButtons);
+
+        // TODO initialize if windows are staggered on the desktop area.
+        anchorPt = new Point2D(0,0);
+        previousLocation = new Point2D(0,0);
+
         // createLeftAccent
         leftAccent = createLeftAccent(this);
+        setupMovePaneSupport(leftAccent);
+
         // createLeftTab
         leftTab = createLeftTab(this);
+        setupMovePaneSupport(leftTab);
+
         // createMainTitleArea
         mainTitleArea = createMainTitleArea();
-        // drag window buttons area. 
-        mainTitleArea.setOnMouseDragged( mouseEvent -> handleMouseDragged(mouseEvent));
-        mainTitleArea.setOnMousePressed(mouseEvent -> handleMousePressed(mouseEvent));
+        setupMovePaneSupport(mainTitleArea);
+
         // build bottom area
         mainContentBorderFrame = createMainContentViewArea();
+
         // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
         AnchorPane.setTopAnchor(contentPane, 15.0);
         AnchorPane.setLeftAnchor(contentPane, 15.0);
         AnchorPane.setRightAnchor(contentPane, 15.0);
         AnchorPane.setBottomAnchor(contentPane, 15.0);
         mainContentBorderFrame.getMainContentPane().getChildren().add(this.contentPane);
+
         //Disable interactions with the content while minimized.
         contentPane.mouseTransparentProperty().bind(minimizedProperty);
         
@@ -147,13 +160,13 @@ public class PathPane extends AnchorPane {
 //        });
 
         // Set the new previous to the current mouse xTo,yTo coordinate
-        setOnMouseReleased(mouseEvent -> {
-            int segment = resizePaneTracker.currentSegmentIndex.get();
-            //if (segment == -1) {
-                previousLocation = new Point2D(getTranslateX(),getTranslateY());
-            //}
-            System.out.println("released");
-        });
+//        scene.setOnMouseReleased(mouseEvent -> {
+//            int segment = resizePaneTracker.currentSegmentIndex.get();
+//            //if (segment == -1) {
+//                previousLocation = new Point2D(getTranslateX(),getTranslateY());
+//            //}
+//            System.out.println("released");
+//        });
         //if the pane is minimized, double click to bring it back
         addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if(minimizedProperty.get() && 
@@ -162,19 +175,19 @@ public class PathPane extends AnchorPane {
             }
         });
         //if the pane is minimized, enable all components to handle mouse presses
-        addEventHandler(MouseEvent.MOUSE_PRESSED, me -> {
-            if(minimizedProperty.get()) {
-                handleMousePressed(me);
-                me.consume();
-            }
-        });
+//        addEventHandler(MouseEvent.MOUSE_PRESSED, me -> {
+//            if(minimizedProperty.get()) {
+//                handleMousePressed(me);
+//                me.consume();
+//            }
+//        });
         //if the pane is minimized, enable all components to assist with dragging
-        addEventHandler(MouseEvent.MOUSE_DRAGGED, me -> {
-            if(minimizedProperty.get()) {
-                handleMouseDragged(me);
-                me.consume();
-            }
-        });
+//        addEventHandler(MouseEvent.MOUSE_DRAGGED, me -> {
+//            if(minimizedProperty.get()) {
+//                handleMouseDragged(me);
+//                me.consume();
+//            }
+//        });
                 
         // Initialize previousLocation after Stage is shown
         //@TODO SMP Replace Stage oriented Window events with custom versions
@@ -200,14 +213,49 @@ public class PathPane extends AnchorPane {
             }        
         }
     }
+    private void handlePositionWindowMouseDragged(MouseEvent mouseEvent) {
+        //System.out.println("Title bar drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
+        if (anchorPt != null && previousLocation != null) {
+            System.out.println("Title bar drag root previousLocation: " + previousLocation + " anchorPt " + anchorPt);
+            this.setTranslateX(previousLocation.getX()
+                    + mouseEvent.getSceneX()
+                    - anchorPt.getX());
+            this.setTranslateY(previousLocation.getY()
+                    + mouseEvent.getSceneY()
+                    - anchorPt.getY());
+        }
+    }
+
     private void handleMousePressed(MouseEvent mouseEvent) {
         int segment = resizePaneTracker.currentSegmentIndex.get();
         if (segment == -1) {
             anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
-        System.out.println("press root sees segment " + resizePaneTracker.currentSegmentIndex.get());        
+        System.out.println("press root sees segment " + resizePaneTracker.currentSegmentIndex.get());
     }
 
+    private void handlePositionWindowMousePressed(MouseEvent mouseEvent) {
+        anchorPt = new Point2D(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+        System.out.println("Title bar press anchorPt: " + anchorPt);
+    }
+
+    private void handlePositionWindowMouseReleased(MouseEvent mouseEvent) {
+        previousLocation = new Point2D(getTranslateX(),getTranslateY());
+        System.out.println("released previousLocation: "+ previousLocation);
+    }
+
+    /**
+     * This convient function allows any node to be allow user to drag or position
+     * window in the scene. For example the title bar or left accent allows the
+     * user to move the pane(window).
+     *
+     * @param node
+     */
+    private void setupMovePaneSupport(Node node){
+        node.setOnMousePressed(mouseEvent -> handlePositionWindowMousePressed(mouseEvent));
+        node.setOnMouseDragged(mouseEvent -> handlePositionWindowMouseDragged(mouseEvent));
+        node.setOnMouseReleased(mouseEvent -> handlePositionWindowMouseReleased(mouseEvent));
+    }
     private Animation createEnterBorderAnimation(Path borderFrame, double totalMS) {
         double totalLength = Utils.getTotalLength(borderFrame);
         borderFrame.getStrokeDashArray().add(totalLength);
