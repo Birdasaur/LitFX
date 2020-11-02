@@ -91,6 +91,7 @@ public class CovalentPaneDemo extends Application {
                     new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 
             PathPane newPane = new PathPane(scene,
+                    desktopPane,
                     640, 480,
                     someContentPane,
                     "Cyber Battlespace", "Notifications",
@@ -111,6 +112,46 @@ public class CovalentPaneDemo extends Application {
         scene.getStylesheets().add(CSS);
         CSS = this.getClass().getResource("covalent.css").toExternalForm();
         scene.getStylesheets().add(CSS);
+
+//        // change cursor when
+//        ObjectProperty<Cursor> cursorState = new SimpleObjectProperty<>();
+//        cursorState.addListener( (ob, oldv, nv) -> {
+//            Cursor cursor = nv;
+//            //if (!oldv.equals(nv)) {
+//                scene.setCursor(nv);
+//            //}
+//        });
+//
+//        // intercept mouse hover to determine which cursor to display
+//        scene.addEventFilter(MouseEvent.MOUSE_MOVED, mouseEvent -> {
+//            System.out.println(":-) mouse cursor " + mouseEvent.getX() + ", " + mouseEvent.getY() + " " + mouseEvent.getSource().getClass());
+//
+//            // Changing cursor when mouse pointer is outside bounding panes.
+//            // is pt near any bounding edge?
+//            double bufferRegion = 4; // a buffer region around bounding box
+//            double x = mouseEvent.getSceneX();
+//            double y = mouseEvent.getSceneY();
+//            desktopPane
+//                    .getChildren()
+//                    .stream()
+//                    .filter( node -> node instanceof PathPane)
+//                    .findAny()
+//                    .map(node -> (PathPane) node)
+//                    .ifPresentOrElse( pathPane -> {
+//
+//                        // determine window edges
+//                        // n,ne,e, se, s, sw, w, nw.
+//
+//                        // withing buffer area outside of bounding box.
+//                        Cursor c = pathPane.findResizeCursor(x, y, bufferRegion);
+//                        scene.setCursor(c);
+//
+//                    },
+//                       // else set to default cursor
+//                       () -> scene.setCursor(Cursor.DEFAULT)
+//                    );
+//        });
+
 
         // fun matrix effect
         // On MacOS use ⌘ + N

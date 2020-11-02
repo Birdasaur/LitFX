@@ -213,13 +213,38 @@ public class Utils {
 
 
 
-    public static boolean isPointNearLine(double targetX, double targetY, Line line, int threshold, Integer segment) {
+    public static boolean isPointNearLine(double targetX,
+                                          double targetY,
+                                          Line line,
+                                          int threshold,
+                                          Integer segment) {
         //take the distance from point 1 to the target, and point 2 to the target,
         double distance = distToSegment(targetX, targetY,
                 line.getStartX(), line.getStartY(),
                 line.getEndX(), line.getEndY());
         boolean isNear = equals(distance, 0 ) || (greaterThan(distance, 0) && lessThan(distance, threshold));
         if (isNear) System.out.printf("isNear:" + isNear + " segment: %d, cursor(%f,%f), nearDistance = %s, %s \n",
+                segment, targetX, targetY, distance, line.toString());
+        return isNear;
+    }
+
+    public static boolean isPointNearLineLocalToScene(double targetX,
+                                          double targetY,
+                                          PathPane pathPane,
+                                          Line line,
+                                          int threshold,
+                                          Integer segment) {
+
+        Point2D startPoint = line.localToScene(line.getStartX(),line.getStartY());
+        Point2D endPoint = line.localToScene(line.getEndX(),line.getEndY());
+        Point2D mousePt = new Point2D(targetX, targetY);
+        System.out.println("mousePt" + mousePt + " was " + targetX + ", " + targetY);
+        //take the distance from point 1 to the target, and point 2 to the target,
+        double distance = distToSegment(targetX, targetY,
+                startPoint.getX(), startPoint.getY(),
+                endPoint.getX(), endPoint.getY());
+        boolean isNear = equals(distance, 0 ) || (greaterThan(distance, 0) && lessThan(distance, threshold));
+        if (isNear) System.out.printf("isPointNearLineLocalToParent() isNear:" + isNear + " segment: %d, cursor(%f,%f), nearDistance = %s, %s \n",
                 segment, targetX, targetY, distance, line.toString());
         return isNear;
     }
