@@ -1,12 +1,8 @@
 package lit.litfx.controls.covalent;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Point2D;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
 
@@ -20,8 +16,10 @@ import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
  * </ul>
  */
 public class ResizePaneTracker {
-    Pane pane;
-    
+
+    PathPane pathPane; // a PathPane
+    Pane desktopPane; // parent desktop area.
+
     ObjectProperty<Point2D> anchorStageXYCoordValue = new SimpleObjectProperty<>();
     //ObjectProperty<Point2D> stageXYCoordValue = new SimpleObjectProperty<>();
 
@@ -34,53 +32,62 @@ public class ResizePaneTracker {
     DoubleProperty anchorHeightSizeValue = new SimpleDoubleProperty();
     DoubleProperty resizeWidthValue = new SimpleDoubleProperty();
     DoubleProperty resizeHeightValue = new SimpleDoubleProperty();
+
     PaneMousePressed mousePressed;
     PaneMouseDragged mouseDragged;
+    PaneMouseReleased mouseReleased;
+
     SimpleObjectProperty<RESIZE_DIRECTION> currentResizeDirection = new SimpleObjectProperty<>(RESIZE_DIRECTION.NONE);
     IntegerProperty currentSegmentIndex = new SimpleIntegerProperty(-1);
 
-    public ResizePaneTracker(Pane pane) {
-        this.pane = pane;
-        
+    public ResizePaneTracker(PathPane pathPane, Pane desktopPane) {
+        this.pathPane = pathPane;
+        this.desktopPane = desktopPane;
+
         // Debug output when bindXToWidth property is changing
-        pane.widthProperty().addListener( l -> {
-            System.out.println("bindXToWidth = " + pane.getWidth());
+        pathPane.widthProperty().addListener(l -> {
+            System.out.println("bindXToWidth = " + pathPane.getWidth());
         });
 
         // Debug output when xTo property is changing
-        pane.translateXProperty().addListener( l -> {
-            System.out.println("xProperty = " + pane.getTranslateX());
+        pathPane.translateXProperty().addListener(l -> {
+            System.out.println("xProperty = " + pathPane.getTranslateX());
         });
 
         // Change stage's bindXToWidth
         resizeWidthValue.addListener( obs -> {
             System.out.println("setting Pane bindXToWidth: " + resizeWidthValue.get());
             //this.stage.setWidth(resizeWidthValue.get());
-            this.pane.setMinWidth(resizeWidthValue.get());
-            this.pane.setPrefWidth(resizeWidthValue.get());
-            this.pane.setMaxWidth(resizeWidthValue.get());
+            double newWidth = resizeWidthValue.get();
+            this.pathPane.setMinWidth(newWidth);
+            this.pathPane.setPrefWidth(newWidth);
+
+            //this.pathPane.setMaxWidth(newWidth);
         });
 
         // Change stage's bindYToHeight
         resizeHeightValue.addListener( obs -> {
             System.out.println("setting Pane bindYToHeight: " + resizeHeightValue.get());
 //            this.pane.setHeight(resizeHeightValue.get());
-            this.pane.setMinHeight(resizeWidthValue.get());
-            this.pane.setPrefHeight(resizeWidthValue.get());            
-            this.pane.setMaxHeight(resizeWidthValue.get());            
+            double newHeight = resizeHeightValue.get();
+            this.pathPane.setPrefHeight(newHeight);
+            this.pathPane.setMinHeight(newHeight);
+            this.pathPane.setMaxHeight(newHeight);
+
         });
 
         // Change stage's upper left corner's X
         paneXCoordValue.addListener(obs -> {
-            System.out.println("1 paneXCoordValue " + paneXCoordValue.get() + " paneX = " + this.pane.getTranslateX());
-            this.pane.setTranslateX(paneXCoordValue.get());
-            System.out.println("2 paneXCoordValue " + paneXCoordValue.get() + " paneX = " + this.pane.getTranslateX());
+            double paneXCoord = paneXCoordValue.get();
+            System.out.println("1 paneXCoordValue " + paneXCoord + " paneX = " + this.pathPane.getTranslateX());
+            this.pathPane.setTranslateX(paneXCoordValue.get());
+            System.out.println("2 paneXCoordValue " + paneXCoord + " paneX = " + this.pathPane.getTranslateX());
             //this.stage.setX(stageXCoordValue.get());
         });
 
         // Change pane's upper left corner's Y
         paneYCoordValue.addListener(obs -> {
-            this.pane.setTranslateY(paneYCoordValue.get());
+            this.pathPane.setTranslateY(paneYCoordValue.get());
         });
 
 //        stageXYCoordValue.addListener(obs -> {
@@ -92,20 +99,36 @@ public class ResizePaneTracker {
 
 
         // Listener to drag window start (mouse press)
-        this.pane.setOnMousePressed(mouseEvent ->
+        this.pathPane.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent ->
             this.mousePressed.pressed(mouseEvent, this)
         );
 
         // Listener to drag window dragged (mouse dragged)
-        this.pane.setOnMouseDragged(mouseEvent ->{
-            this.mouseDragged.dragged(mouseEvent, this);
-        });
+        this.pathPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, mouseEvent ->
+            this.mouseDragged.dragged(mouseEvent, this)
+        );
 
         // Listener to drag window stop (mouse release)
-        this.pane.setOnMouseReleased(mouseEvent ->{
+        this.pathPane.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseEvent ->{
             //resizeWidth.set(0.0);
-            System.out.println("Release sx " + mouseEvent.getSceneX());
+            System.out.println("Release sx " + mouseEvent.getX() + " " + pathPane.localToParent(mouseEvent.getX(), mouseEvent.getY()));
+            //this.mouseReleased.released(mouseEvent, this);
         });
+
+//        this.pathPane.setOnMousePressed(mouseEvent ->
+//                this.mousePressed.pressed(mouseEvent, this)
+//        );
+//
+//        // Listener to drag window dragged (mouse dragged)
+//        this.pathPane.setOnMouseDragged(mouseEvent ->
+//                this.mouseDragged.dragged(mouseEvent, this)
+//        );
+//
+//        // Listener to drag window stop (mouse release)
+//        this.pathPane.setOnMouseReleased(mouseEvent ->{
+//            //resizeWidth.set(0.0);
+//            System.out.println("Release sx " + mouseEvent.getX());
+//        });
 
     }
 
@@ -116,6 +139,9 @@ public class ResizePaneTracker {
     }
 
     public void setOnMouseDragged(PaneMouseDragged mouseDragged) {
+        this.mouseDragged = mouseDragged;
+    }
+    public void setOnMouseReleased(PaneMouseDragged mouseDragged) {
         this.mouseDragged = mouseDragged;
     }
 

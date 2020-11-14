@@ -28,17 +28,21 @@ import java.util.*;
 import static lit.litfx.controls.covalent.BindablePointBuilder.*;
 import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
 import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
-import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
 
 public class PathPane extends AnchorPane {
 
     public SimpleStringProperty mainTitleTextProperty = new SimpleStringProperty("");
     public SimpleStringProperty mainTitleText2Property = new SimpleStringProperty("");
     private Scene scene;
+    private Pane desktopPane;
+
     private double borderTimeMs, contentTimeMs;
     private ResizePaneTracker resizePaneTracker;
     private Map<Integer, Line> lineSegmentMap = new HashMap<>();
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
+    private RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
+
+
     public Pane contentPane;
     public Path outerFrame = null; //new Path();
     public MainContentViewArea mainContentBorderFrame;
@@ -55,6 +59,7 @@ public class PathPane extends AnchorPane {
     SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
     public PathPane(Scene scene,
+                    Pane desktopPane,
                     int width,
                     int height,
                     Pane userContent,
@@ -63,6 +68,7 @@ public class PathPane extends AnchorPane {
                     double borderTimeMs,
                     double contentTimeMs) {
         this.scene = scene;
+        this.desktopPane = desktopPane;
         this.contentPane = userContent;
         this.borderTimeMs = borderTimeMs;
         this.contentTimeMs = contentTimeMs;
@@ -75,16 +81,16 @@ public class PathPane extends AnchorPane {
         outerFrame = createFramePath(this);
         outerFrame.getStyleClass().add("outer-path-frame");
 
-        scene.setOnMouseMoved(me -> {
+        setOnMouseMoved(me -> {
             // update segment listener (s0 s2, s2, none...)
             // when segment listener's invalidation occurs fire cursor to change.
-            logLineSegment(me.getSceneX(), me.getSceneY());
-            outerFrame.toBack();
-//            System.out.println("scene mouse moved");
+            logLineSegment(me.getX(), me.getY());
+//            outerFrame.toBack();
+            System.out.println("scene mouse moved");
         });
 
         // reset cursor
-        scene.setOnMouseExited( mouseEvent -> {
+        setOnMouseExited( mouseEvent -> {
             segmentSelected.set(-1);
             System.out.println("mouse exited group");
         });
@@ -122,8 +128,8 @@ public class PathPane extends AnchorPane {
         //Disable interactions with the content while minimized.
         contentPane.mouseTransparentProperty().bind(minimizedProperty);
         
-        getChildren().addAll(windowButtons, mainTitleArea,
-            leftAccent, leftTab, outerFrame, mainContentBorderFrame);
+        getChildren().addAll(outerFrame, windowButtons, mainTitleArea,
+            leftAccent, leftTab,  mainContentBorderFrame);
         enterScene = createEnterAnimation(
                 this.contentPane,
                 windowButtons,
@@ -133,39 +139,7 @@ public class PathPane extends AnchorPane {
                 outerFrame,
                 mainContentBorderFrame.getMainContentInnerPath());
         
-        // starting initial anchor point
-//        root.setOnMousePressed(mouseEvent -> {
-//            int segment = resizeWindowTracker.currentSegmentIndex.get();
-//            if (segment == -1) {
-//                anchorPt = new Point2D(mouseEvent.getScreenX(),
-//                        mouseEvent.getScreenY());
-//            }
-//            System.out.println("press root sees segment " + resizeWindowTracker.currentSegmentIndex.get());
-//
-//        });
-        // Dragging the stage by moving its xTo,yTo
-        // based on the previous location.
-//        root.setOnMouseDragged(mouseEvent -> {
-//            System.out.println("drag root sees segment " + resizeWindowTracker.currentSegmentIndex.get());
-//            int segment = resizeWindowTracker.currentSegmentIndex.get();
-//            if (segment == -1 && anchorPt != null && previousLocation != null) {
-//                stage.setX(previousLocation.getX()
-//                        + mouseEvent.getScreenX()
-//                        - anchorPt.getX());
-//                stage.setY(previousLocation.getY()
-//                        + mouseEvent.getScreenY()
-//                        - anchorPt.getY());
-//            }
-//        });
 
-        // Set the new previous to the current mouse xTo,yTo coordinate
-//        scene.setOnMouseReleased(mouseEvent -> {
-//            int segment = resizePaneTracker.currentSegmentIndex.get();
-//            //if (segment == -1) {
-//                previousLocation = new Point2D(getTranslateX(),getTranslateY());
-//            //}
-//            System.out.println("released");
-//        });
         //if the pane is minimized, double click to bring it back
         addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if(minimizedProperty.get() && 
@@ -195,21 +169,37 @@ public class PathPane extends AnchorPane {
                 previousLocation = new Point2D(getTranslateX(),getTranslateY());
             });
 
+
         wireListeners();
     }
 
-    private void handleMouseDragged(MouseEvent mouseEvent) {
-        System.out.println("drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
-        int segment = resizePaneTracker.currentSegmentIndex.get();
-        if (segment == -1 && anchorPt != null && previousLocation != null) {
-            this.setTranslateX(previousLocation.getX()
-                    + mouseEvent.getScreenX()
-                    - anchorPt.getX());
-            this.setTranslateY(previousLocation.getY()
-                    + mouseEvent.getScreenY()
-                    - anchorPt.getY());
-        }        
+    /**
+     * Position window mouse pressed
+     * @param mouseEvent
+     */
+    private void handlePositionWindowMousePressed(MouseEvent mouseEvent) {
+        anchorPt = new Point2D(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+        System.out.println("Title bar press anchorPt: " + anchorPt);
     }
+
+    //    private void handleMouseDragged(MouseEvent mouseEvent) {
+//        System.out.println("drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
+//        int segment = resizePaneTracker.currentSegmentIndex.get();
+//        if (segment == -1 && anchorPt != null && previousLocation != null) {
+//            this.setTranslateX(previousLocation.getX()
+//                    + mouseEvent.getScreenX()
+//                    - anchorPt.getX());
+//            this.setTranslateY(previousLocation.getY()
+//                    + mouseEvent.getScreenY()
+//                    - anchorPt.getY());
+//        }
+//    }
+
+
+    /**
+     * Position window mouse dragged
+     * @param mouseEvent
+     */
     private void handlePositionWindowMouseDragged(MouseEvent mouseEvent) {
         //System.out.println("Title bar drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
         if (anchorPt != null && previousLocation != null) {
@@ -223,19 +213,10 @@ public class PathPane extends AnchorPane {
         }
     }
 
-    private void handleMousePressed(MouseEvent mouseEvent) {
-        int segment = resizePaneTracker.currentSegmentIndex.get();
-        if (segment == -1) {
-            anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY());
-        }
-        System.out.println("press root sees segment " + resizePaneTracker.currentSegmentIndex.get());
-    }
-
-    private void handlePositionWindowMousePressed(MouseEvent mouseEvent) {
-        anchorPt = new Point2D(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-        System.out.println("Title bar press anchorPt: " + anchorPt);
-    }
-
+    /**
+     * Positioning window mouse release
+     * @param mouseEvent
+     */
     private void handlePositionWindowMouseReleased(MouseEvent mouseEvent) {
         previousLocation = new Point2D(getTranslateX(),getTranslateY());
         System.out.println("released previousLocation: "+ previousLocation);
@@ -249,10 +230,11 @@ public class PathPane extends AnchorPane {
      * @param node
      */
     private void setupMovePaneSupport(Node node){
-        node.setOnMousePressed(mouseEvent -> handlePositionWindowMousePressed(mouseEvent));
-        node.setOnMouseDragged(mouseEvent -> handlePositionWindowMouseDragged(mouseEvent));
-        node.setOnMouseReleased(mouseEvent -> handlePositionWindowMouseReleased(mouseEvent));
+        node.addEventHandler(MouseEvent.MOUSE_PRESSED, this::handlePositionWindowMousePressed);
+        node.addEventHandler(MouseEvent.MOUSE_DRAGGED, this::handlePositionWindowMouseDragged);
+        node.addEventHandler(MouseEvent.MOUSE_RELEASED, this::handlePositionWindowMouseReleased);
     }
+
     private Animation createEnterBorderAnimation(Path borderFrame, double totalMS) {
         double totalLength = Utils.getTotalLength(borderFrame);
         borderFrame.getStrokeDashArray().add(totalLength);
@@ -261,7 +243,7 @@ public class PathPane extends AnchorPane {
         KeyValue visible = new KeyValue(borderFrame.visibleProperty(), true);
         KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1), strokeOffsetStart, visible);
         KeyValue strokeOffsetEnd = new KeyValue(borderFrame.strokeDashOffsetProperty(), 0);
-        KeyFrame keyFrame2 = new KeyFrame(Duration.millis(1000), handler -> {
+        KeyFrame keyFrame2 = new KeyFrame(Duration.millis(300), handler -> {
             System.out.println("done.");
             borderFrame.getStrokeDashArray().clear();
         }, strokeOffsetEnd);
@@ -579,22 +561,26 @@ public class PathPane extends AnchorPane {
     }
 
     private void wireListeners() {
-        resizePaneTracker = new ResizePaneTracker(contentPane);
+
+        // Rework the resize pane tracker work...
+        resizePaneTracker = new ResizePaneTracker(this, desktopPane);
 
         resizePaneTracker.setOnMousePressed((mouseEvent, wt) -> {
             // store anchor x,y of the stage
-            wt.anchorStageXYCoordValue.set(new Point2D(getTranslateX(), getTranslateY()));
+            Point2D mouseDesktopXY = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+            Point2D windowXY = new Point2D(getTranslateX(), getTranslateY());
+            wt.anchorStageXYCoordValue.set(windowXY);
 
             // TODO Revisit code b/c this might be doing the same thing as line above.
-            wt.paneXCoordValue.set(getTranslateX());
-            wt.paneYCoordValue.set(getTranslateY());
+            wt.paneXCoordValue.set(windowXY.getX());
+            wt.paneYCoordValue.set(windowXY.getY());
 
             // anchor of the mouse screen x,y position.
-            wt.anchorCoordValue.set(new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
+            wt.anchorCoordValue.set(mouseDesktopXY);
 
             // current width and height
-            wt.anchorWidthSizeValue.set(contentPane.getWidth());
-            wt.anchorHeightSizeValue.set(contentPane.getHeight());
+            wt.anchorWidthSizeValue.set(getWidth());
+            wt.anchorHeightSizeValue.set(getHeight());
             System.out.println("press mouseX = " + mouseEvent.getX() + " translateX = " + getTranslateX());
 
             // current resize direction
@@ -606,7 +592,6 @@ public class PathPane extends AnchorPane {
 
         resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
 
-//        resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
             RESIZE_DIRECTION direction = wt.currentResizeDirection.get();
 
             switch (direction) {
@@ -647,14 +632,17 @@ public class PathPane extends AnchorPane {
 
         });
 
-        // Mouse cursor touching segments
+//        resizePaneTracker.setOnMouseReleased((mouseEvent, wt) -> {
+//
+//        });
+                // Mouse cursor touching segments
         segmentSelected.addListener( (ob, oldv, newv) -> {
             int index = newv.intValue();
             if (index > -1) {
                 RESIZE_DIRECTION direction = cursorSegmentArray[index];
-                cursorProperty().set(cursorMap.get(direction));
+                scene.cursorProperty().set(cursorMap.get(direction));
             } else {
-                cursorProperty().set(Cursor.DEFAULT);
+                scene.cursorProperty().set(Cursor.DEFAULT);
             }
         });
 
@@ -663,10 +651,11 @@ public class PathPane extends AnchorPane {
         scene.getRoot().addEventHandler(CovalentPaneEvent.COVALENT_PANE_SHOWN, e -> {
             generateLineMap(outerFrame.getElements());
         });
+        generateLineMap(outerFrame.getElements());
     }
 
     private void resizeNorth(MouseEvent mouseEvent, ResizePaneTracker wt) {
-        double screenY = mouseEvent.getScreenY();
+        double screenY = mouseEvent.getY();
         double distance = wt.anchorStageXYCoordValue.get().getY() - screenY;
 
         wt.paneYCoordValue.set(wt.anchorStageXYCoordValue.get().getY() - distance);
@@ -675,21 +664,21 @@ public class PathPane extends AnchorPane {
     }
 
     private void resizeSouth(MouseEvent mouseEvent, ResizePaneTracker wt) {
-        double y = mouseEvent.getScreenY();
-        double newHeight = wt.anchorHeightSizeValue.get() + y - wt.anchorCoordValue.get().getY();
+        double screenY = mouseEvent.getY();
+        double newHeight = wt.anchorHeightSizeValue.get() + screenY - wt.anchorCoordValue.get().getY();
         wt.resizeHeightValue.set(newHeight);
         //System.out.println("newHeight " + newHeight + " dragging      xTo " + yTo + ", length " + (yTo - wt.anchorCoordValue.get().getY()));
     }
 
     private void resizeEast(MouseEvent mouseEvent, ResizePaneTracker wt) {
-        double x = mouseEvent.getScreenX();
-        double newWidth = wt.anchorWidthSizeValue.get() + x - wt.anchorCoordValue.get().getX();
+        double screenX = mouseEvent.getX();
+        double newWidth = wt.anchorWidthSizeValue.get() + screenX - wt.anchorCoordValue.get().getX();
         wt.resizeWidthValue.set(newWidth);
         //System.out.println("newWidth " + newWidth + " dragging      xTo " + xTo + ", length " + (xTo - wt.anchorCoordValue.get().getX()));
     }
 
     private void resizeWest(MouseEvent mouseEvent, ResizePaneTracker wt) {
-        double screenX = mouseEvent.getScreenX();
+        double screenX = mouseEvent.getX();
         double offset = wt.currentSegmentIndex.intValue() == 8 ? 10 : 0; // TODO magic numbers fix.
         System.out.println("offset for segment " + offset);
         double distance = wt.anchorStageXYCoordValue.get().getX() - screenX + offset; // offset left side segment 8 (10 pixels)
@@ -702,7 +691,8 @@ public class PathPane extends AnchorPane {
     private Map.Entry<Integer, Line> logLineSegment(double targetX, double targetY) {
         Set<Map.Entry<Integer, Line>> entries = lineSegmentMap.entrySet();
         Optional<Map.Entry<Integer, Line>> entry = entries.stream()
-                .filter(e -> Utils.isPointNearLine(targetX, targetY, e.getValue(), 5, e.getKey()))
+                .filter(segNumLine -> Utils.isPointNearLine(targetX,
+                        targetY, segNumLine.getValue(), 5, segNumLine.getKey()))
                 .findAny();
 
         entry.ifPresentOrElse(a -> segmentSelected.set(a.getKey()),
@@ -781,7 +771,7 @@ public class PathPane extends AnchorPane {
         return line;
     }
 
-    private Path createFramePath(Pane pane) {
+    public Path createFramePath(Pane pane) {
         // draw
         ShapedPath newFrame = ShapedPathBuilder.create(pane)
                 .moveTo(20, 0)
@@ -801,6 +791,22 @@ public class PathPane extends AnchorPane {
                 .closeSeg()
                 .build();
 
+        // Assign mouse cursor direction for each segment.
+        cursorSegmentArray[0] = RESIZE_DIRECTION.N;
+        cursorSegmentArray[1] = RESIZE_DIRECTION.NE;
+        cursorSegmentArray[2] = RESIZE_DIRECTION.E;
+        cursorSegmentArray[3] = RESIZE_DIRECTION.SE;
+        cursorSegmentArray[4] = RESIZE_DIRECTION.S;
+        cursorSegmentArray[5] = RESIZE_DIRECTION.S;
+        cursorSegmentArray[6] = RESIZE_DIRECTION.S;
+        cursorSegmentArray[7] = RESIZE_DIRECTION.SW;
+        cursorSegmentArray[8] = RESIZE_DIRECTION.W;
+        cursorSegmentArray[9] = RESIZE_DIRECTION.W;
+        cursorSegmentArray[10] = RESIZE_DIRECTION.W;
+        cursorSegmentArray[11] = RESIZE_DIRECTION.NW;
+        cursorSegmentArray[12] = RESIZE_DIRECTION.NW;
+        cursorSegmentArray[13] = RESIZE_DIRECTION.NW;
+
         return newFrame;
     }
 }
@@ -810,4 +816,7 @@ interface PaneMousePressed {
 }
 interface PaneMouseDragged {
     void dragged(MouseEvent mouseEvent, ResizePaneTracker paneTracker);
+}
+interface PaneMouseReleased {
+    void released(MouseEvent mouseEvent, ResizePaneTracker paneTracker);
 }

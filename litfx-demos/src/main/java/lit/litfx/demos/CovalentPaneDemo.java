@@ -91,6 +91,7 @@ public class CovalentPaneDemo extends Application {
                     new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 
             PathPane newPane = new PathPane(scene,
+                    desktopPane,
                     640, 480,
                     someContentPane,
                     "Cyber Battlespace", "Notifications",
@@ -111,6 +112,7 @@ public class CovalentPaneDemo extends Application {
         scene.getStylesheets().add(CSS);
         CSS = this.getClass().getResource("covalent.css").toExternalForm();
         scene.getStylesheets().add(CSS);
+
 
         // fun matrix effect
         // On MacOS use ⌘ + N
