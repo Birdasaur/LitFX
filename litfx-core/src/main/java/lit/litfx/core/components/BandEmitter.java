@@ -54,7 +54,7 @@ public class BandEmitter extends Group {
         timeToLiveSeconds = DEFAULT_TIMETOLIVE_SECONDS;
         //Default band generaton capability which can be started and stopped 
         //users can manage generation of bands themselves by simply calling the createQuadBand()
-        generate = new Timeline(new KeyFrame(Duration.seconds(generationSeconds), e -> createQuadBand()));
+        generate = new Timeline(new KeyFrame(Duration.seconds(getGenerationSeconds()), e -> createQuadBand()));
         generate.setCycleCount(Timeline.INDEFINITE);
     }
 
@@ -64,7 +64,7 @@ public class BandEmitter extends Group {
         band.path.setFill(fill);
         band.path.setStroke(stroke);
         band.setVelocity(velocity);
-        band.setTimeToLiveSeconds(timeToLiveSeconds);
+        band.setTimeToLiveSeconds(getTimeToLiveSeconds());
         if(showPoints)
             band.setPointFill(Color.ALICEBLUE);
         else
@@ -74,7 +74,7 @@ public class BandEmitter extends Group {
         band.animation.play();
 
         Timeline remover = new Timeline(new KeyFrame(
-            Duration.seconds(timeToLiveSeconds), e -> {
+            Duration.seconds(getTimeToLiveSeconds()), e -> {
             getChildren().remove(band);
             band.animation.stop();
         }));
@@ -212,5 +212,33 @@ public class BandEmitter extends Group {
         this.quadBandCreator = quadBandCreator;
         this.quadBandCreator.setGeneratorCenterX(generatorCenterX);
         this.quadBandCreator.setGeneratorCenterY(generatorCenterY);
+    }
+
+    /**
+     * @return the generationSeconds
+     */
+    public double getGenerationSeconds() {
+        return generationSeconds;
+    }
+
+    /**
+     * @param generationSeconds the generationSeconds to set
+     */
+    public void setGenerationSeconds(double generationSeconds) {
+        this.generationSeconds = generationSeconds;
+    }
+
+    /**
+     * @return the timeToLiveSeconds
+     */
+    public double getTimeToLiveSeconds() {
+        return timeToLiveSeconds;
+    }
+
+    /**
+     * @param timeToLiveSeconds the timeToLiveSeconds to set
+     */
+    public void setTimeToLiveSeconds(double timeToLiveSeconds) {
+        this.timeToLiveSeconds = timeToLiveSeconds;
     }
 }

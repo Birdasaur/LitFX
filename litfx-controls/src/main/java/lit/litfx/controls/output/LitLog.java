@@ -13,12 +13,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -35,10 +37,10 @@ public class LitLog extends BorderPane {
     static int DEFAULT_MAXLINES = 50;
     private double lineSpacing;
     private int maxLines;
-    private VBox vbox;
-    private ScrollPane scrollPane;
-    private TextArea textArea;
-    private StackPane stackPane;
+    public VBox vbox;
+    public ScrollPane scrollPane;
+    public TextArea textArea;
+    public StackPane stackPane;
     public ObservableList<Text> lines;
     public SimpleBooleanProperty selectingProperty = new SimpleBooleanProperty(false);
     
@@ -63,7 +65,7 @@ public class LitLog extends BorderPane {
         textArea.maxWidthProperty().bind(vbox.widthProperty());
         textArea.maxHeightProperty().bind(vbox.heightProperty());
         
-        stackPane = new StackPane(vbox, textArea);
+        stackPane = new StackPane(textArea, vbox );
 
         scrollPane = new ScrollPane(stackPane);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -92,23 +94,55 @@ public class LitLog extends BorderPane {
         textArea.setOpacity(0);
         getStyleClass().add("litlog-pane");
     }
-    
-    public void addLine(String line, Font font, Color color) {
-        Text text = new Text(line);
-        //Override default font
-        text.setFont(font);
-        text.setFill(color);
-        appendText(text);
-    }
     public void addLine(String line) {
         Text text = new Text(line);
         text.getStyleClass().add("litlog-text");
         appendText(text);
     }
+    public void addLine(String line, Font font, Color color) {
+        addLine(line, font, color, null);
+    }
+    public void addLine(String line, Font font, Color color, Node node) {
+        Text text = new Text(line);
+        //Override default font
+        text.setFont(font);
+        text.setFill(color);
+        if(null != node)
+            appendText(text, node);
+        else
+            appendText(text);
+    }
     private void appendText(Text text) {
         lines.add(text);
         Platform.runLater(()-> animateLine(text));
     }
+    private void appendText(Text text, Node node) {
+        lines.add(text);
+        Platform.runLater(()-> animateLine(text, node));
+    }
+    private void animateLine(Text text, Node node) {
+        final IntegerProperty i = new SimpleIntegerProperty(0);
+        Timeline timeline = new Timeline();
+        String animatedString = text.getText();
+        KeyFrame keyFrame1 = new KeyFrame( Duration.millis(30), event -> {
+            if (i.get() > animatedString.length()) {
+                timeline.stop();
+                textArea.appendText(System.lineSeparator() + animatedString);
+                node.setVisible(true);
+            } else {
+                text.setText(animatedString.substring(0, i.get()));
+                i.set(i.get() + 1);
+            }
+        });
+        timeline.getKeyFrames().addAll(keyFrame1);
+        timeline.setCycleCount(Animation.INDEFINITE);
+        HBox hbox = new HBox(text, node);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        vbox.getChildren().add(hbox);
+        node.setVisible(false);
+        timeline.play();
+    }
+    
     private void animateLine(Text text) {
         final IntegerProperty i = new SimpleIntegerProperty(0);
         Timeline timeline = new Timeline();

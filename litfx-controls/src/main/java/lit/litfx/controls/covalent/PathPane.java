@@ -50,7 +50,8 @@ public class PathPane extends AnchorPane {
     // used for setupMovePaneSupport()
     private Point2D anchorPt;
     private Point2D previousLocation;
-
+    private double contentAnchorGap = 0.0;
+    private double mainContentViewRightAnchorGap = 15.0;
     Animation enterScene;
     SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
@@ -114,10 +115,10 @@ public class PathPane extends AnchorPane {
         mainContentBorderFrame = createMainContentViewArea();
 
         // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
-        AnchorPane.setTopAnchor(contentPane, 15.0);
-        AnchorPane.setLeftAnchor(contentPane, 15.0);
-        AnchorPane.setRightAnchor(contentPane, 15.0);
-        AnchorPane.setBottomAnchor(contentPane, 15.0);
+        AnchorPane.setTopAnchor(contentPane, contentAnchorGap);
+        AnchorPane.setLeftAnchor(contentPane, contentAnchorGap);
+        AnchorPane.setRightAnchor(contentPane, contentAnchorGap);
+        AnchorPane.setBottomAnchor(contentPane, contentAnchorGap);
         mainContentBorderFrame.getMainContentPane().getChildren().add(this.contentPane);
 
         //Disable interactions with the content while minimized.
@@ -200,39 +201,19 @@ public class PathPane extends AnchorPane {
         wireListeners();
     }
 
-    private void handleMouseDragged(MouseEvent mouseEvent) {
-        if(isEnableDrag()) {
-            System.out.println("drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
-            int segment = resizePaneTracker.currentSegmentIndex.get();
-            if (segment == -1 && anchorPt != null && previousLocation != null) {
+    private void handlePositionWindowMouseDragged(MouseEvent mouseEvent) {
+        if(isEnableDrag()) {        
+            //System.out.println("Title bar drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
+            if (anchorPt != null && previousLocation != null) {
+                System.out.println("Title bar drag root previousLocation: " + previousLocation + " anchorPt " + anchorPt);
                 this.setTranslateX(previousLocation.getX()
-                        + mouseEvent.getScreenX()
+                        + mouseEvent.getSceneX()
                         - anchorPt.getX());
                 this.setTranslateY(previousLocation.getY()
-                        + mouseEvent.getScreenY()
+                        + mouseEvent.getSceneY()
                         - anchorPt.getY());
-            }        
+            }
         }
-    }
-    private void handlePositionWindowMouseDragged(MouseEvent mouseEvent) {
-        //System.out.println("Title bar drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
-        if (anchorPt != null && previousLocation != null) {
-            System.out.println("Title bar drag root previousLocation: " + previousLocation + " anchorPt " + anchorPt);
-            this.setTranslateX(previousLocation.getX()
-                    + mouseEvent.getSceneX()
-                    - anchorPt.getX());
-            this.setTranslateY(previousLocation.getY()
-                    + mouseEvent.getSceneY()
-                    - anchorPt.getY());
-        }
-    }
-
-    private void handleMousePressed(MouseEvent mouseEvent) {
-        int segment = resizePaneTracker.currentSegmentIndex.get();
-        if (segment == -1) {
-            anchorPt = new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY());
-        }
-        System.out.println("press root sees segment " + resizePaneTracker.currentSegmentIndex.get());
     }
 
     private void handlePositionWindowMousePressed(MouseEvent mouseEvent) {
@@ -492,11 +473,11 @@ public class PathPane extends AnchorPane {
         MainContentViewArea mainContentView = new MainContentViewArea();
         mainContentView.getStyleClass().add("main-content-view");
         AnchorPane.setTopAnchor(mainContentView, 90.0);
-        double leftAnchor = 10 + 15;
+        double leftAnchor = 10.0 ;
         AnchorPane.setLeftAnchor(mainContentView, leftAnchor);
-        double rightAnchor = 15;
+        double rightAnchor = 0.0;
         AnchorPane.setRightAnchor(mainContentView, rightAnchor);
-        AnchorPane.setBottomAnchor(mainContentView, 10 + 15.0);
+        AnchorPane.setBottomAnchor(mainContentView, 10.0 );
         //root.getChildren().add(mainContentView);
 
         ShapedPath mainContentInnerPath = ShapedPathBuilder.create(mainContentView)
@@ -824,6 +805,20 @@ public class PathPane extends AnchorPane {
      */
     public void setEnableDrag(boolean enableDrag) {
         this.enableDrag = enableDrag;
+    }
+
+    /**
+     * @return the contentAnchorGap
+     */
+    public double getContentAnchorGap() {
+        return contentAnchorGap;
+    }
+
+    /**
+     * @param contentAnchorGap the contentAnchorGap to set
+     */
+    public void setContentAnchorGap(double contentAnchorGap) {
+        this.contentAnchorGap = contentAnchorGap;
     }
 }
 
