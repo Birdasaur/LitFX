@@ -97,6 +97,11 @@ public class CovalentPaneDemo extends Application {
                     "Cyber Battlespace", "Notifications",
                     borderTimeSpinner.getValue(),
                     contentTimeSpinner.getValue());
+
+            // must be set to prevent user from resizing too small.
+            newPane.setMinHeight(200);
+            newPane.setMinWidth(300);
+
             desktopPane.getChildren().add(newPane);
             newPane.show();
         });
