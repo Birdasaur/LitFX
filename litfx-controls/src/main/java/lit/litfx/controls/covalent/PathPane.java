@@ -205,7 +205,8 @@ public class PathPane extends AnchorPane {
         if(isEnableDrag()) {        
             //System.out.println("Title bar drag root sees segment " + resizePaneTracker.currentSegmentIndex.get());
             if (anchorPt != null && previousLocation != null) {
-                System.out.println("Title bar drag root previousLocation: " + previousLocation + " anchorPt " + anchorPt);
+                //@DEBUG SMP Useful print
+                //System.out.println("Title bar drag root previousLocation: " + previousLocation + " anchorPt " + anchorPt);
                 this.setTranslateX(previousLocation.getX()
                         + mouseEvent.getSceneX()
                         - anchorPt.getX());
