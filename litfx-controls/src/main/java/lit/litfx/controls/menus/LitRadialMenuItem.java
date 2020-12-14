@@ -114,7 +114,8 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
     protected double translateX;
     protected double translateY;
     protected boolean mouseOn = false;
-    protected BooleanProperty mouseOnProperty = new SimpleBooleanProperty(mouseOn);    
+    protected BooleanProperty mouseOnProperty = new SimpleBooleanProperty(mouseOn); 
+    protected BooleanProperty hideMenuOnItemClick = new SimpleBooleanProperty(true);
     protected Path path;
     protected Path outlinePath; //For creating sharply contrasting outline effects
     protected Node graphic;
@@ -144,7 +145,8 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
         outlineStrokeColor.addListener(this);
         outlineStrokeMouseOnColor.addListener(this);
         outlineStrokeWidth.addListener(this);
-        outlineEffect.addListener(this);        
+        outlineEffect.addListener(this);  
+        hideMenuOnItemClick.addListener(this);
         
 	path = new Path();
 	moveTo = new MoveTo();
@@ -231,6 +233,10 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
         menuSize.set(width);
     }
 
+    public BooleanProperty hideMenuOnItemClickProperty() {
+        return hideMenuOnItemClick;
+    }
+    
     public DoubleProperty menuSizeProperty() {
         return menuSize;
     } 

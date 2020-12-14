@@ -219,12 +219,12 @@ public class PathPane extends AnchorPane {
 
     private void handlePositionWindowMousePressed(MouseEvent mouseEvent) {
         anchorPt = new Point2D(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-        System.out.println("Title bar press anchorPt: " + anchorPt);
+        //System.out.println("Title bar press anchorPt: " + anchorPt);
     }
 
     private void handlePositionWindowMouseReleased(MouseEvent mouseEvent) {
         previousLocation = new Point2D(getTranslateX(),getTranslateY());
-        System.out.println("released previousLocation: "+ previousLocation);
+        //System.out.println("released previousLocation: "+ previousLocation);
     }
 
     /**
@@ -248,7 +248,7 @@ public class PathPane extends AnchorPane {
         KeyFrame keyFrame1 = new KeyFrame(Duration.millis(1), strokeOffsetStart, visible);
         KeyValue strokeOffsetEnd = new KeyValue(borderFrame.strokeDashOffsetProperty(), 0);
         KeyFrame keyFrame2 = new KeyFrame(Duration.millis(1000), handler -> {
-            System.out.println("done.");
+            //System.out.println("done.");
             borderFrame.getStrokeDashArray().clear();
         }, strokeOffsetEnd);
 
@@ -536,13 +536,13 @@ public class PathPane extends AnchorPane {
         return scaleTransition;
     }    
     public void minimize() {
-        System.out.println("Minimize called on Pane: " + this.toString());
+        //System.out.println("Minimize called on Pane: " + this.toString());
         Animation minimizeAnimation = createMinimizeAnim(contentTimeMs);
         minimizedProperty.set(true);
         minimizeAnimation.play();
     }
     public void restore() {
-        System.out.println("Restoring Pane: " + this.toString());
+        //System.out.println("Restoring Pane: " + this.toString());
         Animation restoreAnimation = createRestoreAnim(contentTimeMs);
         minimizedProperty.set(false);
         restoreAnimation.play();

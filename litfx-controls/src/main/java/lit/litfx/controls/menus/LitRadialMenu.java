@@ -113,6 +113,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
     private double lastInitialAngleValue;
     private double lastOffsetValue;
     private boolean allowRedraw = true;
+    private BooleanProperty hideMenuOnItemClick = new SimpleBooleanProperty(false);
     
     public LitRadialMenu() {
     }
@@ -270,7 +271,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
         item.outlineStrokeWidthProperty().bind(outlineStrokeWidth);
         item.outlineStrokeVisibleProperty().bind(outlineStrokeVisible);
         item.outlineEffectProperty().bind(outlineEffect);
-
+        item.hideMenuOnItemClickProperty().bind(hideMenuOnItemClick);
         item.clockwiseProperty().bind(clockwise);
         items.add(item);
         itemGroup.getChildren().add(itemGroup.getChildren().size(), item);
@@ -302,7 +303,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
         item.outlineStrokeWidthProperty().unbind();
         item.outlineStrokeVisibleProperty().unbind();
         item.outlineEffectProperty().unbind();
-
+        item.hideMenuOnItemClickProperty().unbind();
         item.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
     }
 
@@ -321,8 +322,10 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
                     it.setSelected(false);
                 }
             }
-            if (!item.isSelected()) {
-                hideRadialMenu();
+            if(hideMenuOnItemClick.get()) {
+                if (!item.isSelected()) {
+                    hideRadialMenu();
+                }
             }
             event.consume();
         }
@@ -715,4 +718,18 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
     }
     
     //</editor-fold>    
+
+    /**
+     * @return the hideMenuOnItemClick
+     */
+    public boolean isHideMenuOnItemClick() {
+        return hideMenuOnItemClick.get();
+    }
+
+    /**
+     * @param hideMenuOnItemClick the hideMenuOnItemClick to set
+     */
+    public void setHideMenuOnItemClick(boolean hideMenuOnItemClick) {
+        this.hideMenuOnItemClick.set(hideMenuOnItemClick);
+    }
 }
