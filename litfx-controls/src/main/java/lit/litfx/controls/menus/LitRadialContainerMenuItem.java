@@ -52,7 +52,7 @@ import javafx.util.Duration;
 
 public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 
-    private boolean selected = false;
+    protected boolean selected = false;
     private final Group childAnimGroup = new Group();
     private FadeTransition fadeIn = null;
     private FadeTransition fadeOut = null;
@@ -71,16 +71,16 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
     }
 
     private void initialize() {
-		arrow.setFill(Color.GRAY);
-		arrow.setStroke(null);
+        arrow.setFill(Color.GRAY);
+        arrow.setStroke(null);
 	childAnimGroup.setVisible(false);
 	visibleProperty().addListener(new ChangeListener<Boolean>() {
-
 	    @Override
 	    public void changed(final ObservableValue<? extends Boolean> arg0,
 		    final Boolean arg1, final Boolean arg2) {
 		if (!arg0.getValue()) {
-		    childAnimGroup.setVisible(false);
+                    if(hideMenuOnItemClick.get())
+                        childAnimGroup.setVisible(false);
 		    setSelected(false);
 		}
 	    }
@@ -93,12 +93,12 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 	fadeOut.setFromValue(0.0);
 	fadeOut.setToValue(1.0);
 	fadeOut.setOnFinished(new EventHandler<ActionEvent>() {
-
-		    @Override
-		    public void handle(final ActionEvent arg0) {
-			childAnimGroup.setVisible(false);
-		    }
-		});
+            @Override
+            public void handle(final ActionEvent arg0) {
+                if(hideMenuOnItemClick.get())
+                    childAnimGroup.setVisible(false);
+            }
+        });
 	getChildren().add(arrow);
     }
 
@@ -114,6 +114,8 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 	item.clockwiseProperty().bind(clockwise);
 	item.backgroundVisibleProperty().bind(backgroundVisible);
 	item.strokeVisibleProperty().bind(strokeVisible);
+        item.hideMenuOnItemClickProperty().bind(hideMenuOnItemClick);
+        
 	items.add(item);
 	childAnimGroup.getChildren().add(item);
 	double currentOffset = 0;
@@ -136,6 +138,7 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 	item.clockwiseProperty().unbind();
 	item.backgroundVisibleProperty().unbind();
 	item.strokeVisibleProperty().unbind();
+        item.hideMenuOnItemClickProperty().unbind();
     }
 
     public void removeMenuItem(final int itemIndex) {
@@ -183,7 +186,7 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
     }
 
     @Override
-    void setSelected(final boolean selected) {
+    public void setSelected(final boolean selected) {
 	this.selected = selected;
 	if (selected) {
 	    double startOpacity = 0;
@@ -197,21 +200,25 @@ public class LitRadialContainerMenuItem extends LitRadialMenuItem {
 	    fadeIn.fromValueProperty().set(startOpacity);
 	    fadeIn.playFromStart();
 	} else {
-	    // draw Children
-	    double startOpacity = 1.0;
-	    if (fadeIn.getStatus() == Status.RUNNING) {
-		fadeIn.stop();
-		startOpacity = childAnimGroup.getOpacity();
-	    }
-	    fadeOut.fromValueProperty().set(startOpacity);
-	    fadeOut.playFromStart();
+            if(hideMenuOnItemClick.get()) {
+                // draw Children
+                double startOpacity = 1.0;
+                if (fadeIn.getStatus() == Status.RUNNING) {
+                    fadeIn.stop();
+                    startOpacity = childAnimGroup.getOpacity();
+                }
+                fadeOut.fromValueProperty().set(startOpacity);
+                fadeOut.playFromStart();
+            }
 	}
 	redraw();
     }
 
     @Override
-    boolean isSelected() {
+    public boolean isSelected() {
 	return selected;
     }
-
+    public List<LitRadialMenuItem> getItems() {
+        return items;
+    }
 }

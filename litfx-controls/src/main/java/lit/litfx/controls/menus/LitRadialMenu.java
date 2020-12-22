@@ -63,6 +63,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
@@ -72,6 +74,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
         ALWAYS, WITH_MENU, NEVER
     }
     public static double DEFAULT_STROKE_WIDTH = 1.0;
+    public static double DEFAULT_FONTSIZE = 16;
     protected List<LitRadialMenuItem> items = new ArrayList<LitRadialMenuItem>();
     protected DoubleProperty innerRadius;
     protected DoubleProperty radius;
@@ -94,9 +97,14 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
     protected ObjectProperty<Effect> outlineEffect;
     
     protected BooleanProperty clockwise;
+    protected BooleanProperty labelsVisible = new SimpleBooleanProperty(true);
+    
     protected BooleanProperty backgroundVisible;
     protected ObjectProperty<CenterVisibility> centerVisibility;
     protected ObjectProperty<Node> centerGraphic;
+    protected String text;
+    protected Text textNode;
+    
     protected Circle centerStrokeShape;
     protected Group centerGroup;
     protected Group itemGroup;
@@ -105,6 +113,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
     private double lastInitialAngleValue;
     private double lastOffsetValue;
     private boolean allowRedraw = true;
+    private BooleanProperty hideMenuOnItemClick = new SimpleBooleanProperty(false);
     
     public LitRadialMenu() {
     }
@@ -117,6 +126,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
 
         itemGroup = new Group();
         getChildren().add(itemGroup);
+        itemGroup.toFront();
         
         itemFitWidth = new SimpleDoubleProperty(innerRadius);
         itemFitWidth.addListener((ov,t,t1) -> {
@@ -156,6 +166,8 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
         this.radius = new SimpleDoubleProperty(radius);
         this.offset = new SimpleDoubleProperty(offset);
         this.clockwise = new SimpleBooleanProperty(clockwise);
+        labelsVisible.addListener(this);
+        
         backgroundFill = new SimpleObjectProperty<>(bgFill);
         backgroundFill.addListener(this);
         backgroundMouseOnFill = new SimpleObjectProperty<>(bgMouseOnFill);
@@ -193,8 +205,14 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
             }
             event.consume();
         });
+        textNode = new Text();
+        textNode.visibleProperty().bind(labelsVisible);
+        textNode.setFont(new Font(DEFAULT_FONTSIZE));
+        textNode.setFill(Color.ALICEBLUE.deriveColor(1, 1, 1, 0.75));        
+        centerGroup.getChildren().add(textNode);        
         getChildren().add(centerGroup);
-        this.centerGraphic = new SimpleObjectProperty<Node>(centerGraphic);
+        centerGroup.toFront();
+        this.centerGraphic = new SimpleObjectProperty<>(centerGraphic);
         setCenterGraphic(centerGraphic);
         saveStateBeforeAnimation();
     }
@@ -253,7 +271,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
         item.outlineStrokeWidthProperty().bind(outlineStrokeWidth);
         item.outlineStrokeVisibleProperty().bind(outlineStrokeVisible);
         item.outlineEffectProperty().bind(outlineEffect);
-
+        item.hideMenuOnItemClickProperty().bind(hideMenuOnItemClick);
         item.clockwiseProperty().bind(clockwise);
         items.add(item);
         itemGroup.getChildren().add(itemGroup.getChildren().size(), item);
@@ -285,7 +303,7 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
         item.outlineStrokeWidthProperty().unbind();
         item.outlineStrokeVisibleProperty().unbind();
         item.outlineEffectProperty().unbind();
-
+        item.hideMenuOnItemClickProperty().unbind();
         item.removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
     }
 
@@ -304,8 +322,10 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
                     it.setSelected(false);
                 }
             }
-            if (!item.isSelected()) {
-                hideRadialMenu();
+            if(hideMenuOnItemClick.get()) {
+                if (!item.isSelected()) {
+                    hideRadialMenu();
+                }
             }
             event.consume();
         }
@@ -400,6 +420,11 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
                         .get() : strokeFill.get())
                         : Color.TRANSPARENT);
         centerStrokeShape.setStrokeWidth(strokeWidth.get());
+        double width = textNode.getLayoutBounds().getMaxX() - textNode.getLayoutBounds().getMinX();
+        double height = textNode.getLayoutBounds().getMaxY() - textNode.getLayoutBounds().getMinY();
+        double graphicHeight = getCenterGraphic().getLayoutBounds().getMaxY() - getCenterGraphic().getLayoutBounds().getMinY();
+        textNode.setTranslateX(-width/2.0);
+        textNode.setTranslateY(-(height/2.0 + graphicHeight/2.0));
     }
 //<editor-fold defaultstate="collapsed" desc="Properties">
     public Group getCenterGroup() {
@@ -542,7 +567,8 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
             centerGroup.getChildren().remove(centerGraphic.get());
         }
         if (graphic != null) {
-            centerGroup.getChildren().add(graphic);
+            //CenterStrokeShape should always be zero... textNode always 2
+            centerGroup.getChildren().add(1, graphic);
         }
         centerGraphic.set(graphic);
     }
@@ -603,6 +629,9 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
 
     public BooleanProperty clockwiseProperty() {
         return clockwise;
+    }
+    public BooleanProperty labelsVisibleProperty() {
+	return labelsVisible;
     }
 
     public boolean isBackgroundVisible() {
@@ -678,5 +707,29 @@ public class LitRadialMenu extends Group implements EventHandler<MouseEvent>,
     public void setAllowRedraw(boolean allowRedraw) {
         this.allowRedraw = allowRedraw;
     }
+    public void setText(final String text) {
+	this.text = text;
+        textNode.setText(text);
+	redraw();
+    }
+
+    public String getText() {
+	return text;
+    }
+    
     //</editor-fold>    
+
+    /**
+     * @return the hideMenuOnItemClick
+     */
+    public boolean isHideMenuOnItemClick() {
+        return hideMenuOnItemClick.get();
+    }
+
+    /**
+     * @param hideMenuOnItemClick the hideMenuOnItemClick to set
+     */
+    public void setHideMenuOnItemClick(boolean hideMenuOnItemClick) {
+        this.hideMenuOnItemClick.set(hideMenuOnItemClick);
+    }
 }

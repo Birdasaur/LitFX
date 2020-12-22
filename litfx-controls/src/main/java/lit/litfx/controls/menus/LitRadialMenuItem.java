@@ -58,9 +58,11 @@ import javafx.scene.shape.FillRule;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
-
+    public static double DEFAULT_FONTSIZE = 12;
     protected DoubleProperty startAngle = new SimpleDoubleProperty();
     protected DoubleProperty menuSize = new SimpleDoubleProperty(45);
     protected DoubleProperty innerRadius = new SimpleDoubleProperty();
@@ -73,6 +75,7 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
     protected ObjectProperty<Paint> strokeColor = new SimpleObjectProperty<Paint>();
     protected ObjectProperty<Paint> strokeMouseOnColor = new SimpleObjectProperty<Paint>();
     protected BooleanProperty clockwise = new SimpleBooleanProperty();
+    protected BooleanProperty labelsVisible = new SimpleBooleanProperty(true);
     //ADDING STROKE WIDTH and Other cool stuff support
     protected DoubleProperty strokeWidth = new SimpleDoubleProperty();
     protected ObjectProperty<Effect> effect = new SimpleObjectProperty<Effect>();
@@ -97,17 +100,27 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
     protected double startY;
     protected double endX;
     protected double endY;
+
+    protected DoubleProperty startXProperty = new SimpleDoubleProperty();
+    protected DoubleProperty startYProperty = new SimpleDoubleProperty();
+    protected DoubleProperty endXProperty = new SimpleDoubleProperty();
+    protected DoubleProperty endYProperty = new SimpleDoubleProperty();
+    protected DoubleProperty translateXProperty = new SimpleDoubleProperty();
+    protected DoubleProperty translateYProperty = new SimpleDoubleProperty();
+
     protected boolean sweep;
     protected double graphicX;
     protected double graphicY;
     protected double translateX;
     protected double translateY;
     protected boolean mouseOn = false;
-    protected BooleanProperty mouseOnProperty = new SimpleBooleanProperty(mouseOn);    
+    protected BooleanProperty mouseOnProperty = new SimpleBooleanProperty(mouseOn); 
+    protected BooleanProperty hideMenuOnItemClick = new SimpleBooleanProperty(true);
     protected Path path;
     protected Path outlinePath; //For creating sharply contrasting outline effects
     protected Node graphic;
     protected String text;
+    protected Text textNode;
 
     public LitRadialMenuItem() {
         menuSize = new SimpleDoubleProperty(45);
@@ -118,7 +131,8 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	backgroundVisible.addListener(this);
 	strokeVisible.addListener(this);
 	clockwise.addListener(this);
-	backgroundColor.addListener(this);
+        labelsVisible.addListener(this);
+        backgroundColor.addListener(this);
 	strokeColor.addListener(this);
 	strokeWidth.addListener(this);
 	effect.addListener(this);
@@ -131,7 +145,8 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
         outlineStrokeColor.addListener(this);
         outlineStrokeMouseOnColor.addListener(this);
         outlineStrokeWidth.addListener(this);
-        outlineEffect.addListener(this);        
+        outlineEffect.addListener(this);  
+        hideMenuOnItemClick.addListener(this);
         
 	path = new Path();
 	moveTo = new MoveTo();
@@ -174,6 +189,11 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	this.graphic = graphic;
 	if (graphic != null)
 	    getChildren().add(graphic);
+        textNode = new Text();
+        textNode.visibleProperty().bind(labelsVisible);
+        textNode.setFont(new Font(DEFAULT_FONTSIZE));
+        textNode.setFill(Color.ALICEBLUE.deriveColor(1, 1, 1, 0.75));        
+        getChildren().add(textNode);
 	redraw();
     }
 
@@ -189,6 +209,7 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
     public LitRadialMenuItem(final double menuSize, final String text, final Node graphic) {
 	this(menuSize, graphic);
 	this.text = text;
+        textNode.setText(text);
 	redraw();
     }
 
@@ -196,6 +217,7 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	    final Node graphic, final EventHandler<ActionEvent> actionHandler) {
 	this(menuSize, graphic, actionHandler);
 	this.text = text;
+        textNode.setText(text);
 	redraw();
     }
     //<editor-fold defaultstate="collapsed" desc="Properties">
@@ -211,6 +233,10 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
         menuSize.set(width);
     }
 
+    public BooleanProperty hideMenuOnItemClickProperty() {
+        return hideMenuOnItemClick;
+    }
+    
     public DoubleProperty menuSizeProperty() {
         return menuSize;
     } 
@@ -237,6 +263,9 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 
     public BooleanProperty clockwiseProperty() {
 	return clockwise;
+    }
+    public BooleanProperty labelsVisibleProperty() {
+	return labelsVisible;
     }
 
     ObjectProperty<Paint> strokeMouseOnColorProperty() {
@@ -308,6 +337,7 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 
     public void setText(final String text) {
 	this.text = text;
+        textNode.setText(text);
 	redraw();
     }
 
@@ -359,7 +389,6 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	arcTo.setX(endX + translateX);
 	arcTo.setY(endY + translateY);
 	arcTo.setSweepFlag(sweep);
-
 	arcTo.setRadiusX(radiusValue);
 	arcTo.setRadiusY(radiusValue);
 
@@ -370,6 +399,15 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	    graphic.setTranslateX(graphicX + translateX);
 	    graphic.setTranslateY(graphicY + translateY);
 	}
+//        double width = textNode.getLayoutBounds().getMaxX() - textNode.getLayoutBounds().getMinX();
+//        double height = textNode.getLayoutBounds().getMaxY() - textNode.getLayoutBounds().getMinY();
+        if(null != textNode) {
+            textNode.setTranslateX(graphicX + translateX );
+            //        double graphicHeight = graphic.getLayoutBounds().getMaxY() - graphic.getLayoutBounds().getMinY();
+            //        double yAdjust = graphicY > innerStartY ? height/2.0 : graphicHeight  + height/2.0;
+            //        textNode.setTranslateY(graphicY + translateY - yAdjust);
+            textNode.setTranslateY(graphicY + translateY);
+        }
     }
 
     protected void computeCoordinates() {
@@ -451,6 +489,13 @@ public class LitRadialMenuItem extends Group implements ChangeListener<Object> {
 	    translateY = offsetValue
 		    * Math.sin(Math.toRadians(startAngleValue + (menuSize.get() / 2.0)));
 	}
+        //Update coordinate dependent properties
+        startXProperty.set(startX);
+        startYProperty.set(startY);
+        endXProperty.set(endX);
+        endYProperty.set(endY);
+        translateXProperty.set(translateX);
+        translateYProperty.set(translateY);
     }
     
     @Override
