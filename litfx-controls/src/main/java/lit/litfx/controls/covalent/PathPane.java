@@ -50,11 +50,12 @@ public class PathPane extends AnchorPane {
     public Node leftTab;
     public Pane windowButtons;
     public Pane mainTitleArea;
-
+    private boolean enableDrag = true;
     // used for setupMovePaneSupport()
     private Point2D anchorPt;
     private Point2D previousLocation;
-
+    private double contentAnchorGap = 15.0;
+    private double mainContentViewRightAnchorGap = 15.0;
     Animation enterScene;
     SimpleBooleanProperty minimizedProperty = new SimpleBooleanProperty(false);
 
@@ -131,10 +132,10 @@ public class PathPane extends AnchorPane {
         mainContentBorderFrame = createMainContentViewArea();
 
         // IMPORTANT THIS IS THE CONTENT SET INTO THE main content pane (nestedPane)
-        AnchorPane.setTopAnchor(contentPane, 15.0);
-        AnchorPane.setLeftAnchor(contentPane, 15.0);
-        AnchorPane.setRightAnchor(contentPane, 15.0);
-        AnchorPane.setBottomAnchor(contentPane, 15.0);
+        AnchorPane.setTopAnchor(contentPane, contentAnchorGap);
+        AnchorPane.setLeftAnchor(contentPane, contentAnchorGap);
+        AnchorPane.setRightAnchor(contentPane, contentAnchorGap);
+        AnchorPane.setBottomAnchor(contentPane, contentAnchorGap);
         mainContentBorderFrame.getMainContentPane().getChildren().add(this.contentPane);
 
         //Disable interactions with the content while minimized.
@@ -198,13 +199,15 @@ public class PathPane extends AnchorPane {
      * @param mouseEvent
      */
     private void handlePositionWindowMouseDragged(MouseEvent mouseEvent) {
-        if (anchorPt != null && previousLocation != null) {
-            this.setTranslateX(previousLocation.getX()
-                    + mouseEvent.getSceneX()
-                    - anchorPt.getX());
-            this.setTranslateY(previousLocation.getY()
-                    + mouseEvent.getSceneY()
-                    - anchorPt.getY());
+        if(isEnableDrag()) {        
+            if (anchorPt != null && previousLocation != null) {
+                this.setTranslateX(previousLocation.getX()
+                        + mouseEvent.getSceneX()
+                        - anchorPt.getX());
+                this.setTranslateY(previousLocation.getY()
+                        + mouseEvent.getSceneY()
+                        - anchorPt.getY());
+            }
         }
     }
 
@@ -876,6 +879,34 @@ public class PathPane extends AnchorPane {
         cursorSegmentArray[13] = RESIZE_DIRECTION.NW;
 
         return newFrame;
+    }
+
+    /**
+     * @return the enableDrag
+     */
+    public boolean isEnableDrag() {
+        return enableDrag;
+}
+
+    /**
+     * @param enableDrag the enableDrag to set
+     */
+    public void setEnableDrag(boolean enableDrag) {
+        this.enableDrag = enableDrag;
+    }
+
+    /**
+     * @return the contentAnchorGap
+     */
+    public double getContentAnchorGap() {
+        return contentAnchorGap;
+    }
+
+    /**
+     * @param contentAnchorGap the contentAnchorGap to set
+     */
+    public void setContentAnchorGap(double contentAnchorGap) {
+        this.contentAnchorGap = contentAnchorGap;
     }
 }
 
