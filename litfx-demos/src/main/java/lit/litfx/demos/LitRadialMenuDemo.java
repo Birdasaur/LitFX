@@ -282,37 +282,25 @@ public class LitRadialMenuDemo extends Application {
                 new Stop(0, bgMolg1ColorPicker.getValue()), new Stop(0.8, bgMolg2ColorPicker.getValue())));
         });        
 
-        strokeColorPicker = new ColorPicker(bgMoLg1Color);
-        bgMolg1ColorPicker.valueProperty().addListener((ov, t, t1) -> {
-            radialMenu.setBackgroundMouseOnFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, bgMolg1ColorPicker.getValue()), new Stop(0.8, bgMolg2ColorPicker.getValue())));
-        });
-        
-        outlineColorPicker = new ColorPicker(bgMoLg2Color);     
-        bgMolg2ColorPicker.valueProperty().addListener((ov, t, t1) -> {
-            radialMenu.setBackgroundMouseOnFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, bgMolg1ColorPicker.getValue()), new Stop(0.8, bgMolg2ColorPicker.getValue())));
-        });        
-
         strokeColorPicker = new ColorPicker(strokeColor);
         strokeColorPicker.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setStrokeColor(t1);
-      });
+        });
         
         strokeMoColorPicker = new ColorPicker(strokeMouseOnColor);     
         strokeMoColorPicker.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setStrokeMouseOnColor(t1);
-      });        
+        });        
 
         outlineColorPicker = new ColorPicker(outlineColor);
         outlineColorPicker.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setOutlineStrokeFill(t1);
-      });
+        });
         
         outlineMoColorPicker = new ColorPicker(outlineMouseOnColor);     
         outlineMoColorPicker.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setOutlineStrokeMouseOnFill(t1);
-       });        
+        });        
         
         vbox.getChildren().addAll(bglg1ColorPicker, bglg2ColorPicker, bgMolg1ColorPicker, bgMolg2ColorPicker, 
                     strokeColorPicker, strokeMoColorPicker, outlineColorPicker, outlineMoColorPicker);

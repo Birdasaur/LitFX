@@ -93,6 +93,19 @@ public class PathPane extends AnchorPane {
             segmentSelected.set(-1);
             //System.out.println("mouse exited group");
         });
+//        scene.setOnMouseMoved(me -> {
+//            // update segment listener (s0 s2, s2, none...)
+//            // when segment listener's invalidation occurs fire cursor to change.
+//            logLineSegment(me.getSceneX(), me.getSceneY());
+//            outerFrame.toBack();
+////            System.out.println("scene mouse moved");
+//        });
+//
+//        // reset cursor
+//        scene.setOnMouseExited( mouseEvent -> {
+//            segmentSelected.set(-1);
+//            System.out.println("mouse exited group");
+//        });
 
         // createWindowButtons this is the title area and three buttons on top left.
         windowButtons = createWindowButtons(this);
@@ -595,6 +608,75 @@ public class PathPane extends AnchorPane {
             }
 
         });
+
+// // Rework the resize pane tracker work...
+//        resizePaneTracker = new ResizePaneTracker(contentPane);
+//
+//        resizePaneTracker.setOnMousePressed((mouseEvent, wt) -> {
+//            // store anchor x,y of the stage
+//            wt.anchorStageXYCoordValue.set(new Point2D(getTranslateX(), getTranslateY()));
+//
+//            // TODO Revisit code b/c this might be doing the same thing as line above.
+//            wt.paneXCoordValue.set(getTranslateX());
+//            wt.paneYCoordValue.set(getTranslateY());
+//
+//            // anchor of the mouse screen x,y position.
+//            wt.anchorCoordValue.set(new Point2D(mouseEvent.getScreenX(), mouseEvent.getScreenY()));
+//
+//            // current width and height
+//            wt.anchorWidthSizeValue.set(contentPane.getWidth());
+//            wt.anchorHeightSizeValue.set(contentPane.getHeight());
+//            System.out.println("press mouseX = " + mouseEvent.getX() + " translateX = " + getTranslateX());
+//
+//            // current resize direction
+//            wt.currentResizeDirection.set(getCurrentResizeDirection());
+//
+//            // current line segment
+//            wt.currentSegmentIndex.set(segmentSelected.get());
+//        });
+//
+//        resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
+//
+////        resizePaneTracker.setOnMouseDragged((mouseEvent, wt) -> {
+//            RESIZE_DIRECTION direction = wt.currentResizeDirection.get();
+//
+//            switch (direction) {
+//                case NW:
+//                    // TODO Northwest or Upper Left accuracy
+//                    resizeNorth(mouseEvent, wt);
+//                    resizeWest(mouseEvent, wt);
+//                    break;
+//                case N:
+//                    resizeNorth(mouseEvent, wt);
+//                    break;
+//                case NE:
+//                    //TODO Northeast Upper right corner accuracy
+//                    resizeNorth(mouseEvent, wt);
+//                    resizeEast(mouseEvent, wt);
+//                    break;
+//                case E:
+//                    resizeEast(mouseEvent, wt);
+//                    break;
+//                case SE:
+//                    resizeSouth(mouseEvent, wt);
+//                    resizeEast(mouseEvent, wt);
+//                    break;
+//                case S:
+//                    resizeSouth(mouseEvent, wt);
+//                    break;
+//                case SW:
+//                    resizeSouth(mouseEvent, wt);
+//                    resizeWest(mouseEvent, wt);
+//                    break;
+//                case W:
+//                    // TODO update offset West left side accuracy
+//                    resizeWest(mouseEvent, wt);
+//                    break;
+//                default:
+//                    break;
+//            }
+//
+//        });
 
         // after user resizes (mouse release) the previous location is reset
         resizePaneTracker.setOnMouseReleased((mouseEvent, wt) -> {
