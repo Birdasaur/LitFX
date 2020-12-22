@@ -1,17 +1,6 @@
 package lit.litfx.controls.covalent;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
@@ -31,15 +20,13 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToPrevX;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindXToWidth;
-import static lit.litfx.controls.covalent.BindablePointBuilder.bindYToHeight;
-import static lit.litfx.controls.covalent.BindablePointBuilder.xTo;
-import static lit.litfx.controls.covalent.BindablePointBuilder.yTo;
 import lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION;
+
+import java.util.*;
+
+import static lit.litfx.controls.covalent.BindablePointBuilder.*;
 import static lit.litfx.controls.covalent.CursorMappings.RESIZE_DIRECTION.NONE;
 import static lit.litfx.controls.covalent.CursorMappings.cursorMap;
-import static lit.litfx.controls.covalent.CursorMappings.cursorSegmentArray;
 
 /*
  notes: https://stackoverflow.com/questions/47213156/how-to-get-length-of-path
@@ -62,7 +49,7 @@ public class PathWindow {
 //        cursorMap.put(RESIZE_DIRECTION.SW, Cursor.SW_RESIZE);
 //        cursorMap.put(RESIZE_DIRECTION.W, Cursor.W_RESIZE);
 //    }
-//    private static RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
+    private RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
     private IntegerProperty segmentSelected = new SimpleIntegerProperty(-1);
 //    static {
 //        cursorSegmentArray[0] = RESIZE_DIRECTION.N;
@@ -678,7 +665,6 @@ public class PathWindow {
     }
 
     private void generateLineMap(List<PathElement> framePath) {
-        System.out.print("generateLineMap called...");
         PathElement prev = null;
         int cnt = 0;
 
@@ -767,6 +753,21 @@ public class PathWindow {
                 .closeSeg()
                 .build();
 
+        // Assign mouse cursor direction for each segment.
+        cursorSegmentArray[0] = RESIZE_DIRECTION.N;
+        cursorSegmentArray[1] = RESIZE_DIRECTION.NE;
+        cursorSegmentArray[2] = RESIZE_DIRECTION.E;
+        cursorSegmentArray[3] = RESIZE_DIRECTION.SE;
+        cursorSegmentArray[4] = RESIZE_DIRECTION.S;
+        cursorSegmentArray[5] = RESIZE_DIRECTION.S;
+        cursorSegmentArray[6] = RESIZE_DIRECTION.S;
+        cursorSegmentArray[7] = RESIZE_DIRECTION.SW;
+        cursorSegmentArray[8] = RESIZE_DIRECTION.W;
+        cursorSegmentArray[9] = RESIZE_DIRECTION.W;
+        cursorSegmentArray[10] = RESIZE_DIRECTION.W;
+        cursorSegmentArray[11] = RESIZE_DIRECTION.NW;
+        cursorSegmentArray[12] = RESIZE_DIRECTION.NW;
+        cursorSegmentArray[13] = RESIZE_DIRECTION.NW;
         return outerFrame;
     }
 }
