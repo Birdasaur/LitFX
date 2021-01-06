@@ -22,9 +22,7 @@
             <properties>
                 <skipTests>true</skipTests>
                 <exec.executable>java</exec.executable>
-                <!--<javafx.run.debug>${jpda.attach.port}</javafx.run.debug>-->
                 <jpda.listen>true</jpda.listen>
-                <!--<jpda.attach>define</jpda.attach>-->
                 <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} --module-path ${project.build.directory}/modules --module ${moduleName}/${mainClass}</exec.args>
             </properties>            
         </action>

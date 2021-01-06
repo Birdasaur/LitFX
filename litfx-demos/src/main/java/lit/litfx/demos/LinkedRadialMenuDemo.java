@@ -1,18 +1,14 @@
 package lit.litfx.demos;
 
-import java.util.ArrayList;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.ParallelTransition;
 import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -32,49 +28,40 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import lit.litfx.core.components.BandEmitter;
-import lit.litfx.core.components.CircleQuadBandCreator;
-import lit.litfx.core.components.PathQuadBandCreator;
+import lit.litfx.controls.menus.LinkedRadialContainerMenuItem;
+import lit.litfx.controls.menus.LinkedRadialMenu;
+import lit.litfx.controls.menus.LitRadialContainerMenuItem;
 import lit.litfx.controls.menus.LitRadialMenu;
 import lit.litfx.controls.menus.LitRadialMenuItem;
 
 /**
  * @author Birdasaur
- * adapted From Mr. LoNee's awesome RadialMenu example. Source for original 
- * prototype can be found in JFXtras-labs project.
- * https://github.com/JFXtras/jfxtras-labs
  */
-public class LitRadialMenuDemo extends Application {
+public class LinkedRadialMenuDemo extends Application {
     protected Label actionPerformedLabel = new Label();
     protected boolean show;
     protected double lastOffsetValue;
     protected double lastInitialAngleValue;
-    private LitRadialMenu radialMenu;
-    double ITEM_SIZE = 70.0;
-    double INNER_RADIUS = 70.0;
-    double ITEM_FIT_WIDTH = 70.0;
-    double MENU_SIZE = 250.0;
-    double OFFSET = 30.0;
-    double INITIAL_ANGLE = -50.0;
-    double STROKE_WIDTH = 1.5;
 
-    double CORNER_ITEM_SIZE = 38.0;
-    double CORNER_INNER_RADIUS = 30;
-    double CORNER_ITEM_FIT_WIDTH = 30.0;
-    double CORNER_MENU_SIZE = 80.0;
-    double CORNER_OFFSET = 4.0;
-    double CORNER_INITIAL_ANGLE = 240.0;
-    double CORNER_STROKE_WIDTH = 0.5;
-    
-    
+    double ITEM_SIZE = 40.0;
+    double INNER_RADIUS = 40.0;
+    double ITEM_FIT_WIDTH = 40.0;
+    double MENU_SIZE = 120.0;
+    double OFFSET = 20.0;
+    double INITIAL_ANGLE = 90.0;
+    double STROKE_WIDTH = 1.0;
+    double LINK_STROKE_WIDTH = 5;
+
     Color bgLg1Color = Color.DARKCYAN.deriveColor(1, 1, 1, 0.2);
     Color bgLg2Color = Color.LIGHTBLUE.deriveColor(1, 1, 1, 0.5);
     Color bgMoLg1Color = Color.LIGHTSKYBLUE.deriveColor(1, 1, 1, 0.3);
@@ -83,6 +70,11 @@ public class LitRadialMenuDemo extends Application {
     Color strokeMouseOnColor = Color.YELLOW;
     Color outlineColor = Color.GREEN;    
     Color outlineMouseOnColor = Color.LIGHTGREEN;
+    Color linkStrokeColor = Color.ALICEBLUE;
+    Color linkStrokeMouseOnColor = Color.ALICEBLUE;
+    Color linkFillColor = Color.SKYBLUE;    
+    Color linkFillMouseOnColor = Color.SKYBLUE;
+    
     
     private ColorPicker bglg1ColorPicker;
     private ColorPicker bglg2ColorPicker;
@@ -92,7 +84,10 @@ public class LitRadialMenuDemo extends Application {
     private ColorPicker strokeMoColorPicker;
     private ColorPicker outlineColorPicker;
     private ColorPicker outlineMoColorPicker;
+    private ColorPicker linkStrokeColorPicker;
+    private ColorPicker linkStrokeMoColorPicker;
     
+    private Slider linkStrokeWidthSlider;
     private Slider itemSizeSlider;
     private Slider innerRadiusSlider;
     private Slider itemFitWidthSlider;
@@ -100,15 +95,13 @@ public class LitRadialMenuDemo extends Application {
     private Slider offsetSlider;
     private Slider initialAngleSlider;    
     private Slider strokeWidthSlider;
+ 
+    
     private SimpleLongProperty timeDelayProp = new SimpleLongProperty(2000);
     private SimpleBooleanProperty centeredMenu = new SimpleBooleanProperty(true);
 
+    private LinkedRadialMenu radialMenu;
     LitRadialMenuItem operatorMenuItem; 
-    BandEmitter centerBe;
-    BandEmitter operatorBe;
-    ArrayList<BandEmitter> bandEmitters = new ArrayList<>();
-    TranslateTransition tt;
-    ParallelTransition pt;
     FadeTransition textFadeTransition;
     Timeline animation;
     
@@ -120,6 +113,7 @@ public class LitRadialMenuDemo extends Application {
         Pane pane = new Pane();
         VBox colors = createColorControls();
         colors.setAlignment(Pos.CENTER);
+        
         VBox controls = createSliderControls();
         BorderPane bp = new BorderPane(pane);
         ScrollPane sp = new ScrollPane(controls);
@@ -137,128 +131,44 @@ public class LitRadialMenuDemo extends Application {
         String CSS = this.getClass().getResource("styles.css").toExternalForm();
         scene.getStylesheets().add(CSS);     
         
-        bandEmitters = createBandEmitters();
-        pane.getChildren().addAll(centerBe, radialMenu);
+        pane.getChildren().addAll(radialMenu);
 
-        Task animationTask = new Task() {
-            @Override
-            protected Void call() throws Exception {
-                while(!this.isCancelled() && !this.isDone()) {
-                    updateBands();
-                    Thread.sleep(timeDelayProp.get());
-                }
-                return null;
-            }
-        };
-        Thread animationThread = new Thread(animationTask);
-        animationThread.setDaemon(true);
-        animationThread.start();        
+//        Task animationTask = new Task() {
+//            @Override
+//            protected Void call() throws Exception {
+//                while(!this.isCancelled() && !this.isDone()) {
+//                    updateBands();
+//                    Thread.sleep(timeDelayProp.get());
+//                }
+//                return null;
+//            }
+//        };
+//        Thread animationThread = new Thread(animationTask);
+//        animationThread.setDaemon(true);
+//        animationThread.start();        
         
         radialMenu.hideRadialMenu();
-        radialMenu.translateXProperty().addListener((o,t,t1) -> {
-            centerBe.setGeneratorCenterX(radialMenu.getTranslateX());
-        });
-        radialMenu.translateYProperty().addListener((o,t,t1) -> {
-            centerBe.setGeneratorCenterY(radialMenu.getTranslateY());
-        });        
         
-        tt = new TranslateTransition(Duration.seconds(1.0), radialMenu);
-
         radialMenu.getCenterGroup().addEventHandler(MouseEvent.MOUSE_CLICKED, e-> {
-            if(e.isControlDown()) {
-                centeredMenu.set(!centeredMenu.get());
-                if(centeredMenu.get()) {
-                    tt.setToX(750);
-                    tt.setToY(400);
-                    tt.setFromX(CORNER_ITEM_SIZE);
-                    tt.setFromY(CORNER_ITEM_SIZE);
-                    animation = new Timeline(
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.offsetProperty(), OFFSET)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.menuItemSizeProperty(), ITEM_SIZE)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.itemFitWidthProperty(), ITEM_FIT_WIDTH)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.innerRadiusProperty(), INNER_RADIUS)),
-                        new KeyFrame(Duration.seconds(1.01), new KeyValue(radialMenu.initialAngleProperty(), INITIAL_ANGLE)),
-                        new KeyFrame(Duration.seconds(1.1), new KeyValue(radialMenu.radiusProperty(), MENU_SIZE)),
-                        new KeyFrame(Duration.seconds(1.2), new KeyValue(radialMenu.strokeWidthProperty(), STROKE_WIDTH))
-
-                    );  
-                } else {
-                    tt.setToX(CORNER_ITEM_SIZE);
-                    tt.setToY(CORNER_ITEM_SIZE);
-                    tt.setFromX(750);
-                    tt.setFromY(400);
-                    animation = new Timeline(
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.offsetProperty(), CORNER_OFFSET)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.menuItemSizeProperty(), CORNER_ITEM_SIZE)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.itemFitWidthProperty(), CORNER_ITEM_FIT_WIDTH)),
-                        new KeyFrame(Duration.seconds(1), new KeyValue(radialMenu.innerRadiusProperty(), CORNER_INNER_RADIUS)),
-                        new KeyFrame(Duration.seconds(1.01), new KeyValue(radialMenu.initialAngleProperty(), CORNER_INITIAL_ANGLE)),
-                        new KeyFrame(Duration.seconds(1.1), new KeyValue(radialMenu.radiusProperty(), CORNER_MENU_SIZE)),
-                        new KeyFrame(Duration.seconds(1.2), new KeyValue(radialMenu.strokeWidthProperty(), CORNER_STROKE_WIDTH))
-                    );                                                       
-                }
-                pt = new ParallelTransition(tt, animation);
-                pt.play();
-            }
             e.consume();
         });
         stage.setScene(scene);
         stage.show();
     }
-    private ArrayList<BandEmitter> createBandEmitters() {
-        bandEmitters = new ArrayList<>();
-        centerBe = new BandEmitter(60, 1.1, ITEM_SIZE, 3);
-        centerBe.setGeneratorCenterX(radialMenu.getTranslateX());
-        centerBe.setGeneratorCenterY(radialMenu.getTranslateY());
-        centerBe.setMouseTransparent(true);
-        bandEmitters.add(centerBe);
-        operatorBe = new BandEmitter(60, 1.1, ITEM_SIZE, 3);
-        operatorBe.setGeneratorCenterX(operatorMenuItem.getTranslateX());
-        operatorBe.setGeneratorCenterY(operatorMenuItem.getTranslateY());
-        operatorBe.setMouseTransparent(true);
-        operatorBe.setQuadBandCreator(new PathQuadBandCreator(
-            operatorMenuItem.getPath(), operatorBe.getEdgeVariation(), 
-            operatorMenuItem.getTranslateX(), operatorMenuItem.getTranslateY(),
-            operatorBe.getVelocity()));
-        bandEmitters.add(operatorBe);
-        return bandEmitters;
-        
-    }
-    public void updateBands() {
-            Platform.runLater(()-> {
-    //            bandEmitters.stream().forEach(be -> {
-    //                be.setPolygonPoints(Double.valueOf(pointsSlider.getValue()).intValue());
-                    //CircleQuadBandCreator specific fields
-                    CircleQuadBandCreator cqbc = (CircleQuadBandCreator) centerBe.getQuadBandCreator();
-                    cqbc.setInitialRadius(innerRadiusSlider.getValue());
-                    if(radialMenu.getMouseOnProperty().get())
-                        cqbc.setVelocity(0.95);
-                    else
-                        cqbc.setVelocity(1.1);
-
-    //                be.setEdgeVariation(pointDivergenceSlider.getValue());
-    //                be.setVelocity(velocitySlider.getValue());
-                    centerBe.setPathThickness(0.15);
-    //                be.setEffect(collectEffects());
-    //                be.setOpacity(opacitySlider.getValue());
-    //                be.setShowPoints(true);
-    //                if(showPathLines.isSelected())
-                        centerBe.setCustomStroke(BandEmitter.DEFAULT_STROKE);
-    //                else
-    //                    be.setCustomStroke(Color.TRANSPARENT);
-    //                if(enableGradientFill.isSelected())
-    //                    be.setCustomFill(gradient1);
-    //                else
-    //                    be.setCustomFill(BandEmitter.DEFAULT_FILL);
-                    centerBe.setCustomFill(Color.CYAN.deriveColor(1, 1, 1, 0.15));
-    //            });
-                    if(centeredMenu.get() || radialMenu.getMouseOnProperty().get())
-                        centerBe.createQuadBand();
-            });
-    }        
+  
     private VBox createColorControls() {
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
+        linkStrokeColorPicker = new ColorPicker(linkStrokeColor);
+        linkStrokeColorPicker.valueProperty().addListener((ov, t, t1) -> {
+            radialMenu.setLinkStroke(t1);
+        });
+        
+        linkStrokeMoColorPicker = new ColorPicker(linkStrokeMouseOnColor);     
+        linkStrokeMoColorPicker.valueProperty().addListener((ov, t, t1) -> {
+            radialMenu.setLinkMouseOnStroke(t1);
+        });  
+        
         bglg1ColorPicker = new ColorPicker(bgLg1Color);
         bglg1ColorPicker.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setBackgroundFill(new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
@@ -302,57 +212,50 @@ public class LitRadialMenuDemo extends Application {
             radialMenu.setOutlineStrokeMouseOnFill(t1);
         });        
         
-        vbox.getChildren().addAll(bglg1ColorPicker, bglg2ColorPicker, bgMolg1ColorPicker, bgMolg2ColorPicker, 
-                    strokeColorPicker, strokeMoColorPicker, outlineColorPicker, outlineMoColorPicker);
+        vbox.getChildren().addAll(linkStrokeColorPicker, linkStrokeMoColorPicker,
+            bglg1ColorPicker, bglg2ColorPicker, bgMolg1ColorPicker, bgMolg2ColorPicker, 
+            strokeColorPicker, strokeMoColorPicker, outlineColorPicker, outlineMoColorPicker);
         return vbox;
     }
 
     private VBox createSliderControls() {
         VBox vbox = new VBox(10);
+
+        linkStrokeWidthSlider = new Slider(1, 50, LINK_STROKE_WIDTH);
+        linkStrokeWidthSlider.valueProperty().addListener((ov, t, t1) -> {
+            radialMenu.setLinkStrokeWidth(ov.getValue().doubleValue());
+        });
+
         itemSizeSlider = new Slider(10, 200, ITEM_SIZE);
-        itemSizeSlider.setShowTickMarks(true);
-        itemSizeSlider.setShowTickLabels(true);
         itemSizeSlider.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setMenuItemSize(ov.getValue().doubleValue());
         });
         innerRadiusSlider = new Slider(10, 200, ITEM_SIZE);
-        innerRadiusSlider.setShowTickMarks(true);
-        innerRadiusSlider.setShowTickLabels(true);
         innerRadiusSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setInnerRadius(ov.getValue().doubleValue()));
         
         itemFitWidthSlider = new Slider(10, 200, ITEM_FIT_WIDTH);
-        itemFitWidthSlider.setShowTickMarks(true);
-        itemFitWidthSlider.setShowTickLabels(true);                
         itemFitWidthSlider.valueProperty().addListener((ov, t, t1) -> {
             radialMenu.setGraphicsFitWidth(t1.doubleValue());
         });
 
         menuSizeSlider = new Slider(10, 1000, MENU_SIZE);
-        menuSizeSlider.setShowTickMarks(true);
-        menuSizeSlider.setShowTickLabels(true);        
         menuSizeSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setRadius(ov.getValue().doubleValue()));
 
         offsetSlider = new Slider(1, 200, OFFSET);
-        offsetSlider.setShowTickMarks(true);
-        offsetSlider.setShowTickLabels(true);         
         offsetSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setOffset(ov.getValue().doubleValue()));
 
         initialAngleSlider = new Slider(-359, 359, INITIAL_ANGLE); 
-        initialAngleSlider.setShowTickMarks(true);
-        initialAngleSlider.setShowTickLabels(true);         
         initialAngleSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setInitialAngle(ov.getValue().doubleValue()));
         
         strokeWidthSlider = new Slider(0, 10, STROKE_WIDTH);
-        strokeWidthSlider.setShowTickMarks(true);
-        strokeWidthSlider.setShowTickLabels(true);        
         strokeWidthSlider.valueProperty().addListener((ov, t, t1) -> 
             radialMenu.setStrokeWidth(ov.getValue().doubleValue()));
         
-        vbox.getChildren().addAll(itemSizeSlider, innerRadiusSlider, itemFitWidthSlider, 
+        vbox.getChildren().addAll(linkStrokeWidthSlider, itemSizeSlider, innerRadiusSlider, itemFitWidthSlider, 
             menuSizeSlider, offsetSlider, initialAngleSlider, strokeWidthSlider);
         vbox.setFillWidth(true);
         return vbox;
@@ -399,7 +302,7 @@ public class LitRadialMenuDemo extends Application {
         transition.play();    
     }
 
-    public LitRadialMenu createCenterRadialMenu() {
+    public LinkedRadialMenu createCenterRadialMenu() {
         LinearGradient background = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
             new Stop(0, bgLg1Color), new Stop(0.8, bgLg2Color));
         LinearGradient backgroundMouseOn = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
@@ -411,7 +314,7 @@ public class LitRadialMenuDemo extends Application {
         iv.setTranslateX(-ITEM_FIT_WIDTH/2.0);
         iv.setTranslateY(-ITEM_FIT_WIDTH/2.0);
         
-        radialMenu = new LitRadialMenu(INITIAL_ANGLE, ITEM_SIZE, MENU_SIZE, OFFSET, 
+        radialMenu = new LinkedRadialMenu(INITIAL_ANGLE, ITEM_SIZE, MENU_SIZE, OFFSET, 
             background, backgroundMouseOn, strokeColor, strokeMouseOnColor, 
             false, LitRadialMenu.CenterVisibility.ALWAYS, iv);
         radialMenu.setStrokeWidth(STROKE_WIDTH);
@@ -419,12 +322,6 @@ public class LitRadialMenuDemo extends Application {
         radialMenu.setOutlineStrokeFill(outlineColor);
         radialMenu.setOutlineStrokeMouseOnFill(outlineMouseOnColor);
         Glow glow = new Glow(5.2);
-////        radialMenu.setEffect(glow);
-//        Bloom bloom = new Bloom(10.75);
-//        glow.setInput(bloom);
-////        radialMenu.setEffect(bloom);
-//        DropShadow ds = new DropShadow(5, Color.DARKSLATEBLUE);
-//        radialMenu.setEffect(ds);
         Shadow shadow = new Shadow(BlurType.GAUSSIAN, Color.ALICEBLUE, 50);
         radialMenu.setOutlineEffect(shadow);
 
@@ -478,17 +375,22 @@ public class LitRadialMenuDemo extends Application {
         operatorMenuItem = new LitRadialMenuItem(ITEM_SIZE, "Operator View", operatorView, handler);
         radialMenu.addMenuItem(operatorMenuItem);
         radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Configuration", configuration, handler));
-//        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Metrics", metrics, handler));
-//        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Scenario Generator", scenariogenerator, handler));
+        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Metrics", metrics, handler));
+        radialMenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE, "Scenario Generator", scenariogenerator, handler));
+        
+        LinkedRadialContainerMenuItem subSubmenu = new LinkedRadialContainerMenuItem(ITEM_SIZE * .9, "subSubmenu", new Text("SubSubmenu"));
+        //Make a 2 layers deep sub menu
+        for(int i=1; i<7;i++)
+            subSubmenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE * .75, "SubSubmenu item " + i, new Text("SubSubmenu Item " + i)));
 
-/* Example from original prototype for adding submenus
-        final RadialContainerMenuItem forwardItem = new RadialContainerMenuItem(50, "forward", forward);
-        forwardItem.addMenuItem(new RadialMenuItem(30, "forward 5'", fiveSec, handler));
-        forwardItem.addMenuItem(new RadialMenuItem(30, "forward 10'", tenSec, handler));
-        forwardItem.addMenuItem(new RadialMenuItem(30, "forward 20'", twentySec, handler));
-        this.radialMenu.addMenuItem(forwardItem);        
-  */      
-        return this.radialMenu;
+        LinkedRadialContainerMenuItem submenu = new LinkedRadialContainerMenuItem(ITEM_SIZE, "submenu", new Text("Submenu"));
+//        submenu.addMenuItem(subSubmenu);
+        for(int i=1; i<4;i++)
+            submenu.addMenuItem(new LitRadialMenuItem(ITEM_SIZE * .9, "Submenu item " + i, new Text("Submenu Item " + i), handler));
+
+        radialMenu.addMenuItem(submenu);        
+
+        return radialMenu;
     }
 
     public static void main(String[] args) {

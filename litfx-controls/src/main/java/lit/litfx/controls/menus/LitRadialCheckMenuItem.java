@@ -34,7 +34,7 @@
  * prototype can be found in JFXtras-labs project.
  * https://github.com/JFXtras/jfxtras-labs
  */
-package lit.litfx.controls;
+package lit.litfx.controls.menus;
 
 import javafx.scene.Node;
 import javafx.scene.paint.Paint;

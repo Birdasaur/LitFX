@@ -138,7 +138,7 @@ public class AnimatedWavesDemoController implements Initializable {
         return be;
     }
     public void updateBands() {
-        Platform.runLater(()-> {
+//        Platform.runLater(()-> {
             bandEmitters.stream().forEach(be -> {
                 //QuadBandCreator fields
                 be.setPolygonPoints(Double.valueOf(pointsSlider.getValue()).intValue());
@@ -162,7 +162,7 @@ public class AnimatedWavesDemoController implements Initializable {
                     be.setCustomFill(BandEmitter.DEFAULT_FILL);
                 be.createQuadBand();                
             });
-        });
+//        });
     }    
     private Effect collectEffects() {
         Glow glow = new Glow(glowSlider.getValue());
