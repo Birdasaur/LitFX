@@ -21,7 +21,7 @@
    <bottom>
       <TabPane fx:id="tabPane" style="-fx-background-color: #000000;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
          <tabs>
-            <Tab closable="false" text="Flame Dynamics">
+            <Tab closable="false" disable="true" text="Flame Dynamics">
                <content>
                   <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
                      <content>
@@ -55,14 +55,24 @@
                      <content>
                         <VBox alignment="TOP_CENTER" spacing="3.0">
                            <children>
-                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
+                                 <children>
+                                    <RadioButton fx:id="pixelWriterRB" mnemonicParsing="false" selected="true" text="PixelWriter Method">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="pixelMethodToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="pixelBufferRB" layoutX="597.0" layoutY="52.0" mnemonicParsing="false" text="Shared Pixel Buffer Method" toggleGroup="$pixelMethodToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
                                  <children>
                                     <RadioButton fx:id="classicRB" mnemonicParsing="false" selected="true" text="Classic Flame">
                                        <toggleGroup>
-                                          <ToggleGroup fx:id="toggleGroup" />
+                                          <ToggleGroup fx:id="flameTypeToggleGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton fx:id="wavesRB" layoutX="597.0" layoutY="52.0" mnemonicParsing="false" text="Waves of Fire" toggleGroup="$toggleGroup" />
+                                    <RadioButton fx:id="wavesRB" layoutX="597.0" layoutY="52.0" mnemonicParsing="false" text="Waves of Fire" toggleGroup="$flameTypeToggleGroup" />
                                     <Label text="Wave Shift 1" />
                                     <ChoiceBox fx:id="shift1ChoiceBox" prefWidth="150.0" />
                                     <Label text="Wave Shift 2" />
@@ -72,7 +82,7 @@
                                  </children>
                               </HBox>
                               <Label text="opacity" />
-                              <Slider fx:id="opacitySlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
+                              <Slider fx:id="opacitySlider" blockIncrement="0.1" disable="true" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -91,7 +101,7 @@
    <center>
       <Pane fx:id="centerPane" style="-fx-background-color: #000000;" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fitHeight="720.0" fitWidth="1280.0" opacity="0.01" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@infernogalore.png" />
                </image>

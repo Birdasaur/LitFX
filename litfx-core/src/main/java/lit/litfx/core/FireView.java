@@ -29,6 +29,7 @@ public class FireView extends Region {
     private Region engulfedRegion;
 //    private List<Line> nodeLines;
     public SimpleBooleanProperty classic = new SimpleBooleanProperty(true);
+    public SimpleBooleanProperty pixelWriterMethod = new SimpleBooleanProperty(true);
     private int shift1 = 16;
     private int shift2 = 8;
     private int shift3 = 0;
@@ -40,6 +41,7 @@ public class FireView extends Region {
     PixelFormat<IntBuffer> pixelFormat;
     PixelBuffer<IntBuffer> pixelBuffer;
     WritableImage writableImage;
+    WritableImage writableImagePW;
     GraphicsContext gc;
     Canvas canvas;
     AnimationTimer at;
@@ -89,8 +91,9 @@ public class FireView extends Region {
         writableImage = new WritableImage(pixelBuffer);
         
         //TEMP for testing against pixel buffer method
-        prBuffer = writableImage.getPixelReader();
-        pwBuffer = writableImage.getPixelWriter();
+        writableImagePW = new WritableImage(getCanvasWidth(), getCanvasHeight());
+        prBuffer = writableImagePW.getPixelReader();
+        pwBuffer = writableImagePW.getPixelWriter();
         
         gc = canvas.getGraphicsContext2D();
         gc.drawImage(writableImage, 0, 0);
@@ -185,22 +188,21 @@ public class FireView extends Region {
             public void handle(long now) {
                 if(now > lastTimerCall + ANIMATION_DELAY) {
                     startTime = System.nanoTime();
-
-//                    // A rect region to be updated in the writable image
-//                    pixelBuffer.updateBuffer((b) -> new Rectangle2D(0, 0, getCanvasWidth(), getCanvasHeight()));
-//                    gc.drawImage(writableImage, 0, 0);
-                    
-
-                    //TEMP for testing against pixel buffer method
-                    pw.setPixels(0, 0, getCanvasWidth(), getCanvasHeight(), prBuffer, 0, 0);
-
-
-//                    gc.setFill(Color.WHITE);
-//                    gc.fillText("Worker time spent: " + workTimesMillis + "ms", 10, 15);
+                    if(pixelWriterMethod.get()) {
+                        //TEMP for testing against pixel buffer method
+                        pw.setPixels(0, 0, getCanvasWidth(), getCanvasHeight(), prBuffer, 0, 0);
+                    }
+                    else {
+                        // A rect region to be updated in the writable image
+                        pixelBuffer.updateBuffer((b) -> new Rectangle2D(0, 0, getCanvasWidth(), getCanvasHeight()));
+                        gc.drawImage(writableImage, 0, 0);
+                    }
+                    gc.setFill(Color.WHITE);
+                    gc.fillText("Worker time spent: " + workTimesMillis + "ms", 10, 15);
 
                     lastTimerCall = now;    //update for the next animation
                     elapseTime = (System.nanoTime() - startTime)/1e6;
-//                    gc.fillText("UI Render thread takes : " + elapseTime + "ms", 10, 30);
+                    gc.fillText("UI Render thread takes : " + elapseTime + "ms", 10, 30);
                 }
             }
         };

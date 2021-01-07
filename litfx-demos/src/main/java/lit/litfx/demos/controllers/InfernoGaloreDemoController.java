@@ -27,7 +27,9 @@ public class InfernoGaloreDemoController implements Initializable {
     @FXML
     TabPane tabPane;
     @FXML
-    ToggleGroup toggleGroup;
+    ToggleGroup flameTypeToggleGroup;
+    @FXML
+    ToggleGroup pixelMethodToggleGroup;
     @FXML
     Circle circleButton;
     
@@ -49,6 +51,10 @@ public class InfernoGaloreDemoController implements Initializable {
     RadioButton classicRB;    
     @FXML
     RadioButton wavesRB;    
+    @FXML
+    RadioButton pixelWriterRB;    
+    @FXML
+    RadioButton pixelBufferRB;    
     @FXML
     ChoiceBox<Integer> shift1ChoiceBox;
     @FXML
@@ -76,7 +82,9 @@ public class InfernoGaloreDemoController implements Initializable {
         centerPane.getChildren().add(fireView);
         
         fireView.classic.bind(classicRB.selectedProperty());
-
+        fireView.pixelWriterMethod.bind(pixelWriterRB.selectedProperty());
+        
+        
         shift1ChoiceBox.setItems(
             FXCollections.observableArrayList(
                 -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16));
