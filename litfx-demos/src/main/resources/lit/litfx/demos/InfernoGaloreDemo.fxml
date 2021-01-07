@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.demos.controllers.InfernoGaloreDemoController">
+   <bottom>
+      <TabPane fx:id="tabPane" style="-fx-background-color: #000000;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+         <tabs>
+            <Tab closable="false" text="Flame Dynamics">
+               <content>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
+                     <content>
+                        <VBox alignment="TOP_CENTER" spacing="3.0">
+                           <children>
+                              <Label text="Points" />
+                              <Slider fx:id="pointsSlider" blockIncrement="5.0" majorTickUnit="5.0" max="50.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" />
+                              <Label layoutX="10.0" layoutY="65.0" text="Point Divergence" />
+                              <Slider fx:id="pointDivergenceSlider" layoutX="10.0" layoutY="82.0" majorTickUnit="5.0" max="50.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
+                              <Label text="Initial Radius" />
+                              <Slider fx:id="radiusSlider" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
+                              <Label layoutX="10.0" layoutY="10.0" text="Velocity" />
+                              <Slider fx:id="velocitySlider" blockIncrement="1.0" layoutX="10.0" layoutY="10.0" majorTickUnit="0.5" max="5.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
+                              <Label layoutX="10.0" layoutY="175.0" text="Update Delay" />
+                              <Slider fx:id="updateDelaySlider" blockIncrement="100.0" layoutX="10.0" layoutY="192.0" majorTickUnit="100.0" max="1000.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </ScrollPane>
+               </content>
+            </Tab>
+            <Tab closable="false" text="Fire Effects">
+               <content>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
+                     <content>
+                        <VBox alignment="TOP_CENTER" spacing="3.0">
+                           <children>
+                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                                 <children>
+                                    <RadioButton fx:id="classicRB" mnemonicParsing="false" selected="true" text="Classic Flame">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="toggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="wavesRB" layoutX="597.0" layoutY="52.0" mnemonicParsing="false" text="Waves of Fire" toggleGroup="$toggleGroup" />
+                                    <Label text="Wave Shift 1" />
+                                    <ChoiceBox fx:id="shift1ChoiceBox" prefWidth="150.0" />
+                                    <Label text="Wave Shift 2" />
+                                    <ChoiceBox fx:id="shift2ChoiceBox" prefWidth="150.0" />
+                                    <Label text="Wave Shift 2" />
+                                    <ChoiceBox fx:id="shift3ChoiceBox" prefWidth="150.0" />
+                                 </children>
+                              </HBox>
+                              <Label text="opacity" />
+                              <Slider fx:id="opacitySlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </ScrollPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </bottom>
+   <center>
+      <Pane fx:id="centerPane" style="-fx-background-color: #000000;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="720.0" fitWidth="1280.0" opacity="0.01" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@infernogalore.png" />
+               </image>
+            </ImageView>
+            <Circle fx:id="circleButton" fill="#ffe8533d" layoutX="658.0" layoutY="207.0" radius="193.0" stroke="WHITE" strokeType="INSIDE" />
+         </children></Pane>
+   </center>
+</BorderPane>
