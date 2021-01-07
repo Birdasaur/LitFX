@@ -1,6 +1,5 @@
 package lit.litfx.core;
 
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import javafx.concurrent.Task;
 import javafx.scene.canvas.Canvas;
@@ -12,12 +11,11 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 /**
@@ -29,19 +27,20 @@ public class FireView extends Region {
     private Region engulfedRegion;
 //    private List<Line> nodeLines;
     public SimpleBooleanProperty classic = new SimpleBooleanProperty(true);
-    public SimpleBooleanProperty pixelWriterMethod = new SimpleBooleanProperty(true);
+    public SimpleLongProperty convolutionSleepTime = new SimpleLongProperty(17);     
+    public SimpleLongProperty animationDelayTime = new SimpleLongProperty(16);     
+    public SimpleDoubleProperty flameOpacity = new SimpleDoubleProperty(0.5);     
+        
     private int shift1 = 16;
     private int shift2 = 8;
     private int shift3 = 0;
     int[] paletteAsInts; //this will contain the color palette
     // Y-coordinate first because we use horizontal scanlines
     int[] fire;  //this buffer will contain the fire
-    int[] fireBuf; //TEMP
     IntBuffer intBuffer;
     PixelFormat<IntBuffer> pixelFormat;
     PixelBuffer<IntBuffer> pixelBuffer;
     WritableImage writableImage;
-    WritableImage writableImagePW;
     GraphicsContext gc;
     Canvas canvas;
     AnimationTimer at;
@@ -50,8 +49,6 @@ public class FireView extends Region {
     public LongProperty animationSleepMilli = new SimpleLongProperty(33);
     long workTimesMillis = 0;
 
-    PixelReader prBuffer;
-    PixelWriter pwBuffer;
     
     public FireView(Region parentToOverlay) {
         engulfedRegion = parentToOverlay;
@@ -80,21 +77,11 @@ public class FireView extends Region {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         // Y-coordinate first because we use horizontal scanlines
         fire = new int[getCanvasHeight() * getCanvasWidth()];  //this buffer will contain the fire
-
-        //TEMP for testing against pixel buffer method
-        fireBuf = new int[getCanvasHeight() * getCanvasWidth()];  //this buffer will contain the fire
-
         // new way to store image Shared pixel buffer.
-        intBuffer = ByteBuffer.allocateDirect(4 * getCanvasWidth() * getCanvasHeight()).asIntBuffer();
+        intBuffer = IntBuffer.allocate(getCanvasWidth() * getCanvasHeight());
         pixelFormat = PixelFormat.getIntArgbPreInstance();
         pixelBuffer = new PixelBuffer<>(getCanvasWidth(), getCanvasHeight(), intBuffer, pixelFormat);
         writableImage = new WritableImage(pixelBuffer);
-        
-        //TEMP for testing against pixel buffer method
-        writableImagePW = new WritableImage(getCanvasWidth(), getCanvasHeight());
-        prBuffer = writableImagePW.getPixelReader();
-        pwBuffer = writableImagePW.getPixelWriter();
-        
         gc = canvas.getGraphicsContext2D();
         gc.drawImage(writableImage, 0, 0);
         paletteAsInts = generateArgbPalette(256);
@@ -112,6 +99,7 @@ public class FireView extends Region {
                 int fireStartHeight = startHeight.intValue();
                 int canvasWidth = getCanvasWidth();
                 int canvasHeight = getCanvasHeight();
+             
                 //start the loop (one frame per loop)
                 while(animating.get() && !this.isCancelled() && !this.isDone()) {
                     //System.out.print("animating...");
@@ -133,7 +121,8 @@ public class FireView extends Region {
                     // 2 | 1 0 1
                     // 3 | 0 1 0
                     // 4 | 0 1 0
-                    //
+                    
+                    //Update the flame dynamics values only once per traversal
                     int a, b, row, index, pixel;
                     for (int y = 0; y < canvasHeight - 1; y++) {
                         for (int x = 0; x < canvasWidth; x++) {
@@ -146,22 +135,17 @@ public class FireView extends Region {
                                     + fire[((y + 2) % canvasHeight) * canvasWidth + b]
                                     + fire[a + ((x + 1) % canvasWidth)]
                                     + fire[((y + 3) % canvasHeight * canvasWidth) + b])
-                                    * 128) / 513;
-                            //TEMP for testing against pixel buffer method
-                            fireBuf[index] = getPaletteValue(pixel);
+                                    * 128) / 513; 
                             intBuffer.put(index, getPaletteValue(pixel));
                         }
                     }
-                    //TEMP for testing against pixel buffer method
-                    pwBuffer.setPixels(0, 0, canvasWidth, canvasHeight, pixelFormat, fireBuf, 0, canvasWidth);
 
                     elapseTime = System.currentTimeMillis() - startTime;
                     workTimesMillis = elapseTime;
-                    Thread.sleep(17);
+                    Thread.sleep(convolutionSleepTime.get());
 
                     //How fast could we do this?
                     //Utils.printTotalTime(time);
-//                    Thread.sleep(animationSleepMilli.get());
                     if(this.isCancelled() || this.isDone())
                         break;
                 }
@@ -177,32 +161,26 @@ public class FireView extends Region {
         at = new AnimationTimer() {
             public long lastTimerCall = 0;
             private final long NANOS_PER_MILLI = 1000000; //nanoseconds in a millisecond
-            private final long ANIMATION_DELAY = 16 * NANOS_PER_MILLI;
+            private long ANIMATION_DELAY = 16 * NANOS_PER_MILLI;
             private double startTime;
             private double elapseTime;
-
-            //TEMP for testing against pixel buffer method
-            PixelWriter pw = gc.getPixelWriter(); //TEMP
 
             @Override
             public void handle(long now) {
                 if(now > lastTimerCall + ANIMATION_DELAY) {
                     startTime = System.nanoTime();
-                    if(pixelWriterMethod.get()) {
-                        //TEMP for testing against pixel buffer method
-                        pw.setPixels(0, 0, getCanvasWidth(), getCanvasHeight(), prBuffer, 0, 0);
-                    }
-                    else {
-                        // A rect region to be updated in the writable image
-                        pixelBuffer.updateBuffer((b) -> new Rectangle2D(0, 0, getCanvasWidth(), getCanvasHeight()));
-                        gc.drawImage(writableImage, 0, 0);
-                    }
+                    // A rect region to be updated in the writable image
+                    gc.clearRect(0, 0, getCanvasWidth(), getCanvasHeight());
+                    pixelBuffer.updateBuffer((b) -> new Rectangle2D(0, 0, getCanvasWidth(), getCanvasHeight()));
+                    gc.drawImage(writableImage, 0, 0);
+                    //write out how much time we're spending
                     gc.setFill(Color.WHITE);
                     gc.fillText("Worker time spent: " + workTimesMillis + "ms", 10, 15);
 
                     lastTimerCall = now;    //update for the next animation
                     elapseTime = (System.nanoTime() - startTime)/1e6;
                     gc.fillText("UI Render thread takes : " + elapseTime + "ms", 10, 30);
+                    ANIMATION_DELAY = animationDelayTime.get() * NANOS_PER_MILLI;
                 }
             }
         };
@@ -240,7 +218,7 @@ public class FireView extends Region {
         int value = 0;
         try {
             if (classic.get())
-                return paletteAsInts[pixelIndex];
+                value = paletteAsInts[pixelIndex];
             if (getShift1() > -1)
                 value |= paletteAsInts[pixelIndex] << getShift1();
             if (getShift2() > -1)
@@ -250,6 +228,8 @@ public class FireView extends Region {
         } catch (Exception e) {
             System.out.println("pixelIndex: " + pixelIndex + "  value " + value + " " + e );
         }
+        //Apply additional opacity values controlled externally
+        value |= (int)(flameOpacity.get()*255) << 24;
         return value;
     }    
     private int[] generateArgbPalette(int max ) {
@@ -259,12 +239,12 @@ public class FireView extends Region {
             //HSLtoRGB is used to generate colors:
             //Hue goes from 0 to 85: red to yellow
             //Saturation is always the maximum: 255
-            //Lightness is 0..255 for x=0..128, and 255 for x=128..255
+            //Brightness is 0..255 for x=0..128, and 255 for x=128..255
             //color = HSLtoRGB(ColorHSL(x / 3, 255, std::min(255, x * 2)));
             //set the palette to the calculated RGB value
             //palette[x] = RGBtoINT();
             double brightness = Math.min(255, x*2) / 255.0;
-            Color color = Color.hsb(x / 3.0, 1.0, brightness , 1);
+            Color color = Color.hsb(x / 3.0, 1.0, brightness , brightness);
             pal[x] = rgbToIntArgb(color);            
         }
         return pal;

@@ -21,50 +21,12 @@
    <bottom>
       <TabPane fx:id="tabPane" style="-fx-background-color: #000000;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
          <tabs>
-            <Tab closable="false" disable="true" text="Flame Dynamics">
-               <content>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
-                     <content>
-                        <VBox alignment="TOP_CENTER" spacing="3.0">
-                           <children>
-                              <Label text="Points" />
-                              <Slider fx:id="pointsSlider" blockIncrement="5.0" majorTickUnit="5.0" max="50.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" />
-                              <Label layoutX="10.0" layoutY="65.0" text="Point Divergence" />
-                              <Slider fx:id="pointDivergenceSlider" layoutX="10.0" layoutY="82.0" majorTickUnit="5.0" max="50.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
-                              <Label text="Initial Radius" />
-                              <Slider fx:id="radiusSlider" majorTickUnit="10.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" />
-                              <Label layoutX="10.0" layoutY="10.0" text="Velocity" />
-                              <Slider fx:id="velocitySlider" blockIncrement="1.0" layoutX="10.0" layoutY="10.0" majorTickUnit="0.5" max="5.0" minorTickCount="4" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
-                              <Label layoutX="10.0" layoutY="175.0" text="Update Delay" />
-                              <Slider fx:id="updateDelaySlider" blockIncrement="100.0" layoutX="10.0" layoutY="192.0" majorTickUnit="100.0" max="1000.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="100.0" />
-                           </children>
-                           <padding>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </padding>
-                        </VBox>
-                     </content>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </ScrollPane>
-               </content>
-            </Tab>
             <Tab closable="false" text="Fire Effects">
                <content>
                   <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
                      <content>
                         <VBox alignment="TOP_CENTER" spacing="3.0">
                            <children>
-                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
-                                 <children>
-                                    <RadioButton fx:id="pixelWriterRB" mnemonicParsing="false" selected="true" text="PixelWriter Method">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="pixelMethodToggleGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="pixelBufferRB" layoutX="597.0" layoutY="52.0" mnemonicParsing="false" text="Shared Pixel Buffer Method" toggleGroup="$pixelMethodToggleGroup" />
-                                 </children>
-                              </HBox>
                               <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
                                  <children>
                                     <RadioButton fx:id="classicRB" mnemonicParsing="false" selected="true" text="Classic Flame">
@@ -77,12 +39,16 @@
                                     <ChoiceBox fx:id="shift1ChoiceBox" prefWidth="150.0" />
                                     <Label text="Wave Shift 2" />
                                     <ChoiceBox fx:id="shift2ChoiceBox" prefWidth="150.0" />
-                                    <Label text="Wave Shift 2" />
+                                    <Label text="Wave Shift 3" />
                                     <ChoiceBox fx:id="shift3ChoiceBox" prefWidth="150.0" />
                                  </children>
                               </HBox>
-                              <Label text="opacity" />
-                              <Slider fx:id="opacitySlider" blockIncrement="0.1" disable="true" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
+                              <Label text="Convolution Time Delay" />
+                              <Slider fx:id="convolutionDelaySlider" majorTickUnit="8.0" max="128.0" min="1.0" minorTickCount="7" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="17.0" />
+                              <Label layoutX="596.0" layoutY="68.0" text="Animation Time Delay" />
+                              <Slider fx:id="animationDelaySlider" blockIncrement="16.0" layoutX="15.0" layoutY="88.0" majorTickUnit="8.0" max="128.0" min="1.0" minorTickCount="7" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="16.0" />
+                              <Label layoutX="596.0" layoutY="129.0" text="Base Opacity" />
+                              <Slider fx:id="opacitySlider" blockIncrement="0.1" layoutX="15.0" layoutY="88.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

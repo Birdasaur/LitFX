@@ -29,22 +29,13 @@ public class InfernoGaloreDemoController implements Initializable {
     @FXML
     ToggleGroup flameTypeToggleGroup;
     @FXML
-    ToggleGroup pixelMethodToggleGroup;
-    @FXML
     Circle circleButton;
     
     //Dynamics
-//    @FXML
-//    private Slider pointsSlider;
-//    @FXML
-//    private Slider pointDivergenceSlider;
-//    @FXML
-//    private Slider radiusSlider;
-//    @FXML
-//    private Slider velocitySlider;
     @FXML
-    private Slider updateDelaySlider;
-    
+    Slider animationDelaySlider;
+    @FXML
+    Slider convolutionDelaySlider;
     @FXML
     Slider opacitySlider;
     @FXML
@@ -61,12 +52,7 @@ public class InfernoGaloreDemoController implements Initializable {
     ChoiceBox<Integer> shift2ChoiceBox;    
     @FXML
     ChoiceBox<Integer> shift3ChoiceBox;    
-    
-    @FXML
-    SimpleLongProperty timeDelayProp = new SimpleLongProperty(500);    
 
-//    SimpleBooleanProperty classic = new SimpleBooleanProperty(true);
-//    SimpleLongProperty workerTimes = new SimpleLongProperty(0);
     FireView fireView;
     
     /**
@@ -82,8 +68,9 @@ public class InfernoGaloreDemoController implements Initializable {
         centerPane.getChildren().add(fireView);
         
         fireView.classic.bind(classicRB.selectedProperty());
-        fireView.pixelWriterMethod.bind(pixelWriterRB.selectedProperty());
-        
+        fireView.convolutionSleepTime.bind(convolutionDelaySlider.valueProperty());
+        fireView.animationDelayTime.bind(animationDelaySlider.valueProperty());
+        fireView.flameOpacity.bind(opacitySlider.valueProperty());
         
         shift1ChoiceBox.setItems(
             FXCollections.observableArrayList(
@@ -111,23 +98,6 @@ public class InfernoGaloreDemoController implements Initializable {
 //            else if(event.getButton() == MouseButton.SECONDARY)
 //                end = new Point2D(event.getX(), event.getY());
         });
- 
-        timeDelayProp.bind(updateDelaySlider.valueProperty());
-        
-//        Task animationTask = new Task() {
-//            @Override
-//            protected Void call() throws Exception {
-//                while(!this.isCancelled() && !this.isDone()) {
-//                    updateBands();
-//                    Thread.sleep(timeDelayProp.get());
-//                }
-//                return null;
-//            }
-//        };
-//        Thread animationThread = new Thread(animationTask);
-//        animationThread.setDaemon(true);
-//        animationThread.start();
-//        
         tabPane.setOnMouseEntered(event -> tabPane.requestFocus());
     }    
     
@@ -137,11 +107,4 @@ public class InfernoGaloreDemoController implements Initializable {
         else
             fireView.start();
     }
-
-    public void updateBands() {
-//        Platform.runLater(()-> {
-
-//        });
-    }    
-
 }
