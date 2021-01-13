@@ -37,6 +37,7 @@ public class FireView extends Region {
     int[] paletteAsInts; //this will contain the color palette
     // Y-coordinate first because we use horizontal scanlines
     int[] fire;  //this buffer will contain the fire
+    int[] firePixel;
     IntBuffer intBuffer;
     PixelFormat<IntBuffer> pixelFormat;
     PixelBuffer<IntBuffer> pixelBuffer;
@@ -77,6 +78,7 @@ public class FireView extends Region {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         // Y-coordinate first because we use horizontal scanlines
         fire = new int[getCanvasHeight() * getCanvasWidth()];  //this buffer will contain the fire
+        firePixel = new int[getCanvasHeight() * getCanvasWidth()];  
         // new way to store image Shared pixel buffer.
         intBuffer = IntBuffer.allocate(getCanvasWidth() * getCanvasHeight());
         pixelFormat = PixelFormat.getIntArgbPreInstance();
@@ -105,7 +107,7 @@ public class FireView extends Region {
                     //System.out.print("animating...");
                     // Start stop watch
                     startTime = System.currentTimeMillis();
-                    canvasWidth = getCanvasWidth();
+                    canvasWidth = getCanvasWidth(); 
                     canvasHeight = getCanvasHeight();
                     //randomize the bottom row of the fire array.
                     for(int i=fireStartHeight; i<fireStartHeight+canvasWidth; i++) {
@@ -124,22 +126,24 @@ public class FireView extends Region {
                     
                     //Update the flame dynamics values only once per traversal
                     int a, b, row, index, pixel;
+                    int shiftedValue; //temporarily holds the first term 
+
                     for (int y = 0; y < canvasHeight - 1; y++) {
                         for (int x = 0; x < canvasWidth; x++) {
                             a = (y + 1) % canvasHeight * canvasWidth;
                             b = x % canvasWidth;
                             row = y * canvasWidth;
                             index = row + x;
-                            pixel = fire[index]
-                                    = ((fire[a + ((x - 1 + canvasWidth) % canvasWidth)]
+                            shiftedValue = ((fire[a + ((x - 1 + canvasWidth) % canvasWidth)]
                                     + fire[((y + 2) % canvasHeight) * canvasWidth + b]
                                     + fire[a + ((x + 1) % canvasWidth)]
                                     + fire[((y + 3) % canvasHeight * canvasWidth) + b])
-                                    * 128) / 513; 
+                                    << 7); //multiply by constant 128
+                            // divide by constant 513
+                            pixel = fire[index] = ((shiftedValue << 9) - shiftedValue) >> 18;
                             intBuffer.put(index, getPaletteValue(pixel));
                         }
                     }
-
                     elapseTime = System.currentTimeMillis() - startTime;
                     workTimesMillis = elapseTime;
                     Thread.sleep(convolutionSleepTime.get());
@@ -173,6 +177,7 @@ public class FireView extends Region {
                     gc.clearRect(0, 0, getCanvasWidth(), getCanvasHeight());
                     pixelBuffer.updateBuffer((b) -> new Rectangle2D(0, 0, getCanvasWidth(), getCanvasHeight()));
                     gc.drawImage(writableImage, 0, 0);
+
                     //write out how much time we're spending
                     gc.setFill(Color.WHITE);
                     gc.fillText("Worker time spent: " + workTimesMillis + "ms", 10, 15);
