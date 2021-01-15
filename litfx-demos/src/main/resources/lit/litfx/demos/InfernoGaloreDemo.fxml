@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -35,6 +36,17 @@
                                        </toggleGroup>
                                     </RadioButton>
                                     <RadioButton fx:id="wavesRB" layoutX="597.0" layoutY="52.0" mnemonicParsing="false" text="Waves of Fire" toggleGroup="$flameTypeToggleGroup" />
+                                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                                    <RadioButton fx:id="serialRB" layoutX="518.0" layoutY="27.0" mnemonicParsing="false" selected="true" text="Serial Convolution">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="flameConvolutionToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="parallelRB" layoutX="629.0" layoutY="27.0" mnemonicParsing="false" text="Parallel Convolution" toggleGroup="$flameConvolutionToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
+                                 <children>
                                     <Label text="Wave Shift 1" />
                                     <ChoiceBox fx:id="shift1ChoiceBox" prefWidth="150.0" />
                                     <Label text="Wave Shift 2" />

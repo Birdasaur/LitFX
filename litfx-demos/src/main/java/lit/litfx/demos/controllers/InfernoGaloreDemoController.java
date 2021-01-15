@@ -2,7 +2,6 @@ package lit.litfx.demos.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +28,8 @@ public class InfernoGaloreDemoController implements Initializable {
     @FXML
     ToggleGroup flameTypeToggleGroup;
     @FXML
+    ToggleGroup flameConvolutionToggleGroup;
+    @FXML
     Circle circleButton;
     
     //Dynamics
@@ -43,9 +44,10 @@ public class InfernoGaloreDemoController implements Initializable {
     @FXML
     RadioButton wavesRB;    
     @FXML
-    RadioButton pixelWriterRB;    
+    RadioButton serialRB;    
     @FXML
-    RadioButton pixelBufferRB;    
+    RadioButton parallelRB;    
+
     @FXML
     ChoiceBox<Integer> shift1ChoiceBox;
     @FXML
@@ -66,8 +68,8 @@ public class InfernoGaloreDemoController implements Initializable {
         //assign the Region you want to engulf in shadows
         fireView = new FireView(centerPane);
         centerPane.getChildren().add(fireView);
-        
         fireView.classic.bind(classicRB.selectedProperty());
+        fireView.serialConvolve.bind(serialRB.selectedProperty());
         fireView.convolutionSleepTime.bind(convolutionDelaySlider.valueProperty());
         fireView.animationDelayTime.bind(animationDelaySlider.valueProperty());
         fireView.flameOpacity.bind(opacitySlider.valueProperty());

@@ -18,6 +18,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import lit.litfx.core.components.fire.ConvolutionPalette;
 import lit.litfx.core.components.fire.FireConvolution;
 
 /**
@@ -29,14 +30,15 @@ public class FireView extends Region {
     private Region engulfedRegion;
 //    private List<Line> nodeLines;
     public SimpleBooleanProperty classic = new SimpleBooleanProperty(true);
+    public SimpleBooleanProperty serialConvolve = new SimpleBooleanProperty(true);    
     public SimpleLongProperty convolutionSleepTime = new SimpleLongProperty(17);     
     public SimpleLongProperty animationDelayTime = new SimpleLongProperty(16);     
-    public SimpleDoubleProperty flameOpacity = new SimpleDoubleProperty(0.5);     
+    public SimpleDoubleProperty flameOpacity = new SimpleDoubleProperty(0.5);    
         
     private int shift1 = 16;
     private int shift2 = 8;
     private int shift3 = 0;
-    int[] paletteAsInts; //this will contain the color palette
+//    int[] paletteAsInts; //this will contain the color palette
     // Y-coordinate first because we use horizontal scanlines
     int[] fire;  //this buffer will contain the fire
     IntBuffer intBuffer;
@@ -51,6 +53,8 @@ public class FireView extends Region {
     public LongProperty animationSleepMilli = new SimpleLongProperty(33);
     long workTimesMillis = 0;
     
+    ConvolutionPalette convolutionPalette;
+    
     public FireView(Region parentToOverlay) {
         engulfedRegion = parentToOverlay;
         prefWidthProperty().bind(engulfedRegion.widthProperty());
@@ -63,6 +67,11 @@ public class FireView extends Region {
         gc = canvas.getGraphicsContext2D();
 //        losList = FXCollections.observableArrayList();
 //        scanFlameRegion();
+        convolutionPalette = new ConvolutionPalette(256);
+        classic.addListener(cl-> convolutionPalette.classic = classic.get());
+        flameOpacity.addListener(cl-> convolutionPalette.flameOpacity = flameOpacity.get());
+//        convolutionPalette.classic.bind(classic);
+//        convolutionPalette.flameOpacity.bind(flameOpacity);
     }
     public void stop() {
         animating.set(false);
@@ -85,7 +94,7 @@ public class FireView extends Region {
         writableImage = new WritableImage(pixelBuffer);
         gc = canvas.getGraphicsContext2D();
         gc.drawImage(writableImage, 0, 0);
-        paletteAsInts = generateArgbPalette(256);
+//        paletteAsInts = generateArgbPalette(256);
     }
     
     private void initFireTask() {
@@ -118,7 +127,10 @@ public class FireView extends Region {
                     for(int i=fireStartHeight; i<fireStartHeight+canvasWidth; i++) {
                         fire[i] = Math.abs(32768 + rand.nextInt(65536)) % 256;
                     }
-                    convolve(canvasHeight, canvasWidth);
+                    if(serialConvolve.get())
+                        convolve(canvasHeight, canvasWidth);
+                    else
+                        parallelConvolve(canvasHeight, canvasWidth);
                     elapseTime = System.currentTimeMillis() - startTime;
                     workTimesMillis = elapseTime;
                     Thread.sleep(convolutionSleepTime.get());
@@ -147,12 +159,15 @@ public class FireView extends Region {
          }
          fcList.parallelStream().forEach(fc -> fc.convolve(fire));
 
-         int row, index;
-//         for(int y=0; y<fcList.size(); y++) {
-//            row = y * canvasWidth;
-//            index = row + x;             
-//            intBuffer.put(index, getPaletteValue(pixel));
-//         }
+         int row;
+         FireConvolution fc;
+         for(int y=0; y<fcList.size(); y++) {
+            row = y * canvasWidth;
+            fc = fcList.get(y);
+            for(int x=0; x<fc.pixelValues.length;x++) {
+                intBuffer.put(row + x, convolutionPalette.getPaletteValue(fc.pixelValues[x]));
+            }
+         }
     }
     /**
      * Fire convolution that processes the entire canvas as a nested loop.
@@ -191,7 +206,7 @@ public class FireView extends Region {
                         << 7); //multiply by constant 128
                 // divide by constant 513
                 pixel = fire[index] = ((shiftedValue << 9) - shiftedValue) >> 18;
-                intBuffer.put(index, getPaletteValue(pixel));
+                intBuffer.put(index, convolutionPalette.getPaletteValue(pixel));
             }
         }        
     }
@@ -243,100 +258,39 @@ public class FireView extends Region {
 //        scanShadowRegion();        
 //    }
     
-//    public void scanFlameRegion() {
-//        //get the Node children in traversal order
-//        //This way is ... pretty close... but JavaFX currently does not publically
-//        //expose a method or means to find the true focus traversable order. :-(
-//        nodeLines = NodeTools.getAllChildren(engulfedRegion).stream()
-//                .filter(node -> node.isFocusTraversable())
-//                .map(node -> NodeTools.boundsToLines(node))
-//                .flatMap(Collection::stream)
-//                .collect(toList());
-//        //        System.out.println("Node Lines count: " + nodeLines.size());
-//    }
-    private int getPaletteValue(int pixelIndex) {
-        int value = 0;
-        try {
-            if (classic.get())
-                value = paletteAsInts[pixelIndex];
-            if (getShift1() > -1)
-                value |= paletteAsInts[pixelIndex] << getShift1();
-            if (getShift2() > -1)
-                value |= paletteAsInts[pixelIndex] << getShift2();
-            if (getShift3() > -1)
-                value |= paletteAsInts[pixelIndex] << getShift3();
-        } catch (Exception e) {
-            System.out.println("pixelIndex: " + pixelIndex + "  value " + value + " " + e );
-        }
-        //Apply additional opacity values controlled externally
-        value |= (int)(flameOpacity.get()*255) << 24;
-        return value;
-    }    
-    private int[] generateArgbPalette(int max ) {
-        int [] pal = new int[max];
-        //generate the palette
-        for (int x = 0; x < max; x++) {
-            //HSLtoRGB is used to generate colors:
-            //Hue goes from 0 to 85: red to yellow
-            //Saturation is always the maximum: 255
-            //Brightness is 0..255 for x=0..128, and 255 for x=128..255
-            //color = HSLtoRGB(ColorHSL(x / 3, 255, std::min(255, x * 2)));
-            //set the palette to the calculated RGB value
-            //palette[x] = RGBtoINT();
-            double brightness = Math.min(255, x*2) / 255.0;
-            Color color = Color.hsb(x / 3.0, 1.0, brightness , brightness);
-            pal[x] = rgbToIntArgb(color);            
-        }
-        return pal;
-    }
-
-    private static int rgbToIntArgb(Color colorRGB) {
-      return (int)(colorRGB.getOpacity()*255) << 24 |
-             (int)(colorRGB.getRed()    *255) << 16 | 
-             (int)(colorRGB.getGreen()  *255) <<  8 | 
-             (int)(colorRGB.getBlue()   *255);
-    }     
-
     /**
      * @return the shift1
      */
     public int getShift1() {
-        return shift1;
+        return convolutionPalette.getShift1();
     }
 
     /**
      * @param shift1 the shift1 to set
      */
     public void setShift1(int shift1) {
-        this.shift1 = shift1;
+        convolutionPalette.setShift1(shift1);
     }
 
-    /**
-     * @return the shift2
-     */
     public int getShift2() {
-        return shift2;
+        return convolutionPalette.getShift2();
     }
 
     /**
      * @param shift2 the shift2 to set
      */
     public void setShift2(int shift2) {
-        this.shift2 = shift2;
+        convolutionPalette.setShift2(shift2);
     }
-
-    /**
-     * @return the shift3
-     */
     public int getShift3() {
-        return shift3;
+        return convolutionPalette.getShift3();
     }
 
     /**
-     * @param shift3 the shift3 to set
+     * @param shift3 the shift1 to set
      */
     public void setShift3(int shift3) {
-        this.shift3 = shift3;
+        convolutionPalette.setShift3(shift3);
     }
 
 }
