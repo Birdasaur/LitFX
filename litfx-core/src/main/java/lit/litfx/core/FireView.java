@@ -1,6 +1,7 @@
 package lit.litfx.core;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import javafx.concurrent.Task;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,6 +18,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import lit.litfx.core.components.fire.FireConvolution;
 
 /**
  *
@@ -37,7 +39,6 @@ public class FireView extends Region {
     int[] paletteAsInts; //this will contain the color palette
     // Y-coordinate first because we use horizontal scanlines
     int[] fire;  //this buffer will contain the fire
-    int[] firePixel;
     IntBuffer intBuffer;
     PixelFormat<IntBuffer> pixelFormat;
     PixelBuffer<IntBuffer> pixelBuffer;
@@ -49,7 +50,6 @@ public class FireView extends Region {
     public BooleanProperty animating = new SimpleBooleanProperty(false);
     public LongProperty animationSleepMilli = new SimpleLongProperty(33);
     long workTimesMillis = 0;
-
     
     public FireView(Region parentToOverlay) {
         engulfedRegion = parentToOverlay;
@@ -78,7 +78,6 @@ public class FireView extends Region {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         // Y-coordinate first because we use horizontal scanlines
         fire = new int[getCanvasHeight() * getCanvasWidth()];  //this buffer will contain the fire
-        firePixel = new int[getCanvasHeight() * getCanvasWidth()];  
         // new way to store image Shared pixel buffer.
         intBuffer = IntBuffer.allocate(getCanvasWidth() * getCanvasHeight());
         pixelFormat = PixelFormat.getIntArgbPreInstance();
@@ -97,10 +96,10 @@ public class FireView extends Region {
                 Random rand = new Random();
                 long startTime = 0;
                 long elapseTime = 0;
-                Double startHeight = (canvas.getHeight() - 1) * canvas.getWidth();
-                int fireStartHeight = startHeight.intValue();
                 int canvasWidth = getCanvasWidth();
                 int canvasHeight = getCanvasHeight();
+                int startHeight = (canvasHeight - 1) * canvasWidth;
+                int fireStartHeight = startHeight;
              
                 //start the loop (one frame per loop)
                 while(animating.get() && !this.isCancelled() && !this.isDone()) {
@@ -108,42 +107,18 @@ public class FireView extends Region {
                     // Start stop watch
                     startTime = System.currentTimeMillis();
                     canvasWidth = getCanvasWidth(); 
-                    canvasHeight = getCanvasHeight();
+                    canvasHeight = getCanvasHeight(); 
+//                    canvasWidth = 200;
+//                    canvasHeight = 200;
+
+                    startHeight = (canvasHeight - 1) * canvasWidth;
+                    fireStartHeight = startHeight;
+                    
                     //randomize the bottom row of the fire array.
                     for(int i=fireStartHeight; i<fireStartHeight+canvasWidth; i++) {
                         fire[i] = Math.abs(32768 + rand.nextInt(65536)) % 256;
                     }
-                    // each convolution matrix. X is the cell to update. Each 1 is the field to calculate.
-                    // If a 1 cell is outside the boundaries use the the x or y's wrapped cell.
-                    // (y, x)
-                    //     0 1 2   <- x
-                    // y +------
-                    // 0 | 0 1 0
-                    // 1 | 0 X 0
-                    // 2 | 1 0 1
-                    // 3 | 0 1 0
-                    // 4 | 0 1 0
-                    
-                    //Update the flame dynamics values only once per traversal
-                    int a, b, row, index, pixel;
-                    int shiftedValue; //temporarily holds the first term 
-
-                    for (int y = 0; y < canvasHeight - 1; y++) {
-                        for (int x = 0; x < canvasWidth; x++) {
-                            a = (y + 1) % canvasHeight * canvasWidth;
-                            b = x % canvasWidth;
-                            row = y * canvasWidth;
-                            index = row + x;
-                            shiftedValue = ((fire[a + ((x - 1 + canvasWidth) % canvasWidth)]
-                                    + fire[((y + 2) % canvasHeight) * canvasWidth + b]
-                                    + fire[a + ((x + 1) % canvasWidth)]
-                                    + fire[((y + 3) % canvasHeight * canvasWidth) + b])
-                                    << 7); //multiply by constant 128
-                            // divide by constant 513
-                            pixel = fire[index] = ((shiftedValue << 9) - shiftedValue) >> 18;
-                            intBuffer.put(index, getPaletteValue(pixel));
-                        }
-                    }
+                    convolve(canvasHeight, canvasWidth);
                     elapseTime = System.currentTimeMillis() - startTime;
                     workTimesMillis = elapseTime;
                     Thread.sleep(convolutionSleepTime.get());
@@ -159,6 +134,66 @@ public class FireView extends Region {
         Thread thread = new Thread(fireTask);
         thread.setDaemon(true);
         thread.start();
+    }
+    /**
+     * WIP a parallelStream() implementation of the fire convolution.
+     * @param canvasHeight
+     * @param canvasWidth 
+     */
+    private void parallelConvolve(int canvasHeight, int canvasWidth) {
+        ArrayList<FireConvolution> fcList = new ArrayList<>();
+         for (int y = 0; y < canvasHeight - 1; y++) {
+             fcList.add(new FireConvolution(canvasHeight, canvasWidth, y));
+         }
+         fcList.parallelStream().forEach(fc -> fc.convolve(fire));
+
+         int row, index;
+//         for(int y=0; y<fcList.size(); y++) {
+//            row = y * canvasWidth;
+//            index = row + x;             
+//            intBuffer.put(index, getPaletteValue(pixel));
+//         }
+    }
+    /**
+     * Fire convolution that processes the entire canvas as a nested loop.
+     * @param canvasHeight
+     * @param canvasWidth 
+     */    
+    private void convolve(int canvasHeight, int canvasWidth) {
+        // each convolution matrix. X is the cell to update. Each 1 is the field to calculate.
+        // If a 1 cell is outside the boundaries use the the x or y's wrapped cell.
+        // (y, x)
+        //     0 1 2   <- x
+        // y +------
+        // 0 | 0 1 0
+        // 1 | 0 X 0
+        // 2 | 1 0 1
+        // 3 | 0 1 0
+        // 4 | 0 1 0
+
+        //Update the flame dynamics values only once per traversal
+        int a, b, row, index, pixel;
+        int shiftedValue; //temporarily holds the first shifted term
+        int fireIndex1, fireIndex2; //column oriented values computed in outer loop
+        
+        for (int y = 0; y < canvasHeight - 1; y++) {
+            a = (y + 1) % canvasHeight * canvasWidth;
+            row = y * canvasWidth;
+            fireIndex1 = ((y + 2) % canvasHeight) * canvasWidth;
+            fireIndex2 = ((y + 3) % canvasHeight * canvasWidth);
+            for (int x = 0; x < canvasWidth; x++) {
+                b = x % canvasWidth;
+                index = row + x;
+                shiftedValue = ((fire[a + ((x - 1 + canvasWidth) % canvasWidth)] //fireIndex0
+                        + fire[fireIndex1 + b] //fireIndex1
+                        + fire[a + ((x + 1) % canvasWidth)] //fireIndex2
+                        + fire[fireIndex2 + b]) //fireIndex3
+                        << 7); //multiply by constant 128
+                // divide by constant 513
+                pixel = fire[index] = ((shiftedValue << 9) - shiftedValue) >> 18;
+                intBuffer.put(index, getPaletteValue(pixel));
+            }
+        }        
     }
 
     private void initAnimation() {
