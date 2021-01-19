@@ -54,7 +54,7 @@ public class ConvolutionPalette {
         return pal;
     }
 
-    private static int rgbToIntArgb(Color colorRGB) {
+    public static int rgbToIntArgb(Color colorRGB) {
       return (int)(colorRGB.getOpacity()*255) << 24 |
              (int)(colorRGB.getRed()    *255) << 16 | 
              (int)(colorRGB.getGreen()  *255) <<  8 | 

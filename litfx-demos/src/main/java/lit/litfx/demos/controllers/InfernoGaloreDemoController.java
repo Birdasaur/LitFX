@@ -1,19 +1,25 @@
 package lit.litfx.demos.controllers;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import lit.litfx.core.FireView;
+import lit.litfx.core.components.fire.Ember;
 
 /**
  * FXML Controller class
@@ -29,8 +35,6 @@ public class InfernoGaloreDemoController implements Initializable {
     ToggleGroup flameTypeToggleGroup;
     @FXML
     ToggleGroup flameConvolutionToggleGroup;
-    @FXML
-    Circle circleButton;
     
     //Dynamics
     @FXML
@@ -55,7 +59,13 @@ public class InfernoGaloreDemoController implements Initializable {
     @FXML
     ChoiceBox<Integer> shift3ChoiceBox;    
 
+    @FXML
+    ToggleButton infernoToggleButton;
+    
     FireView fireView;
+    Point2D start, end;
+    boolean dragStarted;
+    ArrayList<Point2D> pointList;
     
     /**
      * Initializes the controller class.
@@ -64,7 +74,7 @@ public class InfernoGaloreDemoController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        circleButton.setOnMouseClicked(eh->toggleFire());
+        infernoToggleButton.selectedProperty().addListener(cl -> toggleFire());
         //assign the Region you want to engulf in shadows
         fireView = new FireView(centerPane);
         centerPane.getChildren().add(fireView);
@@ -94,15 +104,50 @@ public class InfernoGaloreDemoController implements Initializable {
         
 //       centerPane.getChildren().addAll(be1, be2);
         
-        centerPane.setOnMouseClicked((MouseEvent event) -> {
-//            if(event.getButton() == MouseButton.PRIMARY)
-//                start = new Point2D(event.getX(), event.getY());
-//            else if(event.getButton() == MouseButton.SECONDARY)
-//                end = new Point2D(event.getX(), event.getY());
+        pointList = new ArrayList<>();
+        centerPane.setOnMousePressed((MouseEvent event) -> {
+            //System.out.println("Mouse pressed on centerPane...");
+            if(event.getButton() == MouseButton.PRIMARY) {
+                start = new Point2D(event.getX(), event.getY());
+                dragStarted = true;
+                pointList.clear();
+                pointList = new ArrayList<>();
+                pointList.add(new Point2D(event.getX(), event.getY()));
+            }
         });
+        
+        centerPane.setOnMouseDragged((MouseEvent event) -> {
+            //System.out.println("Mouse DRAGGED on centerPane...");
+            if(dragStarted) {
+                pointList.add(new Point2D(event.getX(), event.getY()));
+            }
+        });
+        
+        centerPane.setOnMouseReleased((MouseEvent event) -> {
+            if(dragStarted) {
+                end = new Point2D(event.getX(), event.getY());
+                dragStarted = false;
+                ArrayList<Color> colors = new ArrayList<>();
+                System.out.println("Point List From Drag: " + pointList.size());
+                pointList.forEach(point -> { 
+                    colors.add(Color.WHITESMOKE);
+//                    Platform.runLater(() ->
+//                        centerPane.getChildren().add(
+//                            new Circle(point.getX(), point.getY(), 1, Color.WHITESMOKE))
+//                    );
+                });
+                ArrayList<Point2D> points = new ArrayList<>();
+                points.addAll(pointList);
+                Ember ember = new Ember(points, colors);
+                fireView.addEmber(ember);
+            }
+        });
+
         tabPane.setOnMouseEntered(event -> tabPane.requestFocus());
     }    
-    
+    public void clearEmbers() {
+        fireView.clearEmberFlag.set(true);
+    }
     public void toggleFire() {
         if(fireView.animating.get())
             fireView.stop();

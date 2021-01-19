@@ -8,18 +8,21 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import lit.litfx.core.components.fire.ConvolutionPalette;
 import lit.litfx.core.components.fire.FireConvolution;
+import lit.litfx.core.components.fire.Ember;
 
 /**
  *
@@ -34,6 +37,7 @@ public class FireView extends Region {
     public SimpleLongProperty convolutionSleepTime = new SimpleLongProperty(17);     
     public SimpleLongProperty animationDelayTime = new SimpleLongProperty(16);     
     public SimpleDoubleProperty flameOpacity = new SimpleDoubleProperty(0.5);    
+    public SimpleBooleanProperty clearEmberFlag = new SimpleBooleanProperty(false);
         
     private int shift1 = 16;
     private int shift2 = 8;
@@ -54,6 +58,8 @@ public class FireView extends Region {
     long workTimesMillis = 0;
     
     ConvolutionPalette convolutionPalette;
+    ConcurrentLinkedQueue<Ember> emberQueue;
+    ArrayList<Ember> embers;
     
     public FireView(Region parentToOverlay) {
         engulfedRegion = parentToOverlay;
@@ -72,6 +78,8 @@ public class FireView extends Region {
         flameOpacity.addListener(cl-> convolutionPalette.flameOpacity = flameOpacity.get());
 //        convolutionPalette.classic.bind(classic);
 //        convolutionPalette.flameOpacity.bind(flameOpacity);
+        emberQueue = new ConcurrentLinkedQueue<>();
+        embers = new ArrayList<>();
     }
     public void stop() {
         animating.set(false);
@@ -94,7 +102,6 @@ public class FireView extends Region {
         writableImage = new WritableImage(pixelBuffer);
         gc = canvas.getGraphicsContext2D();
         gc.drawImage(writableImage, 0, 0);
-//        paletteAsInts = generateArgbPalette(256);
     }
     
     private void initFireTask() {
@@ -117,16 +124,20 @@ public class FireView extends Region {
                     startTime = System.currentTimeMillis();
                     canvasWidth = getCanvasWidth(); 
                     canvasHeight = getCanvasHeight(); 
-//                    canvasWidth = 200;
-//                    canvasHeight = 200;
-
                     startHeight = (canvasHeight - 1) * canvasWidth;
                     fireStartHeight = startHeight;
-                    
+                        
+                    if(clearEmberFlag.get()) {
+                        embers.clear();
+                        clearEmberFlag.set(false);
+                    }
+                    //collect anything from the ember queue
+                    stokeEmbers(canvasWidth);
                     //randomize the bottom row of the fire array.
                     for(int i=fireStartHeight; i<fireStartHeight+canvasWidth; i++) {
                         fire[i] = Math.abs(32768 + rand.nextInt(65536)) % 256;
                     }
+                    
                     if(serialConvolve.get())
                         convolve(canvasHeight, canvasWidth);
                     else
@@ -147,8 +158,38 @@ public class FireView extends Region {
         thread.setDaemon(true);
         thread.start();
     }
+
+    private void stokeEmbers(int canvasWidth) {
+        while(!emberQueue.isEmpty()) {
+            Ember ember = emberQueue.poll(); 
+            Ember newEmber = new Ember(ember.getPixels(), ember.getColors());
+            embers.add(newEmber);
+        }
+
+        Random rand = new Random();
+        ArrayList<Color> colors;
+        ArrayList<Point2D> points;
+        Point2D pixel;
+        Color color;
+        int index;
+        Ember ember;
+        for(int emberIndex=0; emberIndex < embers.size(); emberIndex++) {
+            ember = embers.get(emberIndex);
+            colors = ember.getColors();
+            points = ember.getPixels();
+            for(int i=0; i<points.size();i++) {
+                pixel = points.get(i);
+                index = (((int)pixel.getY()-1) * canvasWidth) + (int)pixel.getX();
+//                color = colors.get(i);
+//                fire[index] = ConvolutionPalette.rgbToIntArgb(color);
+                fire[index] = Math.abs(32768 + rand.nextInt(65536)) % 256;
+            }
+        }        
+    }
+    
+    
     /**
-     * WIP a parallelStream() implementation of the fire convolution.
+     * A parallelStream() implementation of the fire convolution.
      * @param canvasHeight
      * @param canvasWidth 
      */
@@ -251,6 +292,9 @@ public class FireView extends Region {
         return d.intValue();
     }
 
+    public void addEmber(Ember ember) {
+        emberQueue.add(ember);
+    }
     
 //    @Override
 //    protected void layoutChildren() {
