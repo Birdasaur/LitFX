@@ -3,10 +3,13 @@ package lit.litfx.demos.controllers;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
@@ -62,10 +65,14 @@ public class InfernoGaloreDemoController implements Initializable {
     @FXML
     ToggleButton infernoToggleButton;
     
+    @FXML
+    CheckBox emberPointsCheckBox;
+    
     FireView fireView;
     Point2D start, end;
     boolean dragStarted;
     ArrayList<Point2D> pointList;
+    Group emberGroup;
     
     /**
      * Initializes the controller class.
@@ -77,7 +84,9 @@ public class InfernoGaloreDemoController implements Initializable {
         infernoToggleButton.selectedProperty().addListener(cl -> toggleFire());
         //assign the Region you want to engulf in shadows
         fireView = new FireView(centerPane);
-        centerPane.getChildren().add(fireView);
+        emberGroup = new Group();
+        emberGroup.visibleProperty().bind(emberPointsCheckBox.selectedProperty());
+        centerPane.getChildren().addAll(fireView, emberGroup);
         fireView.classic.bind(classicRB.selectedProperty());
         fireView.serialConvolve.bind(serialRB.selectedProperty());
         fireView.convolutionSleepTime.bind(convolutionDelaySlider.valueProperty());
@@ -128,13 +137,13 @@ public class InfernoGaloreDemoController implements Initializable {
                 end = new Point2D(event.getX(), event.getY());
                 dragStarted = false;
                 ArrayList<Color> colors = new ArrayList<>();
-                System.out.println("Point List From Drag: " + pointList.size());
+                //System.out.println("Point List From Drag: " + pointList.size());
                 pointList.forEach(point -> { 
                     colors.add(Color.WHITESMOKE);
-//                    Platform.runLater(() ->
-//                        centerPane.getChildren().add(
-//                            new Circle(point.getX(), point.getY(), 1, Color.WHITESMOKE))
-//                    );
+                    Platform.runLater(() ->
+                        emberGroup.getChildren().add(
+                            new Circle(point.getX(), point.getY(), 1, Color.WHITESMOKE))
+                    );
                 });
                 ArrayList<Point2D> points = new ArrayList<>();
                 points.addAll(pointList);
@@ -147,6 +156,7 @@ public class InfernoGaloreDemoController implements Initializable {
     }    
     public void clearEmbers() {
         fireView.clearEmberFlag.set(true);
+        emberGroup.getChildren().clear();
     }
     public void toggleFire() {
         if(fireView.animating.get())
