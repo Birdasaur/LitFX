@@ -10,7 +10,7 @@
     <artifactId>litfx-demos</artifactId>
 
     <properties>
-        <mainClassName>lit.litfx.demos.InfernoGaloreDemo</mainClassName>
+        <mainClassName>lit.litfx.demos.TargetingDemo</mainClassName>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
     </properties>

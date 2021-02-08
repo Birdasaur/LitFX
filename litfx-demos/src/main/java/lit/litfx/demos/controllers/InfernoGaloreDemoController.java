@@ -155,7 +155,7 @@ public class InfernoGaloreDemoController implements Initializable {
         tabPane.setOnMouseEntered(event -> tabPane.requestFocus());
     }    
     public void clearEmbers() {
-        fireView.clearEmberFlag.set(true);
+        fireView.clearEmberFlag = true;
         emberGroup.getChildren().clear();
     }
     public void toggleFire() {

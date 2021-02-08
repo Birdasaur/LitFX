@@ -6,5 +6,6 @@ module lit.litfx.core {
     exports lit.litfx.core;
     exports lit.litfx.core.components;
     exports lit.litfx.core.components.fire;
+    exports lit.litfx.core.components.targeting;
     exports lit.litfx.core.utils;
 }

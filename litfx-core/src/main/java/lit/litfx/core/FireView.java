@@ -37,12 +37,12 @@ public class FireView extends Region {
     public SimpleLongProperty convolutionSleepTime = new SimpleLongProperty(17);     
     public SimpleLongProperty animationDelayTime = new SimpleLongProperty(16);     
     public SimpleDoubleProperty flameOpacity = new SimpleDoubleProperty(0.5);    
-    public SimpleBooleanProperty clearEmberFlag = new SimpleBooleanProperty(false);
+    public boolean clearEmberFlag = false;
         
     private int shift1 = 16;
     private int shift2 = 8;
     private int shift3 = 0;
-//    int[] paletteAsInts; //this will contain the color palette
+
     // Y-coordinate first because we use horizontal scanlines
     int[] fire;  //this buffer will contain the fire
     IntBuffer intBuffer;
@@ -114,22 +114,21 @@ public class FireView extends Region {
                 long elapseTime = 0;
                 int canvasWidth = getCanvasWidth();
                 int canvasHeight = getCanvasHeight();
-                int startHeight = (canvasHeight - 1) * canvasWidth;
-                int fireStartHeight = startHeight;
+                int fireStartHeight  = (canvasHeight - 1) * canvasWidth;
              
-                //start the loop (one frame per loop)
+                //start the loop (one frame of flames per loop)
+                //Minimize the processing done in this loop as much as possible
                 while(animating.get() && !this.isCancelled() && !this.isDone()) {
                     //System.out.print("animating...");
                     // Start stop watch
                     startTime = System.currentTimeMillis();
                     canvasWidth = getCanvasWidth(); 
                     canvasHeight = getCanvasHeight(); 
-                    startHeight = (canvasHeight - 1) * canvasWidth;
-                    fireStartHeight = startHeight;
-                        
-                    if(clearEmberFlag.get()) {
+                    fireStartHeight = (canvasHeight - 1) * canvasWidth;
+                          
+                    if(clearEmberFlag) {
                         embers.clear();
-                        clearEmberFlag.set(false);
+                        clearEmberFlag = false;
                     }
                     //collect anything from the ember queue
                     stokeEmbers(canvasWidth);
@@ -137,11 +136,12 @@ public class FireView extends Region {
                     for(int i=fireStartHeight; i<fireStartHeight+canvasWidth; i++) {
                         fire[i] = Math.abs(32768 + rand.nextInt(65536)) % 256;
                     }
-                    
+                    //Convolution algorithm is an M x N compute cost where the
+                    //total number iterations equals that of the canvas pixels 
                     if(serialConvolve.get())
-                        convolve(canvasHeight, canvasWidth);
+                        convolve(canvasHeight, canvasWidth); //nested loop algo
                     else
-                        parallelConvolve(canvasHeight, canvasWidth);
+                        parallelConvolve(canvasHeight, canvasWidth); //parallelStream() algo
                     elapseTime = System.currentTimeMillis() - startTime;
                     workTimesMillis = elapseTime;
                     Thread.sleep(convolutionSleepTime.get());
@@ -161,32 +161,41 @@ public class FireView extends Region {
 
     private void stokeEmbers(int canvasWidth) {
         while(!emberQueue.isEmpty()) {
-            Ember ember = emberQueue.poll(); 
-            Ember newEmber = new Ember(ember.getPixels(), ember.getColors());
-            embers.add(newEmber);
+            embers.add(emberQueue.poll());
+//            Ember ember = emberQueue.poll(); 
+//            Ember newEmber = new Ember(ember.getPixels(), ember.getColors());
+//            embers.add(newEmber);
         }
 
-        Random rand = new Random();
-        ArrayList<Color> colors;
-        ArrayList<Point2D> points;
         Point2D pixel;
         Color color;
         int index;
         Ember ember;
+//        Random rand = new Random();
+//        for(int emberIndex=0; emberIndex < embers.size(); emberIndex++) {
+//            ember = embers.get(emberIndex);
+//            colors = ember.getColors();
+//            points = ember.getPixels();
+//            for(int i=0; i<points.size();i++) {
+//                pixel = points.get(i);
+//                index = (((int)pixel.getY()-1) * canvasWidth) + (int)pixel.getX();
+////                color = colors.get(i);
+////                fire[index] = ConvolutionPalette.rgbToIntArgb(color);
+//                fire[index] = Math.abs(32768 + rand.nextInt(65536)) % 256;
+//            }
+//        }
+        int pointsSize;
         for(int emberIndex=0; emberIndex < embers.size(); emberIndex++) {
             ember = embers.get(emberIndex);
-            colors = ember.getColors();
-            points = ember.getPixels();
-            for(int i=0; i<points.size();i++) {
-                pixel = points.get(i);
+            pointsSize = ember.pixels.length;
+            for(int i=0; i<pointsSize;i++) {
+                pixel = ember.pixels[i];
                 index = (((int)pixel.getY()-1) * canvasWidth) + (int)pixel.getX();
-//                color = colors.get(i);
-//                fire[index] = ConvolutionPalette.rgbToIntArgb(color);
-                fire[index] = Math.abs(32768 + rand.nextInt(65536)) % 256;
+                color = ember.colors[i];
+                fire[index] = ConvolutionPalette.rgbToIntArgb(color);
             }
         }        
     }
-    
     
     /**
      * A parallelStream() implementation of the fire convolution.

@@ -198,10 +198,10 @@ public class PathPane extends AnchorPane {
     private void handlePositionWindowMouseDragged(MouseEvent mouseEvent) {
         if(isEnableDrag()) {        
             if (anchorPt != null && previousLocation != null) {
-                this.setTranslateX(previousLocation.getX()
+                setTranslateX(previousLocation.getX()
                         + mouseEvent.getSceneX()
                         - anchorPt.getX());
-                this.setTranslateY(previousLocation.getY()
+                setTranslateY(previousLocation.getY()
                         + mouseEvent.getSceneY()
                         - anchorPt.getY());
             }
@@ -221,7 +221,20 @@ public class PathPane extends AnchorPane {
     }
 
     /**
-     * This convient function allows any node to be allow user to drag or position
+     * Convenience function to place a pane somewhere in the screen
+     *
+     * @param x X position of the upper left corner of the Pane
+     * @param y Y position of the upper left corner of the Pane
+     */
+    public void moveTo(double x, double y){
+        setTranslateX(x);
+        setTranslateY(y);
+        previousLocation = new Point2D(getTranslateX(),getTranslateY());
+        previousLocationProperty.set(previousLocation);    
+    }
+
+    /**
+     * This convenient function allows any node to be allow user to drag or position
      * window in the scene. For example the title bar or left accent allows the
      * user to move the pane(window).
      *
