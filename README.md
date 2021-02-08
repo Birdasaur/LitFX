@@ -13,6 +13,8 @@ It's like god damn dark magic so have fun.
 OpenJFX Modular Maven Project
 Custom JLink Goal for Apache NetBeans: Right Click Project -> Run Maven -> JLink
 
+![](/media/infernogalore.png)
+
 ![](/media/waveshaper.png)
 
 ![](/media/covalentpanes.png)

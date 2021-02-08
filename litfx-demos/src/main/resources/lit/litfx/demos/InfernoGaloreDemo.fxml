@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lit.litfx.demos.controllers.InfernoGaloreDemoController">
+   <bottom>
+      <TabPane fx:id="tabPane" style="-fx-background-color: #000000;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+         <tabs>
+            <Tab closable="false" text="Fire Effects">
+               <content>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="300.0">
+                     <content>
+                        <VBox alignment="TOP_CENTER" spacing="3.0">
+                           <children>
+                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
+                                 <children>
+                                    <ToggleButton fx:id="infernoToggleButton" mnemonicParsing="false" prefWidth="150.0" text="Enable Inferno" />
+                                    <Button mnemonicParsing="false" onAction="#clearEmbers" prefWidth="150.0" text="Clear Embers" />
+                                    <CheckBox fx:id="emberPointsCheckBox" mnemonicParsing="false" text="Enable Ember Points" />
+                                    <Separator orientation="VERTICAL" prefHeight="200.0" />
+                                    <RadioButton fx:id="serialRB" layoutX="518.0" layoutY="27.0" mnemonicParsing="false" selected="true" text="Serial Convolution">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="flameConvolutionToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="parallelRB" layoutX="629.0" layoutY="27.0" mnemonicParsing="false" text="Parallel Convolution" toggleGroup="$flameConvolutionToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="15.0" layoutY="15.0" minHeight="50.0" spacing="20.0">
+                                 <children>
+                                    <RadioButton fx:id="classicRB" mnemonicParsing="false" selected="true" text="Classic Flame">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="flameTypeToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="wavesRB" mnemonicParsing="false" text="Waves of Fire" toggleGroup="$flameTypeToggleGroup" />
+                                    <Label text="Wave Shift 1" />
+                                    <ChoiceBox fx:id="shift1ChoiceBox" prefWidth="150.0" />
+                                    <Label text="Wave Shift 2" />
+                                    <ChoiceBox fx:id="shift2ChoiceBox" prefWidth="150.0" />
+                                    <Label text="Wave Shift 3" />
+                                    <ChoiceBox fx:id="shift3ChoiceBox" prefWidth="150.0" />
+                                 </children>
+                              </HBox>
+                              <Label text="Convolution Time Delay" />
+                              <Slider fx:id="convolutionDelaySlider" majorTickUnit="8.0" max="128.0" min="1.0" minorTickCount="7" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="17.0" />
+                              <Label layoutX="596.0" layoutY="68.0" text="Animation Time Delay" />
+                              <Slider fx:id="animationDelaySlider" blockIncrement="16.0" layoutX="15.0" layoutY="88.0" majorTickUnit="8.0" max="128.0" min="1.0" minorTickCount="7" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="16.0" />
+                              <Label layoutX="596.0" layoutY="129.0" text="Base Opacity" />
+                              <Slider fx:id="opacitySlider" blockIncrement="0.1" layoutX="15.0" layoutY="88.0" majorTickUnit="0.1" max="1.0" minorTickCount="10" showTickLabels="true" showTickMarks="true" value="0.5" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </ScrollPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+   </bottom>
+   <center>
+      <Pane fx:id="centerPane" style="-fx-background-color: #000000;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="720.0" fitWidth="1280.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@infernogalore.png" />
+               </image>
+            </ImageView>
+         </children></Pane>
+   </center>
+</BorderPane>

@@ -1,22 +1,33 @@
 package lit.litfx.core;
 
 import javafx.application.Platform;
-import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import jfxtras.labs.util.ShapeConverter;
 import lit.litfx.core.components.EdgePoint;
 import lit.litfx.core.components.LineOfSight;
-
 import java.util.Collection;
 import java.util.List;
-
 import static java.util.stream.Collectors.toList;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.shape.ClosePath;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 /**
  *
