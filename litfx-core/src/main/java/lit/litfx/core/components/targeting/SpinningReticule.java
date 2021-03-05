@@ -25,6 +25,10 @@ public class SpinningReticule extends Group {
     public double c1DashSpacing = 50;
     public double c2DashSpacing = 75;
     public double c3DashSpacing = 100;
+    Line horizontalInnerLine = new Line(0, 0, 0, 0);   
+    Line verticalInnerLine = new Line(0, 0, 0, 0);    
+    Group innerLines = new Group(verticalInnerLine, horizontalInnerLine);
+
     Line horizontalLeftLine = new Line(0, 0, 0, 0);
     Line horizontalRightLine = new Line(0, 0, 0, 0);   
     Line verticalTopLine = new Line(0, 0, 0, 0);
@@ -48,7 +52,11 @@ public class SpinningReticule extends Group {
         horizontalRightLine.setStroke(Color.LIGHTSKYBLUE);
         verticalTopLine.setStroke(Color.LIGHTSKYBLUE);
         verticalBottomLine.setStroke(Color.LIGHTSKYBLUE);
-        getChildren().addAll(c1, c2, c3, center, reticuleLines);        
+        //default to not visible because rendering the lines is highly sensitive
+        //to the parent layout 
+        reticuleLines.setVisible(false);  
+        innerLines.setVisible(false);
+        getChildren().addAll(c1, c2, c3, center, reticuleLines, innerLines);        
     }    
     public SpinningReticule(double outerRadius, double outerStrokeWidth)  {
         this(outerRadius, outerStrokeWidth, 0.75, 0.85, 0.50, 0.75, 25, 50, 75);
@@ -86,7 +94,7 @@ public class SpinningReticule extends Group {
     }
             
     public void showReticuleLines(boolean show) {
-        center.setVisible(show);
+        reticuleLines.setVisible(show);
     }
     
     public void rotateCircle(Circle c, int angle, int duration) {
