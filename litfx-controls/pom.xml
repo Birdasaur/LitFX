@@ -28,7 +28,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${jfx.version}</version>
-            <optional>true</optional>
+            <scope>${jfx.dependency.scope}</scope>
         </dependency>
     </dependencies>
 

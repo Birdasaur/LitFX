@@ -23,7 +23,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${jfx.version}</version>
-            <optional>true</optional>
+            <scope>${jfx.dependency.scope}</scope>
         </dependency>
     </dependencies>
 
