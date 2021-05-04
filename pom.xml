@@ -5,7 +5,7 @@
 
     <groupId>com.github.birdasaur.litfx</groupId>
     <artifactId>LitFX</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -30,7 +30,7 @@
         <connection>scm:git:git://github.com/Birdasaur/LitFX.git</connection>
         <developerConnection>scm:git:git@github.com:Birdasaur/LitFX.git</developerConnection>
         <url>https://github.com/Birdasaur/LitFX</url>
-        <tag>LitFX-0.1.0</tag>
+        <tag>LitFX-0.1.1</tag>
     </scm>
 
     <dependencies>
