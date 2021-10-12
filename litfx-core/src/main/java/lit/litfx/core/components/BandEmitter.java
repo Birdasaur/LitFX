@@ -2,6 +2,7 @@ package lit.litfx.core.components;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -54,33 +55,46 @@ public class BandEmitter extends Group {
         timeToLiveSeconds = DEFAULT_TIMETOLIVE_SECONDS;
         //Default band generaton capability which can be started and stopped 
         //users can manage generation of bands themselves by simply calling the createQuadBand()
-        generate = new Timeline(new KeyFrame(Duration.seconds(generationSeconds), e -> createQuadBand()));
+        generate = new Timeline(new KeyFrame(Duration.seconds(getGenerationSeconds()), e -> createQuadBand()));
         generate.setCycleCount(Timeline.INDEFINITE);
     }
 
     public void createQuadBand() {
+        Band band = buildBand();
+        emitBand(band);
+    }
+
+    public Band buildBand() {
         Band band = quadBandCreator.createQuadBand();
         band.path.setStrokeWidth(pathThickness);
         band.path.setFill(fill);
         band.path.setStroke(stroke);
         band.setVelocity(velocity);
-        band.setTimeToLiveSeconds(timeToLiveSeconds);
+        band.setTimeToLiveSeconds(getTimeToLiveSeconds());
         if(showPoints)
             band.setPointFill(Color.ALICEBLUE);
         else
             band.setPointFill(Color.TRANSPARENT);
-        getChildren().add(band);
-        //starts the animation of the band by applying the velocity to the band.
-        band.animation.play();
-
+        return band;    
+    }
+    public void emitBand(Band band) {
+        //Should we just emit a  current band or accept a parameter?
+        //timeline will eventually remove the band from the group
         Timeline remover = new Timeline(new KeyFrame(
-            Duration.seconds(timeToLiveSeconds), e -> {
+            Duration.seconds(getTimeToLiveSeconds()), e -> {
             getChildren().remove(band);
             band.animation.stop();
         }));
-        remover.play();
+        Platform.runLater(() ->  {
+            //add band to scene as part of this emitter group
+            getChildren().add(band);
+            //starts the animation of the band by applying the velocity to the band.
+            band.animation.play();
+            //Removes the band from the scene after time to live 
+            remover.play();
+        });
     }
-
+    
     public void setCustomFill(Paint fill) {
         this.fill = fill;
     }
@@ -212,5 +226,33 @@ public class BandEmitter extends Group {
         this.quadBandCreator = quadBandCreator;
         this.quadBandCreator.setGeneratorCenterX(generatorCenterX);
         this.quadBandCreator.setGeneratorCenterY(generatorCenterY);
+    }
+
+    /**
+     * @return the generationSeconds
+     */
+    public double getGenerationSeconds() {
+        return generationSeconds;
+    }
+
+    /**
+     * @param generationSeconds the generationSeconds to set
+     */
+    public void setGenerationSeconds(double generationSeconds) {
+        this.generationSeconds = generationSeconds;
+    }
+
+    /**
+     * @return the timeToLiveSeconds
+     */
+    public double getTimeToLiveSeconds() {
+        return timeToLiveSeconds;
+    }
+
+    /**
+     * @param timeToLiveSeconds the timeToLiveSeconds to set
+     */
+    public void setTimeToLiveSeconds(double timeToLiveSeconds) {
+        this.timeToLiveSeconds = timeToLiveSeconds;
     }
 }

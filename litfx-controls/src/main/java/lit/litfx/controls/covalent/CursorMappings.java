@@ -5,11 +5,10 @@
  */
 package lit.litfx.controls.covalent;
 
+import javafx.scene.Cursor;
+
 import java.util.HashMap;
 import java.util.Map;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.Cursor;
 
 /**
  *
@@ -33,22 +32,9 @@ public enum CursorMappings {
         cursorMap.put(RESIZE_DIRECTION.S, Cursor.S_RESIZE);
         cursorMap.put(RESIZE_DIRECTION.SW, Cursor.SW_RESIZE);
         cursorMap.put(RESIZE_DIRECTION.W, Cursor.W_RESIZE);
-    }    
-    public static RESIZE_DIRECTION[] cursorSegmentArray = new RESIZE_DIRECTION[14];
-    static {
-        cursorSegmentArray[0] = RESIZE_DIRECTION.N;
-        cursorSegmentArray[1] = RESIZE_DIRECTION.NE;
-        cursorSegmentArray[2] = RESIZE_DIRECTION.E;
-        cursorSegmentArray[3] = RESIZE_DIRECTION.SE;
-        cursorSegmentArray[4] = RESIZE_DIRECTION.S;
-        cursorSegmentArray[5] = RESIZE_DIRECTION.S;
-        cursorSegmentArray[6] = RESIZE_DIRECTION.S;
-        cursorSegmentArray[7] = RESIZE_DIRECTION.SW;
-        cursorSegmentArray[8] = RESIZE_DIRECTION.W;
-        cursorSegmentArray[9] = RESIZE_DIRECTION.W;
-        cursorSegmentArray[10] = RESIZE_DIRECTION.W;
-        cursorSegmentArray[11] = RESIZE_DIRECTION.NW;
-        cursorSegmentArray[12] = RESIZE_DIRECTION.NW;
-        cursorSegmentArray[13] = RESIZE_DIRECTION.NW;
-    }    
+    }
+
+    public static Cursor findCursorType(RESIZE_DIRECTION direction) {
+        return cursorMap.get(direction);
+    }
 }
