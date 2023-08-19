@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.birdasaur.litfx</groupId>
     <artifactId>LitFX</artifactId>
-    <version>0.1.1</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -15,22 +15,40 @@
     </modules>
 
     <properties>
+        <!-- Using "revision" as SSOT https://maven.apache.org/maven-ci-friendly.html -->
+        <revision>0.1.1</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>14</maven.compiler.source>
-        <maven.compiler.target>14</maven.compiler.target>
-        <maven.compiler.release>14</maven.compiler.release>
-        <jfx.version>14</jfx.version>
-        <jfx.plugin.version>0.0.6</jfx.plugin.version>
-        <!-- This is changed based on the profile -->
-        <jfx.dependency.scope>compile</jfx.dependency.scope>
-        <junit.jupiter.version>5.7.1</junit.jupiter.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <maven.min.version>3.6.3</maven.min.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <!-- Use "mvn versions:display-property-updates" to show updates -->
+        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
+        <maven.enforcer.plugin.version>3.3.0</maven.enforcer.plugin.version>
+        <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
+        <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
+        <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
+        <codehaus.flatten.plugin.version>1.5.0</codehaus.flatten.plugin.version>
+        <maven.scm.provider.gitexe.version>2.0.1</maven.scm.provider.gitexe.version>
+        <nexus.staging.maven.plugin.version>1.6.13</nexus.staging.maven.plugin.version>
+        <javafx.version>20.0.2</javafx.version>
+        <javafx.plugin.version>0.0.8</javafx.plugin.version>
+        <!-- Using "runtime" as default value for downstream users of the library -->
+        <!-- Note, you'll need to run "mvn clean install" when doing local dev -->
+        <!-- Since the default profile will set this scope to "compile" -->
+        <javafx.dependency.scope>runtime</javafx.dependency.scope>
+        <junit.jupiter.version>5.9.3</junit.jupiter.version>
     </properties>
 
     <scm>
         <connection>scm:git:git://github.com/Birdasaur/LitFX.git</connection>
         <developerConnection>scm:git:git@github.com:Birdasaur/LitFX.git</developerConnection>
         <url>https://github.com/Birdasaur/LitFX</url>
-        <tag>LitFX-0.1.1</tag>
+        <tag>LitFX-${revision}</tag>
     </scm>
 
     <dependencies>
@@ -42,28 +60,17 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-    </distributionManagement>
 
     <build>
 
@@ -72,36 +79,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>${maven.jar.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>3.0.0-M4</version>
-                    <configuration>
-                        <skip>true</skip>
-                        <localCheckout>true</localCheckout>
-                        <pushChanges>false</pushChanges>
-                        <mavenExecutorId>forked-path</mavenExecutorId>
-                        <arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
-                    </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.scm</groupId>
-                            <artifactId>maven-scm-provider-gitexe</artifactId>
-                            <version>1.11.2</version>
-                        </dependency>
-                    </dependencies>
+                    <version>${maven.compiler.plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>${maven.deploy.plugin.version}</version>
                     <executions>
                         <execution>
                             <id>default-deploy</id>
@@ -119,7 +107,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M3</version>
+                <version>${maven.enforcer.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -129,7 +117,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.5.4</version>
+                                    <version>[${maven.min.version},)</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -137,21 +125,62 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
+                <!-- Prepare for Maven 5 -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${codehaus.flatten.plugin.version}</version>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <!-- Updates POM used for install/publishing -->
+                    <updatePomFile>true</updatePomFile>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <keepCommentsInPom>false</keepCommentsInPom>
+                    <pomElements>
+                        <build>flatten</build>
+                        <profiles>flatten</profiles>
+                        <pluginManagement>flatten</pluginManagement>
+                    </pomElements>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
     </build>
 
+
+
     <profiles>
+        <!--
+        Default Maven Profile for Development
+        This allows us to mark the JavaFX dependencies as runtime by default when published
+        since the top-level properties are what the consuming side build tools use.
+        -->
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <javafx.dependency.scope>compile</javafx.dependency.scope>
+            </properties>
+        </profile>
+        <!-- Release Maven Profile -->
+        <!-- mvn deploy -DperformRelease=true -->
         <profile>
             <id>release-sign-artifacts</id>
             <activation>
@@ -161,14 +190,15 @@
                 </property>
             </activation>
             <properties>
-                <jfx.dependency.scope>provided</jfx.dependency.scope>
+                <!-- Make the JavaFX dependencies compileOnly for packaging purposes -->
+                <javafx.dependency.scope>provided</javafx.dependency.scope>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
+                        <version>${maven.source.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -181,7 +211,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>${maven.javadoc.plugin.version}</version>
                         <configuration>
                             <encoding>${project.build.sourceEncoding}</encoding>
                         </configuration>
@@ -197,7 +227,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${maven.gpg.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -210,6 +240,54 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>ossrh</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <distributionManagement>
+                <!-- https://central.sonatype.org/publish/publish-maven/#distribution-management-and-authentication -->
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus.staging.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Github Packages Deployment -->
+        <profile>
+            <id>github</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/Birdasaur/LitFX</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 
