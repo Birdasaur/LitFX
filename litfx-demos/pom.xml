@@ -76,8 +76,8 @@
                             <debug>true</debug>
                             <debuglevel>lines,vars,source</debuglevel>
                             <options>
-                                <!--<option>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</option>-->
-                                <option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>
+                                <option>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</option>
+                                <!--<option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>-->
                             </options>
                             <mainClass>${moduleName}/${mainClassName}</mainClass>
                             <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>
