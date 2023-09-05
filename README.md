@@ -1,4 +1,4 @@
-# LitFX
+# LitFX [![JFXCentral](https://img.shields.io/badge/Find_me_on-JFXCentral-blue?logo=googlechrome&logoColor=white)](https://www.jfx-central.com/libraries/litfx)
 Bolt on upgrades for your JavaFX GUI that provide custom special effects such as:
 
 - Lightning 
