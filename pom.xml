@@ -13,6 +13,26 @@
         <module>litfx-demos</module>
         <module>litfx-controls</module>
     </modules>
+    
+    <name>LitFX</name>
+    <description>Bolt on 2D special effects for JavaFX</description>
+    <url>https://github.com/Birdasaur/LitFX</url>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Birdasaur</name>
+        </developer>
+        <developer>
+            <name>samypr100</name>
+        </developer>
+    </developers>
 
     <properties>
         <!-- Using "revision" as SSOT https://maven.apache.org/maven-ci-friendly.html -->
