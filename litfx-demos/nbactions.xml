@@ -21,9 +21,44 @@
             </goals>
             <properties>
                 <skipTests>true</skipTests>
-                <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} --module-path ${project.build.directory}/modules --module ${moduleName}/${mainClass}</exec.args>
-            </properties>            
+            </properties>
         </action>
-    </actions>
+        <action>
+            <actionName>run.single.main</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>clean</goal>
+                <goal>javafx:run</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+                <mainClassName>${packageClassName}</mainClassName>
+            </properties>
+        </action>
+        <action>
+            <actionName>debug.single.main</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>clean</goal>
+                <goal>javafx:run@debug</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+                <jpda.listen>true</jpda.listen>
+                <mainClassName>${packageClassName}</mainClassName>
+            </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-JLink</actionName>
+            <displayName>JLink</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>javafx:jlink</goal>
+            </goals>
+        </action>
+</actions>

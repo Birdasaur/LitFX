@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
         <action>
-            <actionName>run</actionName>
-            <packagings>
-                <packaging>jar</packaging>
-            </packagings>
+            <actionName>CUSTOM-Deploy-OSSRH</actionName>
+            <displayName>Deploy to OSSRH</displayName>
             <goals>
                 <goal>clean</goal>
-                <goal>javafx:run</goal>
+                <goal>deploy</goal>
             </goals>
+            <activatedProfiles>
+                <activatedProfile>ossrh</activatedProfile>
+                <activatedProfile>release-sign-artifacts</activatedProfile>
+            </activatedProfiles>
         </action>
         <action>
-            <actionName>debug</actionName>
-            <packagings>
-                <packaging>jar</packaging>
-            </packagings>
+            <actionName>CUSTOM-Deploy-Github</actionName>
+            <displayName>Deploy to Github</displayName>
             <goals>
                 <goal>clean</goal>
-                <goal>clean javafx:run@debug</goal>
+                <goal>deploy</goal>
             </goals>
+            <activatedProfiles>
+                <activatedProfile>github</activatedProfile>
+                <activatedProfile>release-sign-artifacts</activatedProfile>
+            </activatedProfiles>
         </action>
-        <action>
-            <actionName>CUSTOM-JLink</actionName>
-            <displayName>JLink</displayName>
-            <goals>
-                <goal>clean</goal>
-                <goal>javafx:jlink</goal>
-            </goals>
-        </action>
-    </actions>
+</actions>

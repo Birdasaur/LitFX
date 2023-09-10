@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <artifactId>LitFX</artifactId>
         <groupId>com.github.birdasaur.litfx</groupId>
-        <version>0.1.1</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>litfx-demos</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>14</maven.compiler.source>
-        <maven.compiler.target>14</maven.compiler.target>
-        <maven.compiler.release>14</maven.compiler.release>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <moduleName>lit.litfx.demos</moduleName>
         <mainClassName>lit.litfx.demos.TargetingDemo</mainClassName>
     </properties>
@@ -23,19 +23,14 @@
     <dependencies>
         <dependency>
             <groupId>com.github.birdasaur.litfx</groupId>
-            <artifactId>litfx-core</artifactId>
-            <version>0.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.birdasaur.litfx</groupId>
             <artifactId>litfx-controls</artifactId>
-            <version>0.1.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>${jfx.version}</version>
-            <scope>${jfx.dependency.scope}</scope>
+            <version>${javafx.version}</version>
+            <scope>${javafx.dependency.scope}</scope>
         </dependency>
     </dependencies>
 
@@ -44,6 +39,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -56,17 +52,16 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>${jfx.plugin.version}</version>
+                <version>${javafx.plugin.version}</version>
                 <configuration>
                     <mainClass>${moduleName}/${mainClassName}</mainClass>
                     <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>
-                    <!--<stripDebug>true</stripDebug>-->
-                    <!--<compress>2</compress>-->
-                    <!--<noHeaderFiles>true</noHeaderFiles>-->
-                    <!--<noManPages>true</noManPages>-->
-                    <!--<launcher>lit</launcher>-->
-                    <!--<jlinkImageName>litfx</jlinkImageName>-->
-                    <!--<jlinkZipName>litfxzip</jlinkZipName>-->
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>litfx</launcher>
+                    <jlinkZipName>image</jlinkZipName>
                 </configuration>
                 <executions>
                     <execution>
@@ -81,8 +76,8 @@
                             <debug>true</debug>
                             <debuglevel>lines,vars,source</debuglevel>
                             <options>
-                                <!--<option>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</option>-->
-                                <option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>
+                                <option>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</option>
+                                <!--<option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>-->
                             </options>
                             <mainClass>${moduleName}/${mainClassName}</mainClass>
                             <includePathExceptionsInClasspath>true</includePathExceptionsInClasspath>

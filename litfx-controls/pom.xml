@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <artifactId>LitFX</artifactId>
         <groupId>com.github.birdasaur.litfx</groupId>
-        <version>0.1.1</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>litfx-controls</artifactId>
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>14</maven.compiler.source>
-        <maven.compiler.target>14</maven.compiler.target>
-        <maven.compiler.release>14</maven.compiler.release>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.github.birdasaur.litfx</groupId>
             <artifactId>litfx-core</artifactId>
-            <version>0.1.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>${jfx.version}</version>
-            <scope>${jfx.dependency.scope}</scope>
+            <version>${javafx.version}</version>
+            <scope>${javafx.dependency.scope}</scope>
         </dependency>
     </dependencies>
 
