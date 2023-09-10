@@ -39,6 +39,9 @@ jobs:
         with:
           java-version: ${{ matrix.jdk-version }}
           distribution: 'temurin'
+          server-id: 'ossrh' # id nexus-staging-maven-plugin
+          server-username: OSSRH_USERNAME # env name for nexus-staging-maven-plugin user var
+          server-password: OSSRH_PASSWORD # env name for nexus-staging-maven-plugin pass var
 
       - name: Set Up Maven
         uses: stCarolas/setup-maven@v4.5
