@@ -65,12 +65,10 @@ jobs:
         shell: bash
         run: echo "project_revision=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
-      - name: Update Maven Revision to include sha and snapshot
+      - name: Update Maven Revision As Snapshot
         if: github.event_name != 'release'
         shell: bash
-        run: |
-          base_revision=$(echo "${{ env.project_revision }}" | sed 's/-SNAPSHOT$//')
-          echo "project_revision=${base_revision}-${GITHUB_SHA::6}-SNAPSHOT" >> $GITHUB_ENV
+        run: echo "project_revision=${{ env.project_revision }}-${GITHUB_SHA::6}" >> $GITHUB_ENV
 
       - name: Maven Build and Verify Jar
         run: mvn -V -B -e -ff -ntp -P github,release-sign-artifacts -Drevision="${{ env.project_revision }}" clean verify

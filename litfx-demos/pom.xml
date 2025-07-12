@@ -6,7 +6,7 @@
     <parent>
         <artifactId>LitFX</artifactId>
         <groupId>com.github.birdasaur.litfx</groupId>
-        <version>${revision}${changelist}</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>litfx-demos</artifactId>
