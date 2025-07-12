@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <actions>
         <action>
-            <actionName>CUSTOM-Deploy-OSSRH</actionName>
-            <displayName>Deploy to OSSRH</displayName>
+            <actionName>CUSTOM-Deploy-Sonatype</actionName>
+            <displayName>Deploy to Sonatype</displayName>
             <goals>
                 <goal>clean</goal>
                 <goal>deploy</goal>
             </goals>
             <activatedProfiles>
-                <activatedProfile>ossrh</activatedProfile>
+                <activatedProfile>sonatype</activatedProfile>
                 <activatedProfile>release-sign-artifacts</activatedProfile>
             </activatedProfiles>
         </action>

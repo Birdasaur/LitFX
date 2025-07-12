@@ -6,11 +6,15 @@
     <parent>
         <artifactId>LitFX</artifactId>
         <groupId>com.github.birdasaur.litfx</groupId>
-        <version>${revision}</version>
+        <version>${revision}${changelist}</version>
     </parent>
 
     <artifactId>litfx-controls</artifactId>
     <packaging>jar</packaging>
+
+    <name>LitFX Controls</name>
+    <description>Bolt on 2D special effects for JavaFX</description>
+    <url>https://github.com/Birdasaur/LitFX</url>
 
     <properties>
         <maven.compiler.source>${java.version}</maven.compiler.source>
