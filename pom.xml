@@ -55,7 +55,7 @@
         <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
         <codehaus.flatten.plugin.version>1.7.1</codehaus.flatten.plugin.version>
         <maven.scm.provider.gitexe.version>2.0.1</maven.scm.provider.gitexe.version>
-        <nexus.staging.maven.plugin.version>1.6.13</nexus.staging.maven.plugin.version>
+        <central.publishing.plugin.version>0.8.0</central.publishing.plugin.version>
         <javafx.version>21.0.7</javafx.version>
         <javafx.plugin.version>0.0.8</javafx.plugin.version>
         <!-- Using "runtime" as default value for downstream users of the library -->
@@ -263,7 +263,7 @@
             </build>
         </profile>
         <profile>
-            <id>ossrh</id>
+            <id>sonatype</id>
             <activation>
                 <property>
                     <name>performRelease</name>
@@ -272,26 +272,22 @@
             </activation>
             <distributionManagement>
                 <!-- https://central.sonatype.org/publish/publish-maven/#distribution-management-and-authentication -->
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
                 <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                    <id>sonatype</id>
+                    <url>https://central.sonatype.com</url>
                 </repository>
             </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${nexus.staging.maven.plugin.version}</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central.publishing.plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <publishingServerId>sonatype</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntil>published</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>
