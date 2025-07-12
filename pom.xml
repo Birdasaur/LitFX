@@ -5,7 +5,7 @@
 
     <groupId>com.github.birdasaur.litfx</groupId>
     <artifactId>LitFX</artifactId>
-    <version>${revision}</version>
+    <version>${revision}${changelist}</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -13,7 +13,7 @@
         <module>litfx-demos</module>
         <module>litfx-controls</module>
     </modules>
-    
+
     <name>LitFX</name>
     <description>Bolt on 2D special effects for JavaFX</description>
     <url>https://github.com/Birdasaur/LitFX</url>
@@ -36,32 +36,33 @@
 
     <properties>
         <!-- Using "revision" as SSOT https://maven.apache.org/maven-ci-friendly.html -->
-        <revision>0.1.3</revision>
+        <revision>0.2.0</revision>
+        <changelist>-SNAPSHOT</changelist>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
-        <maven.min.version>3.6.3</maven.min.version>
+        <java.version>21</java.version>
+        <maven.min.version>3.8.8</maven.min.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <!-- Use "mvn versions:display-property-updates" to show updates -->
-        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
-        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-        <maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
-        <maven.enforcer.plugin.version>3.3.0</maven.enforcer.plugin.version>
+        <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+        <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
+        <maven.deploy.plugin.version>3.1.4</maven.deploy.plugin.version>
+        <maven.enforcer.plugin.version>3.6.0</maven.enforcer.plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
         <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
         <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
-        <codehaus.flatten.plugin.version>1.5.0</codehaus.flatten.plugin.version>
+        <codehaus.flatten.plugin.version>1.7.1</codehaus.flatten.plugin.version>
         <maven.scm.provider.gitexe.version>2.0.1</maven.scm.provider.gitexe.version>
         <nexus.staging.maven.plugin.version>1.6.13</nexus.staging.maven.plugin.version>
-        <javafx.version>20.0.2</javafx.version>
+        <javafx.version>21.0.7</javafx.version>
         <javafx.plugin.version>0.0.8</javafx.plugin.version>
         <!-- Using "runtime" as default value for downstream users of the library -->
         <!-- Note, you'll need to run "mvn clean install" when doing local dev -->
         <!-- Since the default profile will set this scope to "compile" -->
         <javafx.dependency.scope>runtime</javafx.dependency.scope>
-        <junit.jupiter.version>5.9.3</junit.jupiter.version>
+        <junit.jupiter.version>5.13.3</junit.jupiter.version>
     </properties>
 
     <scm>
