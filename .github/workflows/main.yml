@@ -12,10 +12,9 @@ permissions:
   contents: write
   packages: write
 
-# cancel in progress jobs or runs for the current workflow
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+  group: main-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
 
