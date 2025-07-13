@@ -68,7 +68,7 @@ jobs:
       - name: Update Maven Revision As Snapshot
         if: github.event_name != 'release'
         shell: bash
-        run: echo "project_revision=${{ env.project_revision }}-${GITHUB_SHA::6}" >> $GITHUB_ENV
+        run: echo "project_revision=${{ env.project_revision }}-${GITHUB_SHA::6}-SNAPSHOT" >> $GITHUB_ENV
 
       - name: Maven Build and Verify Jar
         run: mvn -V -B -e -ff -ntp -P github,release-sign-artifacts -Drevision="${{ env.project_revision }}" clean verify
