@@ -270,6 +270,11 @@
                 </property>
             </activation>
             <distributionManagement>
+                <!-- https://central.sonatype.org/publish/publish-portal-snapshots/#publishing-via-other-methods -->
+                <snapshotRepository>
+                    <id>sonatype</id>
+                    <url>https://central.sonatype.com/repository/maven-snapshots</url>
+                </snapshotRepository>
                 <!-- https://central.sonatype.org/publish/publish-maven/#distribution-management-and-authentication -->
                 <repository>
                     <id>sonatype</id>
